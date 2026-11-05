@@ -61,7 +61,7 @@ Conserva su `/data`: los registros existentes de claves, repositorios y desplieg
 3. En **Repositorios → Añadir repositorio**, introduce nombre, rama y URL:
 
    ```text
-   ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/pivigia.git
+   ssh://forgejo@gentedelcondado:223/usuari/repositorio.git
    ```
 
    La URL es un ejemplo: el repositorio debe existir y contener una aplicación válida. Selecciona la clave creada.
