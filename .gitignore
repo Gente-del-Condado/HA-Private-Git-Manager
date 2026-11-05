@@ -1,0 +1,43 @@
+# Entornos y caches de desarrollo
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Datos privados y aplicaciones de pruebas
+.dev-data*/
+.dev-addons*/
+/data/
+/addons/
+state.json
+jobs.json
+*.log
+*.log.*
+
+# Credenciales y configuracion del equipo
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_ed25519*
+id_rsa*
+authorized_keys
+known_hosts
+.aws/
+.codex/
+.agents/
+
+# Paquetes generados: se publican como archivos de una version
+/dist/
+
+# Archivos del sistema y del editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*~
