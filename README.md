@@ -175,3 +175,4 @@ No ejecutes varias instancias o varios workers compartiendo `/data`. No hay coor
 - [Ingress y sus rutas](https://contributors.home-assistant.io/apps/guides/ingress/)
 - [API de la tienda](https://contributors.home-assistant.io/apps/supervisor-api/store/)
 - [API de aplicaciones](https://contributors.home-assistant.io/apps/supervisor-api/apps/)
+# HA-Private-Git-Manager
