@@ -1,0 +1,177 @@
+# HA Private Git Manager
+
+[Subir a Forgejo](FORGEJO.md)
+
+**Versión 0.2.0 · Español / English · Aplicación nativa de Home Assistant OS**
+
+Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
+
+![Identidad de la aplicación](private_git_manager/logo.png)
+
+[English documentation](README.en.md) · [Guía dentro de Home Assistant](private_git_manager/DOCS.md) · [Validación técnica](VALIDATION.md)
+
+## Qué incluye
+
+| Área | Funciones |
+| --- | --- |
+| Interfaz | Español e inglés completos, tema claro/oscuro/sistema, diseño adaptable y navegación por teclado |
+| SSH | Claves Ed25519, pública copiable y descargable, rotación y bloqueo de eliminación de claves en uso |
+| Confianza | Identidad Ed25519 fijada por servidor y puerto; comparación explícita de huella SHA256 |
+| Git | SSH con puertos personalizados, HTTPS con token, ramas y etiquetas, edición de referencias |
+| Aplicaciones | Detección de manifiestos, instalación, actualización/reconstrucción y registro del commit |
+| Ejecución | Inicio, parada y reinicio a través del Supervisor; primera instalación detenida |
+| Operaciones | Cola en segundo plano, progreso persistente, reconexión de la interfaz y bloqueo de duplicados |
+| Recuperación | Diario anterior a la sustitución de archivos, detección de interrupciones y recuperación explícita |
+| Programación | Sincronización por repositorio cada 5 minutos o más; nunca instala código automáticamente |
+| Registros | Niveles, búsqueda, exportación JSONL, historial traducido y registros del contenedor en español |
+
+Arquitecturas declaradas: **aarch64** y **amd64**. Para Raspberry Pi 4 utiliza HA OS de 64 bits y aplicaciones que admitan `aarch64`. La compatibilidad final de cada aplicación depende de su propio manifiesto y del Supervisor.
+
+## Instalación inicial en Home Assistant
+
+1. Extrae el paquete de distribución. Copia la carpeta `private_git_manager` completa a **`/addons/private_git_manager`** en Home Assistant mediante Samba o una aplicación de terminal con acceso a `/addons`.
+2. Comprueba que existe `/addons/private_git_manager/config.yaml`, junto al `Dockerfile`, los requisitos y la carpeta `app`.
+3. Recarga la tienda:
+
+   ```sh
+   ha addons reload
+   ```
+
+4. Abre **Ajustes → Aplicaciones → Tienda → Aplicaciones locales → HA Private Git Manager**. Activa el modo avanzado de tu perfil si hace falta para ver aplicaciones locales.
+5. Instala, inicia y pulsa **Abrir interfaz web**. Puedes activar su entrada del panel lateral.
+
+La construcción inicial requiere Internet. El gestor utiliza el rol `manager`, acceso de escritura a aplicaciones locales y su carpeta privada `/data`. Su panel está reservado a administradores. No requiere abrir SSH ni otro puerto del gestor en el host, desactivar el modo de protección ni montar `/config`.
+
+### Actualizar desde la versión 0.1.0
+
+Detén el gestor desde Home Assistant, reemplaza **solo sus archivos de programa** en `/addons/private_git_manager` por los de esta versión y reconstruye:
+
+```sh
+ha addons reload
+ha addons rebuild local_private_git_manager
+ha addons start local_private_git_manager
+```
+
+Conserva su `/data`: los registros existentes de claves, repositorios y despliegues se migran al arrancar. Realiza una copia de seguridad de la aplicación antes de reemplazarla. Si tu instalación asignó otro identificador, utiliza el mostrado por `ha addons list`.
+
+## Primer repositorio de Forgejo
+
+1. En **Claves SSH**, crea una identidad, por ejemplo `Forgejo HA`.
+2. Registra su parte pública en **Forgejo → Repositorio → Configuración → Claves de despliegue**, con permiso de **solo lectura**.
+3. En **Repositorios → Añadir repositorio**, introduce nombre, rama y URL:
+
+   ```text
+   ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/pivigia.git
+   ```
+
+   La URL es un ejemplo: el repositorio debe existir y contener una aplicación válida. Selecciona la clave creada.
+4. Pulsa **Verificar servidor SSH → Obtener huella**. Comprueba la huella por un canal de confianza y pega la huella verificada `SHA256:...`.
+5. Guarda, sincroniza y elige una aplicación detectada. Antes de instalar se muestran versión y commit para confirmarlos.
+6. Configura sus opciones desde Home Assistant. La primera instalación queda detenida; puedes iniciarla allí o desde el gestor.
+
+En un servidor OpenSSH administrado por ti puedes obtener la huella con:
+
+```sh
+ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256
+```
+
+Si Forgejo usa SSH integrado o un contenedor, comprueba la clave de ese servicio y puerto concreto. `ssh-keyscan` solo presenta una clave: no demuestra que sea la del servidor legítimo.
+
+Para GitHub se admite `git@github.com:usuario/repositorio.git`; verifica su identidad con las [huellas oficiales de GitHub](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints).
+
+### HTTPS y tokens
+
+Introduce una URL limpia (`https://servidor/usuario/repo.git`), el usuario requerido por el proveedor y un token de lectura en **Credenciales HTTPS**. Los repositorios públicos no necesitan token. Nunca pegues credenciales en la URL. Al cambiar credenciales, dejar el token vacío elimina el token guardado.
+
+### Rotación de claves
+
+Crea una clave nueva, registra la pública, selecciona la nueva en **Credenciales** y sincroniza para probarla. Después revoca la anterior en el proveedor y elimínala del gestor. Las claves en uso no se pueden eliminar.
+
+## Sincronización y actualizaciones
+
+**Sincronizar** descarga la rama o etiqueta configurada en una copia de trabajo nueva. No cambia una aplicación ya instalada. Si falla la descarga o la validación, se conserva la copia anterior.
+
+En **Editar** puedes cambiar la referencia y configurar un intervalo en minutos. `0` desactiva la programación. El mínimo es 5 minutos y el máximo 7 días. Cambiar la referencia invalida la detección anterior y exige sincronizar otra vez.
+
+**Actualizar / reconstruir** verifica que el commit siga siendo el confirmado, prepara los archivos, guarda el diario de operación y solicita instalar, actualizar o reconstruir al Supervisor. Si la aplicación estaba iniciada, se detiene durante la sustitución y se solicita su inicio al finalizar. Si estaba detenida, se mantiene detenida. La versión instalada se consulta antes de marcar el trabajo como completado.
+
+Los trabajos continúan al cerrar la interfaz. Su estado y progreso reaparecen al volver. Las operaciones se serializan y hay un máximo de 20 trabajos pendientes; no se encola dos veces un recurso ocupado.
+
+### Recuperación
+
+Si el Supervisor devuelve un resultado incierto o el gestor se interrumpe durante un despliegue, **no se supone que la instalación haya fallado**: podría seguir construyendo una imagen. Se conservan el diario y los archivos disponibles, y se bloquean nuevos despliegues de esa aplicación.
+
+1. Comprueba desde Home Assistant que ya no hay una construcción o actualización activa. Consulta los registros del Supervisor.
+2. Pulsa **Revisar recuperación** en el gestor.
+3. Elige **Restaurar código anterior** o **Aceptar versión actual verificada** y confirma que revisaste el Supervisor.
+4. La aceptación exige comprobar la versión instalada y la huella del árbol de archivos. La restauración comprueba la copia anterior cuando tiene su huella registrada.
+5. Si restauraste código, puede ser necesario reconstruir o iniciar la aplicación desde Home Assistant. El gestor no revierte imágenes ni datos de aplicaciones.
+
+El diario está en `state.json`; las carpetas temporales `.pgm-stage-*` y `.pgm-backup-*` están ocultas bajo `/addons` para que el Supervisor no las registre como aplicaciones. No las borres durante una recuperación. Si falta una copia verificable, el gestor se detiene y conserva la información para recuperación manual.
+
+### Retirar un repositorio
+
+Desinstala primero sus aplicaciones desde Home Assistant. Después utiliza **Desvincular** para retirar su registro del gestor. Esta acción conserva la carpeta local deliberadamente. Solo los repositorios sin aplicaciones gestionadas se pueden eliminar. No hay desinstalación destructiva desde esta interfaz.
+
+## Formato de las aplicaciones
+
+```text
+repositorio/
+  mi_aplicacion/
+    config.yaml
+    Dockerfile
+    run.sh
+```
+
+Se admiten manifiestos en la raíz o en subcarpetas hasta cinco niveles, con nombre `config.yaml`, `config.yml` o `config.json`. El paquete debe incluir los campos obligatorios de Home Assistant y un `Dockerfile` o una imagen precompilada.
+
+Se copia la carpeta que contiene el manifiesto. Un Dockerfile que depende de archivos externos a esa carpeta necesita adaptar su contexto. Los paquetes no pueden contener otras aplicaciones anidadas, enlaces simbólicos ni archivos especiales. No se materializan submódulos ni objetos Git LFS. Un slug no puede colisionar con otra carpeta local; `private_git_manager` está reservado.
+
+El límite de un paquete desplegado es 512 MiB y se exige margen libre antes de copiarlo. La descarga Git tiene tiempo máximo, pero no una cuota estricta de almacenamiento: evita repositorios gigantes.
+
+## Registros y datos privados
+
+| Ruta | Contenido |
+| --- | --- |
+| `/data/keys` | Claves privadas y públicas |
+| `/data/repos` | Copias de trabajo privadas |
+| `/data/state.json` | Metadatos, tokens y diario de recuperación |
+| `/data/jobs.json` | Trabajos y errores persistentes |
+| `/data/manager.log` | Registro JSONL; rotación a 1 MiB con tres copias anteriores |
+
+Las carpetas privadas utilizan permisos `0700`; los archivos de estado, claves privadas, trabajos y registros, `0600`. Los tokens no se devuelven por la API, no se guardan en la configuración Git y no se incorporan a mensajes de procesos. La autenticación HTTPS utiliza `GIT_ASKPASS`.
+
+Los secretos están protegidos por permisos, **sin cifrado adicional**. Las copias de seguridad contienen credenciales. El gestor no exporta claves privadas. Instalar aplicaciones implica confiar en su código y en los permisos que soliciten al Supervisor; no se verifican firmas de commits.
+
+La interfaz conserva 500 eventos y hasta 100 trabajos terminados. Los textos del historial se traducen al idioma elegido; los registros originales de versiones anteriores pueden conservar su idioma. Los registros estándar del contenedor se escriben en español.
+
+## Desarrollo y verificación
+
+Requisitos: Python 3.11 o posterior, Git y OpenSSH. Las pruebas de transporte completo también utilizan `sshd` y `openssl`.
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
+PGM_DEV=1 .venv/bin/uvicorn app.main:app --app-dir private_git_manager --host 127.0.0.1 --port 8099 --no-proxy-headers --no-access-log
+```
+
+Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y detección; la instalación exige un Supervisor real. No publiques este modo en la red ni establezcas `SUPERVISOR_TOKEN` para simular una conexión.
+
+```sh
+.venv/bin/python -m pytest -q
+node --check private_git_manager/app/static/app.js
+podman build --format docker -t localhost/ha-private-git-manager:0.2.0 private_git_manager
+scripts/container-smoke.sh
+python3 scripts/package.py
+```
+
+La prueba de contenedores crea una red aislada con el proxy de prueba en `172.30.32.2` y comprueba acceso permitido, tráfico ajeno denegado, salud, activos, idiomas, claves, ocultación de tokens y registros. No monta datos del usuario ni publica puertos y elimina sus contenedores al terminar.
+
+No ejecutes varias instancias o varios workers compartiendo `/data`. No hay coordinación entre procesos ni instalación automática, webhooks, importación de claves privadas, verificación de firmas o rollback de imágenes/datos. La prueba definitiva en HA OS y en hardware aarch64 se documenta por separado de las comprobaciones locales.
+
+## Referencias
+
+- [Configuración de aplicaciones](https://contributors.home-assistant.io/apps/reference/configuration/)
+- [Ingress y sus rutas](https://contributors.home-assistant.io/apps/guides/ingress/)
+- [API de la tienda](https://contributors.home-assistant.io/apps/supervisor-api/store/)
+- [API de aplicaciones](https://contributors.home-assistant.io/apps/supervisor-api/apps/)
