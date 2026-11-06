@@ -194,3 +194,54 @@ def test_uncertain_config_save_does_not_leak_values(controls, monkeypatch):
         apps.save(repo_id, "demo", config["yaml"], config["revision"])
     assert caught.value.code == "config_uncertain"
     assert "initial-app-secret" not in manager.log_path.read_text()
+
+
+def test_configuration_exposes_supervisor_values_schema_and_translations(controls, monkeypatch):
+    manager, apps, repo_id, _ = controls
+    original = manager.supervisor.call
+    translations = {
+        "es": {"configuration": {"username": {"name": "Usuario", "description": "Tu usuario"}}}
+    }
+
+    def info(method, path, payload=None):
+        result = original(method, path, payload)
+        if path.endswith("/info"):
+            result.update(translations=translations, network_description={"1234/tcp": "Servicio"})
+        return result
+
+    monkeypatch.setattr(manager.supervisor, "call", info)
+    result = apps.configuration(repo_id, "demo")
+    assert result["values"] == manager.supervisor.settings
+    assert result["schema"] == [{"name": "username", "type": "string"}]
+    assert result["translations"] == translations
+    assert result["network_description"] == {"1234/tcp": "Servicio"}
+    assert "initial-app-secret" not in manager.state_file.read_text()
+
+
+def test_form_yaml_conversion_preserves_types_and_never_saves(controls):
+    manager, apps, repo_id, _ = controls
+    values = {
+        "options": {
+            "password": "!secret app_password",
+            "enabled": False,
+            "count": 4,
+            "nested": [{"name": "first"}],
+        },
+        "boot": "auto",
+    }
+    converted = apps.convert(repo_id, "demo", json.dumps(values))
+    assert converted["values"] == values
+    assert apps.convert(repo_id, "demo", converted["yaml"])["values"] == values
+    assert manager.supervisor.settings["boot"] == "manual"
+    assert not any(path.endswith("/options") for _, path in manager.supervisor.calls)
+    with pytest.raises(Problem):
+        apps.convert(repo_id, "demo", "options: [broken")
+
+
+def test_native_nullable_system_metadata_does_not_block_configuration(controls):
+    manager, apps, repo_id, _ = controls
+    manager.supervisor.settings.update(audio_input=None, audio_output=None, ingress_panel=None)
+    config = apps.configuration(repo_id, "demo")
+    assert "ingress_panel" not in config["values"]
+    assert config["values"]["audio_input"] is None
+    apps.save(repo_id, "demo", config["yaml"], config["revision"])

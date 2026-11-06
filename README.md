@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.6.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.7.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -106,7 +106,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.6.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.7.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -114,7 +114,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.6.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.7.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -173,11 +173,15 @@ El diario está en `state.json`; las carpetas temporales `.pgm-stage-*` y `.pgm-
 
 ### Configuración y logs de una aplicación
 
-Pulsa **Configurar** en una aplicación instalada. El editor YAML muestra sus opciones bajo `options` y los ajustes disponibles: `boot` (`auto`/`manual`), `watchdog`, `network` (puertos), `auto_update`, `ingress_panel` y dispositivos de audio. Admite estructuras anidadas y referencias `!secret nombre`. Las claves YAML deben ser únicas y de texto; las fechas que deban ser cadenas se escriben entre comillas.
+Pulsa **Configurar** en una aplicación instalada. La vista principal es un **Formulario** generado a partir de `schema` y `translations` que devuelve el Supervisor para esa aplicación. Reutiliza sus campos, nombres y ayudas traducidas, con alternativa en inglés si falta la traducción elegida. No necesitas definir un formato adicional en tus aplicaciones.
 
-**Validar configuración** hace una comprobación preliminar del YAML y del esquema de opciones. **Guardar configuración** vuelve a comprobarla mediante el Supervisor. Los cambios se aplican al próximo inicio; puedes marcar **Reiniciar después de guardar si la aplicación está en marcha**. Una aplicación detenida no se inicia automáticamente.
+Incluye texto, contraseñas ocultas con opción de mostrarlas, casillas, números con sus límites, selectores (incluidos dispositivos) y grupos o listas anidados. Puedes añadir o quitar elementos y activar o desactivar opciones opcionales, conservando la diferencia entre un valor `false` y una opción ausente. También muestra los ajustes disponibles de arranque, watchdog, actualizaciones automáticas, puertos, panel Ingress y audio.
 
-El editor conserva los cambios si falla el guardado y avisa antes de descartarlos. Si otra ventana modifica la configuración, se rechaza el guardado para evitar sobrescribirla. Las opciones se envían al Supervisor y no se guardan en el estado, trabajos, historial ni almacenamiento local del navegador. El límite es de 24.000 caracteres por documento y 32 KiB por petición HTTP.
+**YAML avanzado** permite editar la representación completa cuando lo necesites. Puedes volver al formulario sin perder los cambios; si el YAML no es válido, se conserva el texto y la vista avanzada. Los valores no representables permanecen intactos y muestran una indicación para editarlos en la vista avanzada. Las referencias existentes `!secret nombre` se conservan, también en campos numéricos y selectores.
+
+**Validar configuración** hace una comprobación preliminar y **Guardar configuración** vuelve a validarla mediante el Supervisor. Los cambios se aplican al próximo inicio; puedes marcar **Reiniciar después de guardar si la aplicación está en marcha**. Una aplicación detenida no se inicia automáticamente.
+
+El editor conserva los cambios si falla el guardado y avisa antes de descartarlos. Si otra ventana modifica la configuración, se rechaza el guardado para evitar sobrescribirla. Las opciones no se guardan en el estado, trabajos, historial ni almacenamiento local del navegador. La representación enviada está limitada a 24.000 caracteres y cada petición HTTP a 32 KiB.
 
 **Logs de la aplicación** abre su salida reciente como texto. Incluye búsqueda, actualización cada cinco segundos, pausa, refresco manual y descarga `.log`. El refresco se detiene al cerrar el visor y se pausa mientras la página está oculta. Los logs permanecen en memoria, se limitan a 512 KiB por lectura y se ocultan valores conocidos de opciones sensibles y tokens del gestor; no se garantiza detectar todas las credenciales que una aplicación pueda imprimir. También se pueden consultar durante una recuperación pendiente.
 
@@ -244,7 +248,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.6.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.7.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
