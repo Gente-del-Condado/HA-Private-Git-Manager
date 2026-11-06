@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.2.1
+# HA Private Git Manager 0.3.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -21,6 +21,16 @@ The app requests the Supervisor `manager` role and write access to local apps. I
 
 For HTTPS, enter a clean repository URL and an optional read-only token plus the username your provider requires. Public repositories do not need a token. Never put credentials in URLs. An empty token in the credentials form removes the stored token.
 
+## Private single-app repositories and master catalogs
+
+Both formats are supported. A single-app repository may keep its manifest and README in the root or an app subdirectory. A master repository can contain root `README.md` and `repository.yaml`, with one subdirectory per app. Every app still needs its own valid Home Assistant manifest.
+
+Cards display repository type, catalog name, maintainer, summary and app count. Search also covers catalog/app identity. **View catalog** opens the root README and app presentations; **View README** opens an app presentation, and **Documentation** displays its `DOCS.md` when available.
+
+Relative Markdown links stay inside the private reader. Local PNG/JPEG/GIF/WebP images use authenticated Ingress routes. Raw HTML is escaped, external images and SVG are not automatically loaded, and `.git`, keys, symlinks and paths outside the checkout are blocked. Documents are limited to 256 KiB and images to 8 MiB. Optional metadata can also use `repository.yml` or `repository.json`.
+
+Previously downloaded repositories gain presentation metadata after upgrading. Sync again after changing README files in the remote repository.
+
 ## Existing local folders (0.2.1)
 
 The manager itself lives in `/addons/private_git_manager`; each managed app uses `/addons/<slug>`. These are local app source folders, separate from official app container storage.
@@ -29,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.2.1 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.3.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 

@@ -134,3 +134,24 @@ def test_preflight_api_reports_collision_without_claiming_folder(client):
     assert body["requires_adoption"] and not body["installed"]
     assert len(body["local_digest"]) == 64
     assert not main.manager.state["deployments"]
+
+
+def test_private_document_api_and_raster_assets(client):
+    import shutil
+    from pathlib import Path
+
+    from test_manager import prepared
+
+    repo_id, root = prepared(main.manager)
+    (root / "README.md").write_text("# Documentación privada\n\n**Hola**")
+    shutil.copyfile(
+        Path(__file__).resolve().parents[1] / "private_git_manager/icon.png", root / "icon.png"
+    )
+    document = client.get(f"/api/repos/{repo_id}/document")
+    assert document.status_code == 200
+    assert "<strong>Hola</strong>" in document.json()["html"]
+    image = client.get(f"/api/repos/{repo_id}/asset?path=icon.png")
+    assert image.status_code == 200 and image.headers["content-type"] == "image/png"
+    assert image.headers["cross-origin-resource-policy"] == "same-origin"
+    assert client.get(f"/api/repos/{repo_id}/document?path=../README.md").status_code == 400
+    assert client.get(f"/api/repos/{repo_id}/document?path=.git/config.md").status_code == 400

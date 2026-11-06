@@ -1,4 +1,4 @@
-# Validación de HA Private Git Manager 0.2.1
+# Validación de HA Private Git Manager 0.3.0
 
 Fecha: **6 de noviembre de 2026**.
 
@@ -8,9 +8,9 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 | Comprobación | Resultado | Alcance |
 | --- | --- | --- |
-| Pruebas Python | **75 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
+| Pruebas Python | **93 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
 | Análisis de Python | **Correcto** | Ruff: sintaxis, importaciones, errores comunes y código sin uso |
-| Formato de Python | **Correcto** | 17 archivos comprobados |
+| Formato de Python | **Correcto** | 21 archivos comprobados |
 | Sintaxis JavaScript | **Correcta** | `node --check` sobre el módulo de interfaz |
 | Dependencias instaladas | **Correctas** | `pip check` sin requisitos rotos |
 | SSH real | **Correcto** | Clonación contra sshd temporal en localhost con Ed25519 y puerto personalizado |
@@ -48,6 +48,17 @@ Se reprodujo el bloqueo al instalar sobre una carpeta ya presente en `/addons/<s
 
 El usuario ha confirmado la descarga real de un repositorio privado de Forgejo mediante SSH en Home Assistant. La corrección de adopción se ha verificado localmente; su comprobación final en esa instalación sigue pendiente.
 
+## Catálogos y documentación privada en 0.3.0
+
+- Repositorio de una sola aplicación en la raíz, catálogo maestro con README/repository.yaml y aplicaciones en subcarpetas, y catálogo que incluye al propio gestor.
+- Metadatos y documentación distintos por aplicación; migración de copias descargadas antes de actualizar.
+- Markdown formateado (tablas y código), enlaces internos y PNG local servida mediante las rutas privadas de la API.
+- Rechazo de recorridos fuera del checkout, archivos de `.git`/`.ssh`, enlaces simbólicos, documentos demasiado grandes y formatos de archivo no autorizados.
+- HTML de origen desactivado, protocolos activos bloqueados e imágenes externas/SVG sin carga automática.
+- Dos recorridos completos de navegador Chrome 157: sanitizador nativo y alternativa DOMPurify forzada, con lectura de catálogo, README de aplicación, DOCS, enlace interno, imagen local y búsqueda por mantenedor.
+- Cambio del README general de un catálogo real de prueba sin cambio de las huellas de sus aplicaciones.
+- Dependencia Markdown incluida en la construcción Docker, junto con DOMPurify versionado y sus licencias para navegadores sin Sanitizer API.
+
 ## Límites de lo comprobado
 
 - La API del Supervisor se contrastó con su documentación y código oficial. Las operaciones se verificaron con simulaciones y transporte HTTP controlado; **no se ejecutaron contra un Supervisor real**.
@@ -73,7 +84,7 @@ El usuario ha confirmado la descarga real de un repositorio privado de Forgejo m
 .venv/bin/ruff format --check private_git_manager/app tests scripts/package.py
 node --check private_git_manager/app/static/app.js
 .venv/bin/pip check
-podman build --format docker -t localhost/ha-private-git-manager:0.2.1 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.3.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
