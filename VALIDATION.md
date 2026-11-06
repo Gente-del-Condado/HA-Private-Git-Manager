@@ -1,6 +1,6 @@
-# Validación de HA Private Git Manager 0.2.0
+# Validación de HA Private Git Manager 0.2.1
 
-Fecha: **5 de noviembre de 2026**.
+Fecha: **6 de noviembre de 2026**.
 
 Este informe distingue las comprobaciones ejecutadas de la compatibilidad declarada. No certifica una instalación en Home Assistant OS ni en una Raspberry Pi real.
 
@@ -8,9 +8,9 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 | Comprobación | Resultado | Alcance |
 | --- | --- | --- |
-| Pruebas Python | **58 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
+| Pruebas Python | **75 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
 | Análisis de Python | **Correcto** | Ruff: sintaxis, importaciones, errores comunes y código sin uso |
-| Formato de Python | **Correcto** | 15 archivos comprobados |
+| Formato de Python | **Correcto** | 17 archivos comprobados |
 | Sintaxis JavaScript | **Correcta** | `node --check` sobre el módulo de interfaz |
 | Dependencias instaladas | **Correctas** | `pip check` sin requisitos rotos |
 | SSH real | **Correcto** | Clonación contra sshd temporal en localhost con Ed25519 y puerto personalizado |
@@ -37,6 +37,17 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 La suite muestra una advertencia de deprecación de la combinación Starlette TestClient/httpx. No supone fallo de prueba ni interviene en el servidor de producción.
 
+## Regresión corregida en 0.2.1: carpeta local existente
+
+Se reprodujo el bloqueo al instalar sobre una carpeta ya presente en `/addons/<slug>`. Se añadió una revisión previa y consentimiento explícito para adoptar aplicaciones con el mismo identificador, manteniendo el rechazo de carpetas ajenas.
+
+- 14 pruebas nuevas de carpetas vacías, adopción con y sin instalación previa, consentimiento, cambio de huella, carpeta ajena, enlaces, errores y recuperación.
+- Una prueba adicional del endpoint de revisión previa sin toma de propiedad ni modificación de archivos.
+- Dos pruebas de navegador completo (español e inglés), con perfil Chrome aislado y Supervisor simulado: foco inicial en Cancelar, consentimiento nativo obligatorio y aplicación efectiva del código después de confirmar.
+- La adopción idéntica de una instalación con imagen precompilada no solicita una actualización de imagen innecesaria.
+
+El usuario ha confirmado la descarga real de un repositorio privado de Forgejo mediante SSH en Home Assistant. La corrección de adopción se ha verificado localmente; su comprobación final en esa instalación sigue pendiente.
+
 ## Límites de lo comprobado
 
 - La API del Supervisor se contrastó con su documentación y código oficial. Las operaciones se verificaron con simulaciones y transporte HTTP controlado; **no se ejecutaron contra un Supervisor real**.
@@ -62,7 +73,7 @@ La suite muestra una advertencia de deprecación de la combinación Starlette Te
 .venv/bin/ruff format --check private_git_manager/app tests scripts/package.py
 node --check private_git_manager/app/static/app.js
 .venv/bin/pip check
-podman build --format docker -t localhost/ha-private-git-manager:0.2.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.2.1 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

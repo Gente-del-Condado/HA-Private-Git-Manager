@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.2.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.2.1 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -59,6 +59,33 @@ ha addons start local_private_git_manager
 ```
 
 Conserva su `/data`: los registros existentes de claves, repositorios y despliegues se migran al arrancar. Realiza una copia de seguridad de la aplicación antes de reemplazarla. Si tu instalación asignó otro identificador, utiliza el mostrado por `ha addons list`.
+
+## Carpetas locales que ya existen
+
+El gestor se instala en `/addons/private_git_manager`. Cada aplicación privada utiliza su propia carpeta `/addons/<slug>`. Todas aparecen en la tienda de Home Assistant, pero `/addons` es el directorio de código de las aplicaciones locales: no es el almacén de los contenedores oficiales.
+
+Desde **0.2.1**, al pulsar **Instalar** se revisa la carpeta de destino antes de confirmar:
+
+- Si no existe, se instala normalmente.
+- Si está vacía, se reutiliza sin borrar archivos de otra aplicación.
+- Si contiene una aplicación con el mismo identificador, se muestra su ruta, versión y estado instalado. Marca el consentimiento y pulsa **Adoptar y aplicar** para gestionarla desde este repositorio.
+- Si contiene otra aplicación, enlaces simbólicos o una estructura ambigua, no se sobrescribe.
+
+Durante la adopción se conserva una copia del código anterior hasta confirmar el resultado. Si falla, el código se restaura; si el Supervisor pierde la conexión, ambas copias se conservan para recuperación explícita. Esto no sustituye una copia de seguridad de los datos ni de la imagen de la aplicación. Si la carpeta cambia después de revisarla, hay que revisarla de nuevo.
+
+Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez de intentar instalarla otra vez. Si código y versión ya coinciden exactamente, basta con registrar su gestión. No hace falta borrar la carpeta existente ni eliminar la aplicación desde Home Assistant para resolver este caso.
+
+### Aplicar la corrección a un gestor instalado localmente
+
+Detén HA Private Git Manager, extrae el paquete **0.2.1** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+
+```sh
+ha addons reload
+ha addons rebuild local_private_git_manager
+ha addons start local_private_git_manager
+```
+
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.2.1** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -166,7 +193,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.2.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.2.1 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

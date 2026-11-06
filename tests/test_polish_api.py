@@ -116,3 +116,21 @@ def test_complete_language_catalogs_and_manifest_version():
     assert manifest["version"] == main.VERSION
     assert manifest["ingress"] and manifest["panel_admin"]
     assert "ports" not in manifest
+
+
+def test_preflight_api_reports_collision_without_claiming_folder(client):
+    from test_manager import FakeSupervisor, addon, prepared
+
+    fake = FakeSupervisor()
+    fake.addons = main.manager.addons
+    main.manager.supervisor = fake
+    repo_id, _ = prepared(main.manager)
+    addon(main.manager.addons / "demo", "0.5.0")
+    response = client.post(
+        f"/api/repos/{repo_id}/preflight", headers=HEADERS, json={"slug": "demo"}
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["requires_adoption"] and not body["installed"]
+    assert len(body["local_digest"]) == 64
+    assert not main.manager.state["deployments"]

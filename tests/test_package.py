@@ -4,11 +4,13 @@ import sys
 import tarfile
 from pathlib import Path
 
+from app.core import VERSION
+
 
 def test_release_archive_reproducible_and_contains_no_runtime_data():
     root = Path(__file__).resolve().parents[1]
     script = root / "scripts/package.py"
-    output = root / "dist/ha-private-git-manager-0.2.0.tar.gz"
+    output = root / f"dist/ha-private-git-manager-{VERSION}.tar.gz"
     subprocess.check_call([sys.executable, str(script)], stdout=subprocess.DEVNULL)
     first = hashlib.sha256(output.read_bytes()).hexdigest()
     subprocess.check_call([sys.executable, str(script)], stdout=subprocess.DEVNULL)

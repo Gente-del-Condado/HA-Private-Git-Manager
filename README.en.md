@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.2.0
+# HA Private Git Manager 0.2.1
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -20,6 +20,16 @@ The app requests the Supervisor `manager` role and write access to local apps. I
 6. Configure app options in Home Assistant, then start the app. Initial installations are left stopped.
 
 For HTTPS, enter a clean repository URL and an optional read-only token plus the username your provider requires. Public repositories do not need a token. Never put credentials in URLs. An empty token in the credentials form removes the stored token.
+
+## Existing local folders (0.2.1)
+
+The manager itself lives in `/addons/private_git_manager`; each managed app uses `/addons/<slug>`. These are local app source folders, separate from official app container storage.
+
+Click **Install** to inspect the destination. Empty folders can be reused. An existing app with the same slug can be adopted after reviewing its path/version and explicitly checking the consent box. **Adopt and apply** keeps the previous source during deployment. Different app slugs, ambiguous packages and symbolic links are refused. A changed folder requires a new review.
+
+An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
+
+For a local installation, stop the manager, replace its program directory with the 0.2.1 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
