@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.3.0
+# HA Private Git Manager 0.4.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.3.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.4.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -57,7 +57,11 @@ Check Supervisor logs and ensure the build/update is no longer active. Select **
 
 Hidden `.pgm-stage-*` and `.pgm-backup-*` folders under `/addons` may hold recovery data. Do not remove them during recovery. The journal is in `/data/state.json`.
 
-Uninstall apps through Home Assistant. **Release** then removes the manager record while keeping the local source folder. Repositories with managed apps cannot be deleted.
+Uninstall the app through Home Assistant first. **Delete app** then removes only its reviewed `/addons/<slug>` source folder and manager record, including previously released copies. Other apps and both the downloaded and remote Git repository are kept.
+
+The optional **Also hide this app** checkbox keeps it out of this manager catalog across syncs and restarts. Use **Hidden apps → Show again** to restore its listing without installing it. Leave the checkbox unchecked to keep it available. **Release** only removes the manager record and keeps local files.
+
+Deletion is a background job with a persistent journal. After a failure, **Review recovery → Finish deletion** retries cleanup of its `.pgm-remove-*` folder. Never delete these folders during pending operations. The manager refuses deletion while the app is installed or Supervisor cannot be checked. Repositories with managed apps cannot be deleted.
 
 ## Logs and privacy
 

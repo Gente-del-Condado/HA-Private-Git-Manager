@@ -155,3 +155,41 @@ def test_private_document_api_and_raster_assets(client):
     assert image.headers["cross-origin-resource-policy"] == "same-origin"
     assert client.get(f"/api/repos/{repo_id}/document?path=../README.md").status_code == 400
     assert client.get(f"/api/repos/{repo_id}/document?path=.git/config.md").status_code == 400
+
+
+def test_remove_api_requires_confirmation_and_runs_in_background(client):
+    import time
+
+    from test_manager import FakeSupervisor, addon, prepared
+
+    manager = main.manager
+    manager.supervisor = FakeSupervisor()
+    repo_id, _ = prepared(manager)
+    addon(manager.addons / "demo")
+    preflight = client.post(
+        f"/api/repos/{repo_id}/remove-preflight", json={"slug": "demo"}, headers=HEADERS
+    )
+    assert preflight.status_code == 200
+    body = {"slug": "demo", "expected_local_digest": preflight.json()["local_digest"]}
+    response = client.post(f"/api/repos/{repo_id}/remove-app", json=body, headers=HEADERS)
+    assert response.status_code == 400 and response.json()["code"] == "confirmation_required"
+    assert (manager.addons / "demo").exists()
+    body["confirmed"] = True
+    assert client.post(f"/api/repos/{repo_id}/remove-app", json=body).status_code == 403
+    response = client.post(f"/api/repos/{repo_id}/remove-app", json=body, headers=HEADERS)
+    assert response.status_code == 202
+    for _ in range(200):
+        job = main.jobs.snapshot()[response.json()["id"]]
+        if job["status"] in {"succeeded", "failed"}:
+            break
+        time.sleep(0.01)
+    assert job["status"] == "succeeded"
+    assert not (manager.addons / "demo").exists()
+    assert manager.repo(repo_id)["hidden_apps"] == ["demo"]
+    assert (
+        client.post(
+            f"/api/repos/{repo_id}/restore-app", json={"slug": "demo"}, headers=HEADERS
+        ).status_code
+        == 200
+    )
+    assert not manager.repo(repo_id)["hidden_apps"]
