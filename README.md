@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.7.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.8.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -106,7 +106,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.7.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.8.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -114,7 +114,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.7.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.8.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -185,6 +185,14 @@ El editor conserva los cambios si falla el guardado y avisa antes de descartarlo
 
 **Logs de la aplicación** abre su salida reciente como texto. Incluye búsqueda, actualización cada cinco segundos, pausa, refresco manual y descarga `.log`. El refresco se detiene al cerrar el visor y se pausa mientras la página está oculta. Los logs permanecen en memoria, se limitan a 512 KiB por lectura y se ocultan valores conocidos de opciones sensibles y tokens del gestor; no se garantiza detectar todas las credenciales que una aplicación pueda imprimir. También se pueden consultar durante una recuperación pendiente.
 
+### Abrir la interfaz web por Ingress
+
+Las aplicaciones que declaran `ingress: true` muestran **Abrir interfaz web** cuando están instaladas. Inícialas primero: el botón permanece desactivado mientras estén detenidas o tengan una operación pendiente.
+
+Al pulsarlo, el gestor comprueba el estado y la disponibilidad de Ingress mediante el Supervisor y abre el panel de la aplicación en Home Assistant, fuera del marco del gestor. Home Assistant se encarga de crear y renovar la sesión con tu usuario actual. No se abren puertos directos ni URLs externas de `webui`, y no se devuelven ni guardan tokens de Ingress en el gestor.
+
+Se usa `/app/<slug>` desde Home Assistant 2026.2 y `/hassio/ingress/<slug>` en versiones anteriores, según la versión que informa el Supervisor. Funciona también si la aplicación no está fijada a la barra lateral. Puedes volver al gestor con la navegación de Home Assistant o el botón Atrás.
+
 ### Retirar un repositorio
 
 Puedes realizar el ciclo completo desde este gestor:
@@ -248,7 +256,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.7.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.8.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

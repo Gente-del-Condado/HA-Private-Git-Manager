@@ -1,6 +1,6 @@
-# Validación de HA Private Git Manager 0.7.0
+# Validación de HA Private Git Manager 0.8.0
 
-Fecha: **6 de noviembre de 2026**.
+Fecha: **7 de noviembre de 2026**.
 
 Este informe distingue las comprobaciones ejecutadas de la compatibilidad declarada. No certifica una instalación en Home Assistant OS ni en una Raspberry Pi real.
 
@@ -8,9 +8,9 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 | Comprobación | Resultado | Alcance |
 | --- | --- | --- |
-| Pruebas Python | **155 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
+| Pruebas Python | **171 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
 | Análisis de Python | **Correcto** | Ruff: sintaxis, importaciones, errores comunes y código sin uso |
-| Formato de Python | **Correcto** | 29 archivos comprobados |
+| Formato de Python | **Correcto** | 31 archivos comprobados |
 | Sintaxis JavaScript | **Correcta** | `node --check` sobre el módulo de interfaz |
 | Dependencias instaladas | **Correctas** | `pip check` sin requisitos rotos |
 | SSH real | **Correcto** | Clonación contra sshd temporal en localhost con Ed25519 y puerto personalizado |
@@ -99,6 +99,16 @@ Referencias: [opciones y validación del Supervisor](https://contributors.home-a
 - Alternancia formulario/YAML con ediciones en ambos sentidos, rechazo de YAML inválido sin pérdida de texto, validación del Supervisor y conservación de valores sensibles fuera del estado y trabajos del gestor.
 - Formulario comprobado a 390 píxeles de ancho, acceso por etiquetas, foco al añadir/quitar elementos y selector de idioma protegido durante la carga inicial.
 
+## Apertura de aplicaciones por Ingress en 0.8.0
+
+- 16 pruebas adicionales: rutas de Core anterior y posterior a 2026.2, rechazo de aplicaciones detenidas o sin Ingress, propiedad, instalación, operaciones pendientes y versión desconocida.
+- API privada que devuelve únicamente una ruta local fija de Home Assistant, sin tokens de `ingress_url`, URLs externas de `webui` ni creación de sesiones desde el gestor.
+- Cuatro recorridos Chrome (español/inglés × ruta actual/anterior) desde un iframe bajo un prefijo Ingress simulado. Se comprueba que navega la ventana principal, evitando anidar Home Assistant dentro del gestor.
+- Botón desactivado cuando la aplicación está detenida, y comprobación de disponibilidad de Ingress de nuevo al pulsar sin abandonar el gestor si ya no está disponible.
+- El destino de Home Assistant se simula: se valida el enlace y la salida del iframe, no la creación de una sesión real contra una instalación de Home Assistant.
+
+Referencias oficiales: [panel nativo de aplicaciones y renovación de sesiones](https://github.com/home-assistant/frontend/blob/dev/src/panels/app/ha-panel-app.ts) y registro del panel `app` en [Core 2026.2](https://github.com/home-assistant/core/blob/2026.2.0/homeassistant/components/hassio/__init__.py), ausente en [Core 2026.1](https://github.com/home-assistant/core/blob/2026.1.0/homeassistant/components/hassio/__init__.py).
+
 ## Límites de lo comprobado
 
 - La API del Supervisor se contrastó con su documentación y código oficial. Las operaciones se verificaron con simulaciones y transporte HTTP controlado; **no se ejecutaron contra un Supervisor real**.
@@ -124,7 +134,7 @@ Referencias: [opciones y validación del Supervisor](https://contributors.home-a
 .venv/bin/ruff format --check private_git_manager/app tests scripts/package.py
 node --check private_git_manager/app/static/app.js
 .venv/bin/pip check
-podman build --format docker -t localhost/ha-private-git-manager:0.7.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.8.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
