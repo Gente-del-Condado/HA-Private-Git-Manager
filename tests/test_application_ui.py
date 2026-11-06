@@ -55,11 +55,19 @@ def test_configuration_and_private_logs_in_browser(adoption_server, language, tm
             )
             row.get_by_role("button", name=configure, exact=True).click()
             dialog = page.locator("#modal")
+            dialog.get_by_role(
+                "button", name="YAML avanzado" if language == "es" else "Advanced YAML", exact=True
+            ).click()
             editor = dialog.locator("#app-configuration-yaml")
             assert "initial-app-secret" in editor.input_value()
             editor.fill("options: [broken")
             dialog.get_by_role("button", name=validate, exact=True).click()
             playwright.expect(editor).to_have_attribute("aria-invalid", "true")
+            assert editor.input_value() == "options: [broken"
+            dialog.get_by_role(
+                "button", name="Formulario" if language == "es" else "Form", exact=True
+            ).click()
+            playwright.expect(editor).to_be_visible()
             assert editor.input_value() == "options: [broken"
             editor.fill(
                 "options:\n  username: demo\n  password: changed-app-secret\n  nested:\n    enabled: true\nboot: auto\nwatchdog: true\n"
@@ -92,6 +100,9 @@ def test_configuration_and_private_logs_in_browser(adoption_server, language, tm
             assert "changed-app-secret" not in manager.state_file.read_text()
             assert page.locator("#modal-body").inner_text() == ""
             row.get_by_role("button", name=configure, exact=True).click()
+            dialog.get_by_role(
+                "button", name="YAML avanzado" if language == "es" else "Advanced YAML", exact=True
+            ).click()
             editor.fill("options: {username: unsaved-edit}")
             manager.supervisor.settings["boot"] = "manual"  # Changed in another window.
             dialog.get_by_role("button", name=save, exact=True).click()

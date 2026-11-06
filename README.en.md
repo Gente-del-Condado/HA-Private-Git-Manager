@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.6.0
+# HA Private Git Manager 0.7.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.6.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.7.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -67,11 +67,15 @@ Deletion is a background job with a persistent journal. After a failure, **Revie
 
 ## App configuration and logs
 
-**Configure** opens an installed app’s YAML settings. Edit app-specific values under `options`; supported Supervisor settings include `boot`, `watchdog`, `network`, `auto_update`, `ingress_panel`, `audio_input` and `audio_output` when available. Nested values and `!secret name` references are supported. Keys must be unique strings; quote date strings.
+**Configure** opens a form generated from the installed app’s native Supervisor `schema` and `translations`. It reuses field names, descriptions, types, limits and choices, including device selectors. Labels fall back to English when the selected language is unavailable. No additional app configuration format is needed.
 
-**Validate configuration** checks YAML and options preliminarily. Saving validates again through Supervisor and refuses stale edits if another window changed the configuration. Options take effect at the next start; optionally restart a running app after saving. Stopped apps stay stopped. Failed saves keep the editor open; closing with unsaved edits requires explicit discard.
+The default form supports text, masked passwords with a visibility toggle, booleans, integers/floats, selects, optional fields, nested groups and editable lists of values or objects. Optional fields distinguish omission from `false`. Native startup, watchdog, update, network, Ingress and audio settings are also shown when available.
 
-Option values are never saved in manager state, jobs, event history or browser local storage. Documents are limited to 24,000 characters and requests to 32 KiB. The editor may display credentials.
+**Advanced YAML** remains available. Switching views preserves edits and unrepresented values; invalid YAML stays in the advanced editor. Existing `!secret name` references are preserved, including numeric/select fields. Unknown representations are retained with an explicit advanced-editor hint.
+
+**Validate configuration** checks preliminarily. Saving validates through Supervisor and refuses stale edits if another window changed settings. Options apply at the next start; optionally restart a running app after saving. Stopped apps stay stopped. Failed saves keep the editor open, and closing unsaved edits requires explicit discard.
+
+Option values are never stored in manager state, jobs, event history or browser local storage. Submitted representations are limited to 24,000 characters and HTTP requests to 32 KiB.
 
 **App logs** provides recent plain-text output, search, automatic five-second refresh, pause, manual refresh and `.log` download. Reads are capped at 512 KiB. Refresh pauses while the page is hidden and stops on close. Known sensitive option values and manager tokens are redacted; arbitrary secrets printed by an app cannot all be detected. Logs stay in memory and remain readable during pending recovery.
 

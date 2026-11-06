@@ -262,3 +262,30 @@ def test_app_configuration_and_logs_api_keep_secrets_out_of_history(client):
     assert 'filename="demo.log"' in download.headers["content-disposition"]
     assert "new-private-setting" not in download.text
     assert client.get("/api/repos/missing/apps/demo/logs").status_code == 400
+
+
+def test_native_form_metadata_and_conversion_are_private_and_read_only(client):
+    from test_manager import prepared
+    from test_schema_form_ui import NativeSchemaSupervisor
+
+    manager = main.manager
+    manager.supervisor = NativeSchemaSupervisor()
+    manager.supervisor.addons = manager.addons
+    manager.verify_checkout = lambda repo, root: None
+    repo_id, _ = prepared(manager)
+    manager.deploy(repo_id, "demo")
+    base = f"/api/repos/{repo_id}/apps/demo/configuration"
+    config = client.get(base)
+    assert config.status_code == 200 and config.headers["cache-control"] == "no-store"
+    data = config.json()
+    assert data["schema"] == manager.supervisor.schema
+    assert data["translations"]["es"]["configuration"]["count"]["name"] == "Intentos"
+    body = {"yaml": json.dumps(data["values"])}
+    assert client.post(base + "/convert", json=body).status_code == 403
+    converted = client.post(base + "/convert", json=body, headers=HEADERS)
+    assert converted.status_code == 200
+    assert converted.json()["values"] == data["values"]
+    assert not main.jobs.snapshot()
+    assert "native-app-secret" not in manager.state_file.read_text()
+    assert "native-app-secret" not in client.get("/api/state").text
+    assert client.get("/static/schema-form.js").status_code == 200
