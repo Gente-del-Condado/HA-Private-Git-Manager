@@ -11,12 +11,14 @@ class FakeSupervisor:
 
     def __init__(self):
         self.calls = []
+        self.payloads = []
         self.installed = []
         self.fail = None
         self.addons = None
 
-    def call(self, method, path):
+    def call(self, method, path, payload=None):
         self.calls.append((method, path))
+        self.payloads.append((method, path, payload))
         if path == self.fail:
             raise Problem("Supervisor simulado no disponible.")
         if method == "POST" and "/local_" in path:
@@ -27,12 +29,21 @@ class FakeSupervisor:
                 config = yaml.safe_load(
                     (self.addons / slug.removeprefix("local_") / "config.yaml").read_text()
                 )
+                if (
+                    action == "rebuild"
+                    and app
+                    and app.get("version") is not None
+                    and str(app["version"]) != config["version"]
+                ):
+                    raise Problem("Supervisor no permite reconstruir otra versión.")
                 if not app:
                     app = {"slug": slug, "state": "stopped"}
                     self.installed.append(app)
                 app["version"] = config["version"]
                 if action == "rebuild":
                     app["state"] = "started"
+            elif app and action == "uninstall":
+                self.installed.remove(app)
             elif app and action in {"start", "stop"}:
                 app["state"] = "started" if action == "start" else "stopped"
         return {"addons": self.installed} if path == "/addons" else {}
@@ -182,13 +193,13 @@ def test_install_update_and_commit_tracking(manager):
     assert (manager.addons / "demo" / "payload").read_text() == "1.0.0"
     assert manager.state["deployments"]["demo"]["commit"] == "a" * 40
     assert ("POST", "/store/addons/local_demo/install") in manager.supervisor.calls
-    manager.supervisor.installed = [{"slug": "local_demo", "state": "started"}]
+    manager.supervisor.installed = [{"slug": "local_demo", "version": "1.0.0", "state": "started"}]
     addon(root / "demo", "2.0.0")
     manager.repo(repo_id).update(commit="b" * 40, apps=manager.discover(root))
     manager.deploy(repo_id, "demo", update=True)
     calls = manager.supervisor.calls
     assert calls.index(("POST", "/addons/local_demo/stop")) < calls.index(
-        ("POST", "/addons/local_demo/rebuild")
+        ("POST", "/store/addons/local_demo/update")
     )
     assert manager.supervisor.installed[0]["state"] == "started"
     assert manager.state["deployments"]["demo"]["previous_commit"] == "a" * 40
@@ -197,10 +208,10 @@ def test_install_update_and_commit_tracking(manager):
 def test_failure_restores_code_and_records_uncertainty(manager):
     repo_id, root = prepared(manager)
     manager.deploy(repo_id, "demo")
-    manager.supervisor.installed = [{"slug": "local_demo", "state": "started"}]
+    manager.supervisor.installed = [{"slug": "local_demo", "version": "1.0.0", "state": "started"}]
     addon(root / "demo", "2.0.0")
     manager.repo(repo_id).update(commit="b" * 40, apps=manager.discover(root))
-    manager.supervisor.fail = "/addons/local_demo/rebuild"
+    manager.supervisor.fail = "/store/addons/local_demo/update"
     with pytest.raises(Problem):
         manager.deploy(repo_id, "demo", update=True)
     assert (manager.addons / "demo" / "payload").read_text() == "1.0.0"

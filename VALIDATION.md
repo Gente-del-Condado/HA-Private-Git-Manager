@@ -1,4 +1,4 @@
-# Validación de HA Private Git Manager 0.4.0
+# Validación de HA Private Git Manager 0.5.0
 
 Fecha: **6 de noviembre de 2026**.
 
@@ -8,9 +8,9 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 | Comprobación | Resultado | Alcance |
 | --- | --- | --- |
-| Pruebas Python | **111 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
+| Pruebas Python | **127 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
 | Análisis de Python | **Correcto** | Ruff: sintaxis, importaciones, errores comunes y código sin uso |
-| Formato de Python | **Correcto** | 23 archivos comprobados |
+| Formato de Python | **Correcto** | 25 archivos comprobados |
 | Sintaxis JavaScript | **Correcta** | `node --check` sobre el módulo de interfaz |
 | Dependencias instaladas | **Correctas** | `pip check` sin requisitos rotos |
 | SSH real | **Correcto** | Clonación contra sshd temporal en localhost con Ed25519 y puerto personalizado |
@@ -68,6 +68,18 @@ El usuario ha confirmado la descarga real de un repositorio privado de Forgejo m
 - Dos recorridos Chrome con perfiles aislados (español e inglés): Cancelar recibe el foco, el consentimiento nativo es obligatorio, solo desaparece la aplicación seleccionada y se puede volver a mostrar.
 - Reinstalación después de una desinstalación externa y consulta inmediata del Supervisor al terminar un trabajo. Los controles de ejecución se muestran para aplicaciones instaladas.
 
+## Instalación y desinstalación desde el gestor en 0.5.0
+
+- 16 pruebas adicionales: desinstalar conservando código, reinstalar desde el gestor, borrar junto con desinstalar, mantener otras aplicaciones y elegir `remove_config` explícitamente.
+- Contrato HTTP del Supervisor con transporte controlado: autenticación Bearer, instalación mediante `/store/addons/local_<slug>/install`, desinstalación mediante `/addons/local_<slug>/uninstall` y cuerpo `remove_config: false` por defecto.
+- Cortes antes y después de completar la desinstalación, persistencia del diario al reiniciar y recuperación que no repite automáticamente solicitudes destructivas.
+- Reintento solo autorizado explícitamente, rechazo de confirmaciones con huella desactualizada y conservación de una instalación nueva aparecida después de apartar el código anterior.
+- Endpoint de desinstalación con confirmación, CSRF, HTTP 202 y verificación de su resultado.
+- Actualización local con cambio de versión mediante `/store/addons/<slug>/update`, y reconstrucción sin cambio de versión mediante `/addons/<slug>/rebuild`. El doble de Supervisor rechaza reconstrucciones con versiones distintas, como el Supervisor real.
+
+Referencias oficiales: [desinstalación y `remove_config`](https://contributors.home-assistant.io/apps/supervisor-api/apps/#post-addonsappuninstall), [instalación desde la tienda](https://contributors.home-assistant.io/apps/supervisor-api/store/#post-storeaddonsappinstall) y [restricción de versión al reconstruir](https://github.com/home-assistant/supervisor/blob/main/supervisor/apps/manager.py).
+- Dos recorridos completos de Chrome, español e inglés: consentimiento obligatorio, configuración pública desmarcada por defecto, desinstalación, reinstalación desde la interfaz y borrado combinado sin afectar a la aplicación hermana.
+
 ## Límites de lo comprobado
 
 - La API del Supervisor se contrastó con su documentación y código oficial. Las operaciones se verificaron con simulaciones y transporte HTTP controlado; **no se ejecutaron contra un Supervisor real**.
@@ -93,7 +105,7 @@ El usuario ha confirmado la descarga real de un repositorio privado de Forgejo m
 .venv/bin/ruff format --check private_git_manager/app tests scripts/package.py
 node --check private_git_manager/app/static/app.js
 .venv/bin/pip check
-podman build --format docker -t localhost/ha-private-git-manager:0.4.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.5.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

@@ -129,7 +129,7 @@ def test_uncertain_supervisor_preserves_both_sources_and_requires_recovery(manag
     original = manager.supervisor.call
 
     def uncertain(method, path):
-        if path.endswith("/rebuild"):
+        if path.endswith("/update"):
             raise SupervisorUncertain("May still be running", "supervisor_uncertain")
         return original(method, path)
 
