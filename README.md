@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.9.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.10.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -107,7 +107,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.9.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.10.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -115,7 +115,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.9.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.10.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -240,6 +240,16 @@ Ambas operaciones son trabajos en segundo plano con progreso e historial en espa
 
 Estas copias nativas de datos son distintas de las copias temporales de código `.pgm-backup-*` usadas para recuperar instalaciones fallidas.
 
+### Descargar y borrar copias
+
+En **Copias de seguridad**, cada archivo ofrece **Descargar copia** y **Borrar copia**. Ambos permiten revisar nombre, fecha, tamaño, cifrado y si contiene otros datos. **La descarga y el borrado afectan al archivo completo**, también cuando la copia incluye Core, carpetas u otras aplicaciones; la restauración sigue siendo únicamente de la aplicación elegida.
+
+**Descargar copia** entrega el `.tar` original por streaming, conservando su cifrado. No requiere la contraseña ni guarda otro archivo en el gestor. La descarga utiliza la ubicación mostrada; el navegador indica el progreso y permite elegir dónde guardarla. Si se interrumpe, vuelve a descargar el archivo completo: no se ofrecen descargas parciales ni reanudación. El gestor registra el inicio, sin afirmar que la transferencia haya terminado en el navegador.
+
+**Borrar copia** muestra todas las ubicaciones accesibles que se eliminarán, pide marcar una casilla de consentimiento y enfoca inicialmente **Cancelar**. Borra el archivo completo en esas ubicaciones; no desinstala aplicaciones ni altera sus datos actuales. Las copias ya descargadas y Home Assistant Link quedan fuera del borrado. No puede deshacerse. Si cambian los datos revisados o las ubicaciones antes de ejecutar la operación, hay que actualizar y revisar de nuevo.
+
+El borrado se ejecuta en segundo plano y comprueba el resultado. Si no se puede confirmar o queda una eliminación parcial, el gestor lo indica sin reintentar automáticamente. La descarga y el borrado también están disponibles para aplicaciones desinstaladas que conservan su vínculo y código local.
+
 ## Registros y datos privados
 
 | Ruta | Contenido |
@@ -271,7 +281,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.9.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.10.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
