@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.8.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.9.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -19,6 +19,7 @@ Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, ve
 | Confianza | Identidad Ed25519 fijada por servidor y puerto; comparación explícita de huella SHA256 |
 | Git | SSH con puertos personalizados, HTTPS con token, ramas y etiquetas, edición de referencias |
 | Aplicaciones | Detección de manifiestos, instalación, actualización/reconstrucción y registro del commit |
+| Copias | Creación y restauración parcial nativa por aplicación, cifrado opcional e historial |
 | Ejecución | Inicio, parada y reinicio a través del Supervisor; primera instalación detenida |
 | Operaciones | Cola en segundo plano, progreso persistente, reconexión de la interfaz y bloqueo de duplicados |
 | Recuperación | Diario anterior a la sustitución de archivos, detección de interrupciones y recuperación explícita |
@@ -106,7 +107,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.8.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.9.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -114,7 +115,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.8.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.9.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -225,6 +226,20 @@ Se copia la carpeta que contiene el manifiesto. Un Dockerfile que depende de arc
 
 El límite de un paquete desplegado es 512 MiB y se exige margen libre antes de copiarlo. La descarga Git tiene tiempo máximo, pero no una cuota estricta de almacenamiento: evita repositorios gigantes.
 
+## Copias de seguridad de cada aplicación
+
+**Copias de seguridad** abre las copias nativas de Home Assistant que contienen esa aplicación: nombre, fecha, tamaño, ubicación y protección con contraseña. También aparecen copias generales o creadas fuera del gestor. La lista se filtra por el identificador exacto de la aplicación.
+
+**Crear copia** guarda los datos y la configuración de la aplicación instalada en el almacenamiento local de copias de Home Assistant. Puedes poner nombre y cifrar con una contraseña opcional, repetida para evitar errores. Sin contraseña se guarda sin cifrar. El Supervisor puede detener temporalmente aplicaciones que requieren copia en frío. Las copias son compatibles con Home Assistant y aparecen también en su listado de copias.
+
+**Restaurar copia** muestra la versión guardada y exige confirmar que se reemplazarán los datos actuales; el foco inicial está en **Cancelar**. Si está cifrada, introduce su contraseña. Se restaura únicamente esa aplicación, incluso al elegir una copia completa con otras aplicaciones y datos de Home Assistant. También puedes restaurar una aplicación desinstalada mientras siga vinculada al gestor y conserve su copia local. La creación de nuevas copias requiere que esté instalada.
+
+La restauración puede detener/reiniciar la aplicación y cambiar su versión instalada, visible en la ficha. Conserva el código Git local y su commit: revisa la versión antes de volver a actualizar o reconstruir. Las carpetas compartidas, Core y otras aplicaciones no se incluyen ni restauran desde estos botones. Las copias disponibles en una ubicación de red se restauran desde esa ubicación; Home Assistant Link (`.cloud_backup`) es exclusivo de Core y no está disponible para el gestor.
+
+Ambas operaciones son trabajos en segundo plano con progreso e historial en español e inglés. Puedes cerrar el gestor mientras terminan. Las contraseñas solo se mantienen en memoria durante la operación y no se guardan en estado, trabajos, logs o almacenamiento del navegador. Guárdalas de forma segura: el gestor no puede recuperarlas. Si se pierde la conexión con el Supervisor, el resultado se marca incierto y no se reintenta automáticamente; actualiza las copias y comprueba el estado antes de repetir. Tras reiniciar el gestor, los trabajos interrumpidos tampoco se repiten.
+
+Estas copias nativas de datos son distintas de las copias temporales de código `.pgm-backup-*` usadas para recuperar instalaciones fallidas.
+
 ## Registros y datos privados
 
 | Ruta | Contenido |
@@ -256,7 +271,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.8.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.9.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
