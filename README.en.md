@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.5.0
+# HA Private Git Manager 0.6.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -17,7 +17,7 @@ The app requests the Supervisor `manager` role and write access to local apps. I
 3. Add a repository using `ssh://user@server:port/owner/repo.git` or `git@github.com:owner/repo.git`, select a branch/tag and the key.
 4. Fetch the host fingerprint, verify it using a trusted channel and paste the verified SHA256 fingerprint. Fetching a key does not establish its authenticity.
 5. Save and sync. Choose a detected app and confirm the exact version/commit to install.
-6. Configure app options in Home Assistant, then start the app. Initial installations are left stopped.
+6. Use **Configure** to edit options and **App logs** to check startup. Start the app from the manager when ready. Initial installations are left stopped.
 
 For HTTPS, enter a clean repository URL and an optional read-only token plus the username your provider requires. Public repositories do not need a token. Never put credentials in URLs. An empty token in the credentials form removes the stored token.
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.5.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.6.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -64,6 +64,16 @@ Uninstallation deletes the app’s internal data and options. The public `app_co
 The optional **Also hide this app** checkbox keeps it out of this manager catalog across syncs and restarts. Use **Hidden apps → Show again** to restore its listing without installing it. Leave the checkbox unchecked to keep it available. **Release** only removes the manager record and keeps local files.
 
 Deletion is a background job with a persistent journal. After a failure, **Review recovery → Finish deletion** retries cleanup of its `.pgm-remove-*` folder. Never delete these folders during pending operations. The manager verifies uninstallation before deleting source. Uncertain results preserve the source and journal. Recovery checks state without repeating an uninstall; an explicit additional authorization is required to retry it after checking that no operation is running. Restart never replays these operations. Repositories with managed apps cannot be deleted.
+
+## App configuration and logs
+
+**Configure** opens an installed app’s YAML settings. Edit app-specific values under `options`; supported Supervisor settings include `boot`, `watchdog`, `network`, `auto_update`, `ingress_panel`, `audio_input` and `audio_output` when available. Nested values and `!secret name` references are supported. Keys must be unique strings; quote date strings.
+
+**Validate configuration** checks YAML and options preliminarily. Saving validates again through Supervisor and refuses stale edits if another window changed the configuration. Options take effect at the next start; optionally restart a running app after saving. Stopped apps stay stopped. Failed saves keep the editor open; closing with unsaved edits requires explicit discard.
+
+Option values are never saved in manager state, jobs, event history or browser local storage. Documents are limited to 24,000 characters and requests to 32 KiB. The editor may display credentials.
+
+**App logs** provides recent plain-text output, search, automatic five-second refresh, pause, manual refresh and `.log` download. Reads are capped at 512 KiB. Refresh pauses while the page is hidden and stops on close. Known sensitive option values and manager tokens are redacted; arbitrary secrets printed by an app cannot all be detected. Logs stay in memory and remain readable during pending recovery.
 
 ## Logs and privacy
 

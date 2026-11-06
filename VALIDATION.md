@@ -1,4 +1,4 @@
-# Validación de HA Private Git Manager 0.5.0
+# Validación de HA Private Git Manager 0.6.0
 
 Fecha: **6 de noviembre de 2026**.
 
@@ -8,9 +8,9 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 | Comprobación | Resultado | Alcance |
 | --- | --- | --- |
-| Pruebas Python | **127 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
+| Pruebas Python | **149 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
 | Análisis de Python | **Correcto** | Ruff: sintaxis, importaciones, errores comunes y código sin uso |
-| Formato de Python | **Correcto** | 25 archivos comprobados |
+| Formato de Python | **Correcto** | 28 archivos comprobados |
 | Sintaxis JavaScript | **Correcta** | `node --check` sobre el módulo de interfaz |
 | Dependencias instaladas | **Correctas** | `pip check` sin requisitos rotos |
 | SSH real | **Correcto** | Clonación contra sshd temporal en localhost con Ed25519 y puerto personalizado |
@@ -80,6 +80,16 @@ El usuario ha confirmado la descarga real de un repositorio privado de Forgejo m
 Referencias oficiales: [desinstalación y `remove_config`](https://contributors.home-assistant.io/apps/supervisor-api/apps/#post-addonsappuninstall), [instalación desde la tienda](https://contributors.home-assistant.io/apps/supervisor-api/store/#post-storeaddonsappinstall) y [restricción de versión al reconstruir](https://github.com/home-assistant/supervisor/blob/main/supervisor/apps/manager.py).
 - Dos recorridos completos de Chrome, español e inglés: consentimiento obligatorio, configuración pública desmarcada por defecto, desinstalación, reinstalación desde la interfaz y borrado combinado sin afectar a la aplicación hermana.
 
+## Configuración y logs por aplicación en 0.6.0
+
+- 22 pruebas adicionales: opciones anidadas, referencias !secret, rechazo de YAML ambiguo/inseguro, errores de esquema sin valores privados, conflicto de revisiones, guardado, reinicio opcional y fallo parcial explícito.
+- Configuración sin valores persistidos en estado, trabajos o registros; control de acceso por repositorio, aplicación instalada y transacciones pendientes.
+- Logs HTTP autenticados y limitados a 512 KiB; texto seguro, limpieza de códigos de terminal y ocultación de valores sensibles conocidos.
+- API con confirmación y CSRF, configuración privada sin caché y descarga de logs como texto.
+- Dos recorridos completos de Chrome (español/inglés): validar, guardar y reiniciar; conservar cambios ante un conflicto; confirmar el descarte; buscar, actualizar automática y manualmente y descargar logs; rechazo de ejecución de HTML y revisión de ancho móvil.
+
+Referencias: [opciones y validación del Supervisor](https://contributors.home-assistant.io/apps/supervisor-api/apps/#post-addonsappoptions) y [logs de aplicaciones](https://contributors.home-assistant.io/apps/supervisor-api/apps/#get-addonsapplogs).
+
 ## Límites de lo comprobado
 
 - La API del Supervisor se contrastó con su documentación y código oficial. Las operaciones se verificaron con simulaciones y transporte HTTP controlado; **no se ejecutaron contra un Supervisor real**.
@@ -93,7 +103,7 @@ Referencias oficiales: [desinstalación y `remove_config`](https://contributors.
 1. Instalar la carpeta `private_git_manager` como aplicación local y comprobar la construcción en la arquitectura del host.
 2. Abrirla desde Ingress y comprobar panel de administración, watchdog y persistencia tras reinicio.
 3. Registrar una clave pública de solo lectura en el Forgejo real y verificar la huella del servicio SSH.
-4. Sincronizar una aplicación de prueba compatible, instalarla y configurarla desde Home Assistant.
+4. Sincronizar una aplicación de prueba compatible, instalarla, configurarla y consultar sus logs desde el gestor.
 5. Aplicar una nueva versión y comprobar versión, commit y estado de ejecución en el Supervisor.
 6. Crear y restaurar una copia de seguridad de la aplicación, protegiendo sus credenciales.
 
@@ -105,7 +115,7 @@ Referencias oficiales: [desinstalación y `remove_config`](https://contributors.
 .venv/bin/ruff format --check private_git_manager/app tests scripts/package.py
 node --check private_git_manager/app/static/app.js
 .venv/bin/pip check
-podman build --format docker -t localhost/ha-private-git-manager:0.5.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.6.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

@@ -224,3 +224,41 @@ def test_uninstall_api_requires_consent_and_verifies_native_result(client):
         "/addons/local_demo/uninstall",
         {"remove_config": False},
     ) in manager.supervisor.payloads
+
+
+def test_app_configuration_and_logs_api_keep_secrets_out_of_history(client):
+    from test_application import ControlsSupervisor
+    from test_jobs_recovery import wait_job
+    from test_manager import prepared
+
+    manager = main.manager
+    manager.supervisor = ControlsSupervisor()
+    manager.supervisor.addons = manager.addons
+    manager.verify_checkout = lambda repo, root: None
+    repo_id, _ = prepared(manager)
+    manager.deploy(repo_id, "demo")
+    base = f"/api/repos/{repo_id}/apps/demo"
+    response = client.get(base + "/configuration")
+    assert response.status_code == 200 and response.headers["cache-control"] == "no-store"
+    config = response.json()
+    body = {
+        "yaml": "options: {password: new-private-setting}",
+        "expected_revision": config["revision"],
+    }
+    assert client.post(base + "/configuration", json=body, headers=HEADERS).status_code == 400
+    body["confirmed"] = True
+    assert client.post(base + "/configuration", json=body).status_code == 403
+    response = client.post(base + "/configuration", json=body, headers=HEADERS)
+    assert response.status_code == 202
+    assert wait_job(main.jobs, response.json()["id"])["status"] == "succeeded"
+    assert "new-private-setting" not in main.jobs.path.read_text()
+    assert "new-private-setting" not in manager.state_file.read_text()
+    assert "new-private-setting" not in client.get("/api/state").text
+    manager.supervisor.log_text = "password: new-private-setting\nReady\n"
+    logs = client.get(base + "/logs")
+    assert logs.status_code == 200 and "new-private-setting" not in logs.text
+    download = client.get(base + "/logs?download=true")
+    assert download.headers["content-type"].startswith("text/plain")
+    assert 'filename="demo.log"' in download.headers["content-disposition"]
+    assert "new-private-setting" not in download.text
+    assert client.get("/api/repos/missing/apps/demo/logs").status_code == 400
