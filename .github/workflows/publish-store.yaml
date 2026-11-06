@@ -1,0 +1,66 @@
+name: Publicar en Mis-app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'private_git_manager/**'
+      - 'scripts/publish-store.sh'
+      - '.github/workflows/publish-store.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-mis-app
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'Gente-del-Condado/HA-Private-Git-Manager' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Descargar la última versión de main
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          path: source
+          persist-credentials: false
+
+      - name: Comprobar credencial de publicación
+        env:
+          DEPLOY_KEY: ${{ secrets.MIS_APP_DEPLOY_KEY }}
+        run: |
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo '::error::Falta el secreto MIS_APP_DEPLOY_KEY. Consulta PUBLISHING.md.'
+            exit 1
+          fi
+
+      - name: Descargar la tienda con su clave de despliegue
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: Gente-del-Condado/Mis-app
+          ref: main
+          path: store
+          ssh-key: ${{ secrets.MIS_APP_DEPLOY_KEY }}
+
+      - name: Sincronizar únicamente la carpeta de la app
+        run: bash source/scripts/publish-store.sh store
+
+      - name: Publicar los cambios
+        working-directory: store
+        run: |
+          set -euo pipefail
+          git add -- private_git_manager
+          if git diff --cached --quiet; then
+            echo 'La tienda ya está actualizada.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          SOURCE_COMMIT=$(git -C ../source rev-parse HEAD)
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Update private_git_manager from ${SOURCE_COMMIT}"
+          git push origin HEAD:main
+          echo "Publicada private_git_manager desde ${SOURCE_COMMIT} en Gente-del-Condado/Mis-app." >> "$GITHUB_STEP_SUMMARY"

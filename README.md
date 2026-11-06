@@ -27,6 +27,12 @@ Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, ve
 
 Arquitecturas declaradas: **aarch64** y **amd64**. Para Raspberry Pi 4 utiliza HA OS de 64 bits y aplicaciones que admitan `aarch64`. La compatibilidad final de cada aplicación depende de su propio manifiesto y del Supervisor.
 
+## Instalación desde mi tienda
+
+Añade [Mis-app a Home Assistant](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FGente-del-Condado%2FMis-app) e instala **HA Private Git Manager**. El repositorio de la tienda es `https://github.com/Gente-del-Condado/Mis-app`.
+
+La carpeta de la app se publica automáticamente con GitHub Actions al actualizar `main`. Consulta [Publicación automática](PUBLISHING.md).
+
 ## Instalación inicial en Home Assistant
 
 1. Extrae el paquete de distribución. Copia la carpeta `private_git_manager` completa a **`/addons/private_git_manager`** en Home Assistant mediante Samba o una aplicación de terminal con acceso a `/addons`.
