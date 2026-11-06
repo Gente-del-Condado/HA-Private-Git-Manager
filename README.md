@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.5.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.6.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -106,7 +106,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.5.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.6.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -114,7 +114,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.5.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.6.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -129,7 +129,7 @@ Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiz
    La URL es un ejemplo: el repositorio debe existir y contener una aplicación válida. Selecciona la clave creada.
 4. Pulsa **Verificar servidor SSH → Obtener huella**. Comprueba la huella por un canal de confianza y pega la huella verificada `SHA256:...`.
 5. Guarda, sincroniza y elige una aplicación detectada. Antes de instalar se muestran versión y commit para confirmarlos.
-6. Configura sus opciones desde Home Assistant. La primera instalación queda detenida; puedes iniciarla allí o desde el gestor.
+6. Usa **Configurar** para editar sus opciones y **Logs de la aplicación** para comprobar el arranque. La primera instalación queda detenida; puedes iniciarla desde el gestor.
 
 En un servidor OpenSSH administrado por ti puedes obtener la huella con:
 
@@ -170,6 +170,16 @@ Si el Supervisor devuelve un resultado incierto o el gestor se interrumpe durant
 5. Si restauraste código, puede ser necesario reconstruir o iniciar la aplicación desde Home Assistant. El gestor no revierte imágenes ni datos de aplicaciones.
 
 El diario está en `state.json`; las carpetas temporales `.pgm-stage-*` y `.pgm-backup-*` están ocultas bajo `/addons` para que el Supervisor no las registre como aplicaciones. No las borres durante una recuperación. Si falta una copia verificable, el gestor se detiene y conserva la información para recuperación manual.
+
+### Configuración y logs de una aplicación
+
+Pulsa **Configurar** en una aplicación instalada. El editor YAML muestra sus opciones bajo `options` y los ajustes disponibles: `boot` (`auto`/`manual`), `watchdog`, `network` (puertos), `auto_update`, `ingress_panel` y dispositivos de audio. Admite estructuras anidadas y referencias `!secret nombre`. Las claves YAML deben ser únicas y de texto; las fechas que deban ser cadenas se escriben entre comillas.
+
+**Validar configuración** hace una comprobación preliminar del YAML y del esquema de opciones. **Guardar configuración** vuelve a comprobarla mediante el Supervisor. Los cambios se aplican al próximo inicio; puedes marcar **Reiniciar después de guardar si la aplicación está en marcha**. Una aplicación detenida no se inicia automáticamente.
+
+El editor conserva los cambios si falla el guardado y avisa antes de descartarlos. Si otra ventana modifica la configuración, se rechaza el guardado para evitar sobrescribirla. Las opciones se envían al Supervisor y no se guardan en el estado, trabajos, historial ni almacenamiento local del navegador. El límite es de 24.000 caracteres por documento y 32 KiB por petición HTTP.
+
+**Logs de la aplicación** abre su salida reciente como texto. Incluye búsqueda, actualización cada cinco segundos, pausa, refresco manual y descarga `.log`. El refresco se detiene al cerrar el visor y se pausa mientras la página está oculta. Los logs permanecen en memoria, se limitan a 512 KiB por lectura y se ocultan valores conocidos de opciones sensibles y tokens del gestor; no se garantiza detectar todas las credenciales que una aplicación pueda imprimir. También se pueden consultar durante una recuperación pendiente.
 
 ### Retirar un repositorio
 
@@ -234,7 +244,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.5.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.6.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
