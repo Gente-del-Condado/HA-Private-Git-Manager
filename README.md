@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.4.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.5.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -106,7 +106,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.4.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.5.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -114,7 +114,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.4.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.5.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -173,13 +173,19 @@ El diario está en `state.json`; las carpetas temporales `.pgm-stage-*` y `.pgm-
 
 ### Retirar un repositorio
 
-Desinstala primero la aplicación desde Home Assistant. Después pulsa **Borrar aplicación** en su fila: revisa la ruta y confirma para eliminar únicamente `/addons/<slug>` y su registro. Funciona también después de haberla desvinculado. No borra el repositorio Git descargado, el remoto ni las demás aplicaciones del catálogo maestro.
+Puedes realizar el ciclo completo desde este gestor:
+
+- **Instalar** descarga/prepara la aplicación y solicita su instalación al Supervisor. **Actualizar / reconstruir** aplica una nueva versión.
+- **Desinstalar** solicita al Supervisor la desinstalación y conserva el código local para instalarla de nuevo.
+- **Borrar aplicación** elimina `/addons/<slug>` y su registro. Si sigue instalada, el diálogo ofrece **Desinstalar y borrar** con autorización explícita. También funciona con copias previamente desvinculadas.
+
+La desinstalación elimina los datos internos y las opciones de la aplicación; no se pueden recuperar desde el gestor. La carpeta pública `app_config` se conserva por defecto y solo se borra si marcas esa opción. El diálogo avisa de esta diferencia antes de confirmar. No se borran el repositorio Git descargado, el remoto ni las demás aplicaciones del catálogo maestro.
 
 La casilla **Ocultar también esta aplicación del catálogo del gestor** evita que siga apareciendo como disponible después de borrarla. La preferencia se conserva al sincronizar y reiniciar; puedes revertirla desde **Aplicaciones ocultas → Volver a mostrar**. Mostrarla de nuevo no la instala. Desmarca la casilla si quieres conservarla visible para una futura instalación.
 
 **Desvincular** conserva la carpeta local y solo retira el registro del gestor. Usa **Borrar aplicación** si también quieres retirar sus archivos de la tienda local. Solo los repositorios sin aplicaciones gestionadas se pueden eliminar.
 
-El borrado se ejecuta en segundo plano con un diario persistente. Si falla, **Revisar recuperación → Terminar borrado** reintenta la limpieza de su carpeta temporal `.pgm-remove-*`. No la borres manualmente durante una operación pendiente. El gestor comprueba que la aplicación esté desinstalada antes de borrar; si el Supervisor no responde, conserva los archivos.
+El borrado se ejecuta en segundo plano con un diario persistente. Si falla, **Revisar recuperación → Terminar borrado** reintenta la limpieza de su carpeta temporal `.pgm-remove-*`. No la borres manualmente durante una operación pendiente. El gestor verifica que la aplicación esté desinstalada antes de retirar su carpeta. Una desinstalación con resultado incierto conserva el código y el diario: **Revisar recuperación** permite comprobar el estado sin repetirla. Reintentar la desinstalación requiere marcar una autorización adicional después de comprobar que no hay una operación activa. Reiniciar el gestor nunca repite automáticamente estas operaciones.
 
 ## Formato de las aplicaciones
 
@@ -228,7 +234,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.4.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.5.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

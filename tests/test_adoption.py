@@ -72,12 +72,12 @@ def test_adopt_existing_uninstalled_app_and_install(manager):
     assert any(event["code"] == "local_adopted" for event in manager.state["events"])
 
 
-def test_adopt_already_installed_app_rebuilds_and_preserves_running_state(manager):
+def test_adopt_already_installed_app_updates_and_preserves_running_state(manager):
     repo_id, _ = prepared(manager)
     addon(manager.addons / "demo", "0.5.0")
     manager.supervisor.installed = [{"slug": "local_demo", "version": "0.5.0", "state": "started"}]
     adopt(manager, repo_id)
-    assert ("POST", "/addons/local_demo/rebuild") in manager.supervisor.calls
+    assert ("POST", "/store/addons/local_demo/update") in manager.supervisor.calls
     assert ("POST", "/store/addons/local_demo/install") not in manager.supervisor.calls
     assert manager.supervisor.installed[0]["state"] == "started"
 

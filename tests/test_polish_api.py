@@ -193,3 +193,34 @@ def test_remove_api_requires_confirmation_and_runs_in_background(client):
         == 200
     )
     assert not manager.repo(repo_id)["hidden_apps"]
+
+
+def test_uninstall_api_requires_consent_and_verifies_native_result(client):
+    from test_jobs_recovery import wait_job
+    from test_manager import FakeSupervisor, prepared
+
+    manager = main.manager
+    manager.supervisor = FakeSupervisor()
+    manager.supervisor.addons = manager.addons
+    manager.verify_checkout = lambda repo, root: None
+    repo_id, _ = prepared(manager)
+    manager.deploy(repo_id, "demo")
+    preflight = client.post(
+        f"/api/repos/{repo_id}/remove-preflight", json={"slug": "demo"}, headers=HEADERS
+    )
+    assert preflight.status_code == 200 and preflight.json()["installed"]
+    body = {"slug": "demo", "expected_local_digest": preflight.json()["local_digest"]}
+    url = f"/api/repos/{repo_id}/uninstall-app"
+    assert client.post(url, json=body, headers=HEADERS).status_code == 400
+    body["confirmed"] = True
+    assert client.post(url, json=body).status_code == 403
+    response = client.post(url, json=body, headers=HEADERS)
+    assert response.status_code == 202
+    assert wait_job(main.jobs, response.json()["id"])["status"] == "succeeded"
+    assert not manager.installed_info("demo")
+    assert (manager.addons / "demo/payload").exists()
+    assert (
+        "POST",
+        "/addons/local_demo/uninstall",
+        {"remove_config": False},
+    ) in manager.supervisor.payloads
