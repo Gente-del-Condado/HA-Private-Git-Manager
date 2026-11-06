@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Isolated network and throwaway containers: no host port or user data is mounted.
-image=${1:-localhost/ha-private-git-manager:0.2.1}
+image=${1:-localhost/ha-private-git-manager:0.3.0}
 suffix="$$-$(date +%s)"
 network="pgm-test-$suffix"
 container="pgm-test-$suffix"
@@ -29,7 +29,7 @@ def request(path, method='GET', payload=None):
     with urllib.request.urlopen(req,timeout=5) as response:
         return response.read()
 assert b'static/app.js' in request('')
-assert json.loads(request('api/state'))['version']=='0.2.1'
+assert json.loads(request('api/state'))['version']=='0.3.0'
 for lang in ['es','en']:
     assert json.loads(request('static/locales/'+lang+'.json'))['install']
 key=json.loads(request('api/keys','POST',{'name':'Isolated container smoke test'}))
@@ -53,3 +53,5 @@ else:
 print('PASS: non-Ingress traffic denied, spoofed forwarding header ignored')
 PY
 podman exec "$container" python -c "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8099/health').status==200; print('PASS: container health check')"
+
+podman exec "$container" python -c 'import tempfile; from pathlib import Path; from app.documentation import RepositoryDocs; tmp=tempfile.TemporaryDirectory(); root=Path(tmp.name); (root/"README.md").write_text("# Catalogo privado\n\n**Aplicaciones**\n\n<script>alert(1)</script>"); result=RepositoryDocs(root,"smoke").document("README.md"); assert "<strong>Aplicaciones</strong>" in result["html"] and "<script>" not in result["html"]; print("PASS: private Markdown rendering and raw HTML protection inside container"); tmp.cleanup()'

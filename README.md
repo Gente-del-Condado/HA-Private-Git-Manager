@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.2.1 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.3.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -60,6 +60,35 @@ ha addons start local_private_git_manager
 
 Conserva su `/data`: los registros existentes de claves, repositorios y despliegues se migran al arrancar. Realiza una copia de seguridad de la aplicación antes de reemplazarla. Si tu instalación asignó otro identificador, utiliza el mostrado por `ha addons list`.
 
+## Repositorios individuales y catálogos maestros privados
+
+Puedes conectar cualquiera de estos formatos por SSH o HTTPS:
+
+```text
+Una aplicación:                 Un catálogo maestro:
+README.md                       README.md
+config.yaml                     repository.yaml
+Dockerfile                      primera_app/
+                                segunda_app/
+```
+
+Cada carpeta de aplicación de un catálogo contiene su propio `config.yaml`, Dockerfile o imagen precompilada y, opcionalmente, `README.md`, `DOCS.md` e `icon.png`. También se admiten manifiestos de aplicaciones en subcarpetas de un repositorio individual.
+
+El gestor detecta el formato y muestra **Aplicación individual** o **Repositorio maestro**, número de aplicaciones, nombre del catálogo, mantenedor y resumen del README. La búsqueda encuentra repositorios por esos datos y por los nombres y descripciones de sus aplicaciones.
+
+- **Ver catálogo** abre el README general y permite seleccionar la presentación de cada aplicación.
+- **Ver README** abre la presentación de una aplicación o un repositorio individual.
+- **Documentación** muestra `DOCS.md` cuando existe.
+- Los enlaces a otros Markdown del mismo repositorio permanecen dentro del lector privado. Las imágenes PNG, JPEG, GIF y WebP locales se sirven mediante Ingress, sin publicar el repositorio ni utilizar sus claves en el navegador.
+
+`repository.yaml`, `repository.yml` y `repository.json` son opcionales. Se leen los campos de texto `name`, `maintainer`, `url` y `description`; si no hay manifiesto se sigue detectando cada aplicación por su configuración. No hace falta convertir un repositorio individual en maestro para utilizar el gestor. Si el catálogo incluye al propio HA Private Git Manager, se puede consultar su documentación y gestionar las demás aplicaciones; el gestor se actualiza desde Home Assistant.
+
+Los README se presentan con formato Markdown, tablas y bloques de código. El HTML sin procesar se muestra como texto para impedir la ejecución de contenido del repositorio. Las imágenes externas, SVG y contenidos incrustados no se cargan automáticamente. Los documentos tienen un límite de 256 KiB y las imágenes de 8 MiB; no se permite leer `.git`, claves, rutas externas o enlaces simbólicos.
+
+Los cambios se comparan por aplicación: modificar el README general del catálogo no marca como actualizables las aplicaciones cuyo código sigue igual.
+
+Al actualizar, se recupera la información de presentación de las copias ya descargadas. Si modificas la documentación en Forgejo o GitHub, pulsa **Sincronizar** para verla actualizada.
+
 ## Carpetas locales que ya existen
 
 El gestor se instala en `/addons/private_git_manager`. Cada aplicación privada utiliza su propia carpeta `/addons/<slug>`. Todas aparecen en la tienda de Home Assistant, pero `/addons` es el directorio de código de las aplicaciones locales: no es el almacén de los contenedores oficiales.
@@ -77,7 +106,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.2.1** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.3.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -85,7 +114,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.2.1** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.3.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -193,7 +222,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.2.1 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.3.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
