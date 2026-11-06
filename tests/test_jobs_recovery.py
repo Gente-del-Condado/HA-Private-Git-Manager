@@ -4,7 +4,7 @@ import time
 
 import httpx
 import pytest
-from app.core import Manager, Problem, Supervisor, SupervisorUncertain
+from app.core import VERSION, Manager, Problem, Supervisor, SupervisorUncertain
 from app.jobs import Jobs, Scheduler
 from test_manager import FakeSupervisor, addon, prepared
 
@@ -40,7 +40,7 @@ def test_background_job_nonblocking_snapshot_and_duplicate_rejection(manager):
         job = jobs.submit("sync", "repo:one", operation, "request-one")
         assert started.wait(timeout=2)
         before = time.monotonic()
-        assert manager.snapshot()["version"] == "0.2.0"
+        assert manager.snapshot()["version"] == VERSION
         assert time.monotonic() - before < 0.1
         assert jobs.submit("sync", "repo:one", operation, "request-one")["id"] == job["id"]
         with pytest.raises(Problem) as caught:
