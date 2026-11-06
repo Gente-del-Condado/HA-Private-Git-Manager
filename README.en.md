@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.8.0
+# HA Private Git Manager 0.9.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.8.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.9.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -86,6 +86,20 @@ Installed apps declaring `ingress: true` offer **Open web interface**. Start the
 Home Assistant handles authentication and session renewal with the current user. No direct ports or external `webui` URLs are opened, and the manager does not return or store Ingress session tokens. Apps do not need to be pinned to the sidebar.
 
 The destination is `/app/<slug>` on Core 2026.2 or later, or `/hassio/ingress/<slug>` on older versions, selected from Supervisor’s Core version. Use Home Assistant navigation or Back to return.
+
+## Per-app backups
+
+**Backups** lists native Home Assistant backups containing the exact app slug, including general backups and backups created outside the manager. It shows name, date, size, location and password protection.
+
+**Create backup** saves the installed app’s data and configuration to Home Assistant local backup storage. Name and encryption password are optional; passwords must be repeated to avoid typos. Without a password the backup is unencrypted. Supervisor may temporarily stop apps requiring cold backups. These native backups are also listed in Home Assistant.
+
+**Restore backup** shows the saved app version and requires explicit consent to replace current data, with initial focus on **Cancel**. Encrypted backups require their password. Only the chosen app is restored, even from a full backup containing Core, folders and other apps. Uninstalled apps can be restored while still linked to the manager with their local source retained; creating a backup requires an installed app.
+
+Restoring can stop/restart the app and change its installed version, shown on its card. Local Git source and commit are retained: review the version before updating or rebuilding again. Shared folders, Core and other apps are never included or restored by these controls. Existing backups on network storage restore from their location. Home Assistant Link (`.cloud_backup`) is exclusive to Core and unavailable here.
+
+Both operations use background jobs with translated progress and history and continue after closing the manager. Passwords are kept only in memory during the operation, never in state, jobs, logs or browser storage; retain them securely because the manager cannot recover them. A lost Supervisor connection produces an uncertain outcome with no automatic retry. Refresh backups and check the app before repeating. Interrupted jobs are never replayed on restart.
+
+These native data backups are separate from temporary `.pgm-backup-*` source trees used for deployment recovery.
 
 ## Logs and privacy
 

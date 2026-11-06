@@ -1,4 +1,4 @@
-# Validación de HA Private Git Manager 0.8.0
+# Validación de HA Private Git Manager 0.9.0
 
 Fecha: **7 de noviembre de 2026**.
 
@@ -8,9 +8,9 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 | Comprobación | Resultado | Alcance |
 | --- | --- | --- |
-| Pruebas Python | **171 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
+| Pruebas Python | **191 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
 | Análisis de Python | **Correcto** | Ruff: sintaxis, importaciones, errores comunes y código sin uso |
-| Formato de Python | **Correcto** | 31 archivos comprobados |
+| Formato de Python | **Correcto** | 34 archivos comprobados |
 | Sintaxis JavaScript | **Correcta** | `node --check` sobre el módulo de interfaz |
 | Dependencias instaladas | **Correctas** | `pip check` sin requisitos rotos |
 | SSH real | **Correcto** | Clonación contra sshd temporal en localhost con Ed25519 y puerto personalizado |
@@ -109,6 +109,17 @@ Referencias: [opciones y validación del Supervisor](https://contributors.home-a
 
 Referencias oficiales: [panel nativo de aplicaciones y renovación de sesiones](https://github.com/home-assistant/frontend/blob/dev/src/panels/app/ha-panel-app.ts) y registro del panel `app` en [Core 2026.2](https://github.com/home-assistant/core/blob/2026.2.0/homeassistant/components/hassio/__init__.py), ausente en [Core 2026.1](https://github.com/home-assistant/core/blob/2026.1.0/homeassistant/components/hassio/__init__.py).
 
+## Copias nativas por aplicación en 0.9.0
+
+- 20 pruebas adicionales: creación local y cifrada, filtrado exacto, metadatos privados omitidos, detalles y compatibilidad de campos `addons`/`apps`, ubicaciones de red y exclusión de Home Assistant Link.
+- Restauración parcial desde una copia completa sin solicitar Core, carpetas ni otras aplicaciones; recuperación de una aplicación desinstalada y comprobación de la versión final sin modificar el checkout Git.
+- Rechazo de contraseñas ausentes/incorrectas, propiedad cruzada, el propio gestor, rutas manipuladas y recuperación pendiente; resultados inciertos diferenciados de rechazos y sin reintentos automáticos.
+- API con CSRF, confirmación, límites, respuesta HTTP 202, estado consultable durante una restauración bloqueada e idempotencia. Contraseñas ausentes de estado, trabajos y logs, también tras reiniciar.
+- Tres recorridos Chrome: creación cifrada y restauración con consentimiento en español e inglés, más restauración sin contraseña tras desinstalar. Cancelar recibe el foco, Escape no ejecuta restauraciones, se rechazan contraseñas distintas y se comprueba ancho de 390 píxeles y texto con HTML inerte.
+- El contenido de datos y las operaciones nativas se comprueban con un Supervisor simulado. No se ha creado/restaurado ninguna copia en el Home Assistant real del usuario.
+
+Referencias: [API oficial de copias](https://contributors.home-assistant.io/apps/supervisor-api/backups/), [implementación de restauración parcial](https://github.com/home-assistant/supervisor/blob/main/supervisor/api/backups.py) y [permisos del rol manager](https://github.com/home-assistant/supervisor/blob/main/supervisor/api/middleware/security.py).
+
 ## Límites de lo comprobado
 
 - La API del Supervisor se contrastó con su documentación y código oficial. Las operaciones se verificaron con simulaciones y transporte HTTP controlado; **no se ejecutaron contra un Supervisor real**.
@@ -124,7 +135,7 @@ Referencias oficiales: [panel nativo de aplicaciones y renovación de sesiones](
 3. Registrar una clave pública de solo lectura en el Forgejo real y verificar la huella del servicio SSH.
 4. Sincronizar una aplicación de prueba compatible, instalarla, configurarla y consultar sus logs desde el gestor.
 5. Aplicar una nueva versión y comprobar versión, commit y estado de ejecución en el Supervisor.
-6. Crear y restaurar una copia de seguridad de la aplicación, protegiendo sus credenciales.
+6. Desde el gestor, crear una copia cifrada de una aplicación de prueba, modificar una opción y restaurarla; comprobar datos, versión y comportamiento tras un reinicio. Conservar la contraseña de forma segura.
 
 ## Repetir las comprobaciones
 
@@ -134,7 +145,7 @@ Referencias oficiales: [panel nativo de aplicaciones y renovación de sesiones](
 .venv/bin/ruff format --check private_git_manager/app tests scripts/package.py
 node --check private_git_manager/app/static/app.js
 .venv/bin/pip check
-podman build --format docker -t localhost/ha-private-git-manager:0.8.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.9.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
