@@ -289,3 +289,20 @@ def test_native_form_metadata_and_conversion_are_private_and_read_only(client):
     assert "native-app-secret" not in manager.state_file.read_text()
     assert "native-app-secret" not in client.get("/api/state").text
     assert client.get("/static/schema-form.js").status_code == 200
+
+
+def test_open_web_interface_api_returns_only_a_safe_native_path(client):
+    from test_ingress_link import install_ingress
+
+    manager = main.manager
+    repo_id = install_ingress(manager)
+    endpoint = f"/api/repos/{repo_id}/apps/demo/web-interface"
+    response = client.get(endpoint + "?url=https://untrusted.example")
+    assert response.status_code == 200
+    assert response.json() == {"path": "/app/local_demo"}
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert "private-app-session" not in response.text
+    manager.supervisor.ingress = False
+    assert client.get(endpoint).json()["code"] == "app_no_ingress"
+    assert client.get("/api/repos/missing/apps/demo/web-interface").status_code == 400

@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.7.0
+# HA Private Git Manager 0.8.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.7.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.8.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -78,6 +78,14 @@ The default form supports text, masked passwords with a visibility toggle, boole
 Option values are never stored in manager state, jobs, event history or browser local storage. Submitted representations are limited to 24,000 characters and HTTP requests to 32 KiB.
 
 **App logs** provides recent plain-text output, search, automatic five-second refresh, pause, manual refresh and `.log` download. Reads are capped at 512 KiB. Refresh pauses while the page is hidden and stops on close. Known sensitive option values and manager tokens are redacted; arbitrary secrets printed by an app cannot all be detected. Logs stay in memory and remain readable during pending recovery.
+
+## Open an app through Ingress
+
+Installed apps declaring `ingress: true` offer **Open web interface**. Start the app first; the button is disabled while stopped or during pending operations. The manager rechecks Supervisor before opening Home Assistant’s app panel outside the manager iframe.
+
+Home Assistant handles authentication and session renewal with the current user. No direct ports or external `webui` URLs are opened, and the manager does not return or store Ingress session tokens. Apps do not need to be pinned to the sidebar.
+
+The destination is `/app/<slug>` on Core 2026.2 or later, or `/hassio/ingress/<slug>` on older versions, selected from Supervisor’s Core version. Use Home Assistant navigation or Back to return.
 
 ## Logs and privacy
 
