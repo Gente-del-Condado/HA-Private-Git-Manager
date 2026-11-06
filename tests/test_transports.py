@@ -91,7 +91,9 @@ LogLevel ERROR
             identity = manager.scan(url)
             manager.trust(url, identity["line"], identity["fingerprint"])
             repo_id = manager.repo_add("SSH real", url, "main", key_id=client_key["id"])
+            manager.repo(repo_id)["hidden_apps"] = ["transport_test"]
             manager.sync(repo_id)
+            assert manager.repo(repo_id)["hidden_apps"] == ["transport_test"]
             assert manager.repo(repo_id)["apps"][0]["slug"] == "transport_test"
             manager.verify_checkout(manager.repo(repo_id), manager.data / "repos" / repo_id)
             assert manager.repo(repo_id)["commit"] == command(
