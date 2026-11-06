@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.9.0
+# HA Private Git Manager 0.10.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.9.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.10.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -100,6 +100,16 @@ Restoring can stop/restart the app and change its installed version, shown on it
 Both operations use background jobs with translated progress and history and continue after closing the manager. Passwords are kept only in memory during the operation, never in state, jobs, logs or browser storage; retain them securely because the manager cannot recover them. A lost Supervisor connection produces an uncertain outcome with no automatic retry. Refresh backups and check the app before repeating. Interrupted jobs are never replayed on restart.
 
 These native data backups are separate from temporary `.pgm-backup-*` source trees used for deployment recovery.
+
+### Download and delete backups
+
+Each backup offers **Download backup** and **Delete backup**, with a review of its name, date, size, encryption and whether it contains other data. **Both actions affect the whole archive**, including Core, folders or other apps in a general backup. Restore remains limited to the chosen app.
+
+**Download backup** streams the original `.tar` archive from the displayed location, preserving encryption and requiring no password. No second archive is stored in the manager. Your browser handles progress and destination. Interrupted downloads must restart from the beginning; partial downloads and resuming are not offered. The manager records download start, without claiming completion in your browser.
+
+**Delete backup** shows all accessible locations to remove, requires a consent checkbox and initially focuses **Cancel**. It deletes the whole archive from those locations, keeping installed apps and their current data. Downloaded copies and Home Assistant Link are excluded. Deletion cannot be undone. If reviewed metadata or locations change before execution, refresh and review again.
+
+Deletion runs in the background and verifies the result. Unconfirmed or partial deletion is reported with no automatic retry. Downloading and deleting remain available for uninstalled apps that retain their manager link and local source.
 
 ## Logs and privacy
 

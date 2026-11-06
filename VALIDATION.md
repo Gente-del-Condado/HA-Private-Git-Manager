@@ -1,4 +1,4 @@
-# Validación de HA Private Git Manager 0.9.0
+# Validación de HA Private Git Manager 0.10.0
 
 Fecha: **7 de noviembre de 2026**.
 
@@ -8,9 +8,9 @@ Este informe distingue las comprobaciones ejecutadas de la compatibilidad declar
 
 | Comprobación | Resultado | Alcance |
 | --- | --- | --- |
-| Pruebas Python | **191 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
+| Pruebas Python | **213 superadas** | API, credenciales, Git, trabajos, programación, recuperación y distribución |
 | Análisis de Python | **Correcto** | Ruff: sintaxis, importaciones, errores comunes y código sin uso |
-| Formato de Python | **Correcto** | 34 archivos comprobados |
+| Formato de Python | **Correcto** | 36 archivos comprobados |
 | Sintaxis JavaScript | **Correcta** | `node --check` sobre el módulo de interfaz |
 | Dependencias instaladas | **Correctas** | `pip check` sin requisitos rotos |
 | SSH real | **Correcto** | Clonación contra sshd temporal en localhost con Ed25519 y puerto personalizado |
@@ -120,6 +120,17 @@ Referencias oficiales: [panel nativo de aplicaciones y renovación de sesiones](
 
 Referencias: [API oficial de copias](https://contributors.home-assistant.io/apps/supervisor-api/backups/), [implementación de restauración parcial](https://github.com/home-assistant/supervisor/blob/main/supervisor/api/backups.py) y [permisos del rol manager](https://github.com/home-assistant/supervisor/blob/main/supervisor/api/middleware/security.py).
 
+## Descarga y borrado de copias en 0.10.0
+
+- 22 pruebas adicionales: streaming binario por bloques de hasta 64 KiB, apertura sin leer el archivo completo, integridad de bytes, ubicación de red codificada y cierre al finalizar, interrumpir, fallar o desconectarse antes del primer bloque.
+- Rechazo de errores HTTP, redirecciones y respuestas JSON como si fueran archivos; nombre de descarga fijo y seguro, sin reenviar cookies ni cabeceras del Supervisor. Cierre también si no puede escribirse el evento de auditoría.
+- Borrado del archivo completo en ubicaciones explícitas, sin incluir Home Assistant Link ni tocar aplicaciones instaladas; revisión de cambios y verificación posterior, con resultados parciales o inciertos sin reintentos automáticos.
+- JSON y tiempo de espera correctos para DELETE del Supervisor; permisos, copia sin la aplicación elegida, recuperación pendiente, aplicación desinstalada, CSRF, confirmación, HTTP 202 e idempotencia.
+- Cuatro recorridos Chrome (español/inglés × local/prefijo Ingress): descarga real del archivo de prueba y comparación de bytes, advertencia para copia compartida/cifrada, foco en Cancelar, casilla obligatoria, Escape sin borrar, listado actualizado y ancho de 390 píxeles.
+- Supervisor y contenido de la copia simulados; transferencia HTTP y descarga de Chrome reales contra el servidor de pruebas. No se descargaron ni borraron copias del Home Assistant del usuario.
+
+Referencias: [descarga y borrado en la API oficial](https://contributors.home-assistant.io/apps/supervisor-api/backups/#get-backupsbackupdownload) e [implementación oficial de ambos endpoints](https://github.com/home-assistant/supervisor/blob/main/supervisor/api/backups.py).
+
 ## Límites de lo comprobado
 
 - La API del Supervisor se contrastó con su documentación y código oficial. Las operaciones se verificaron con simulaciones y transporte HTTP controlado; **no se ejecutaron contra un Supervisor real**.
@@ -135,17 +146,17 @@ Referencias: [API oficial de copias](https://contributors.home-assistant.io/apps
 3. Registrar una clave pública de solo lectura en el Forgejo real y verificar la huella del servicio SSH.
 4. Sincronizar una aplicación de prueba compatible, instalarla, configurarla y consultar sus logs desde el gestor.
 5. Aplicar una nueva versión y comprobar versión, commit y estado de ejecución en el Supervisor.
-6. Desde el gestor, crear una copia cifrada de una aplicación de prueba, modificar una opción y restaurarla; comprobar datos, versión y comportamiento tras un reinicio. Conservar la contraseña de forma segura.
+6. Desde el gestor, crear una copia cifrada de una aplicación de prueba, modificar una opción y restaurarla; comprobar datos, versión y comportamiento tras un reinicio. Conservar la contraseña de forma segura. Descargar la copia y comprobar el archivo; crear otra copia descartable y borrarla desde el gestor.
 
 ## Repetir las comprobaciones
 
 ```sh
 .venv/bin/python -m pytest -q
-.venv/bin/ruff check private_git_manager/app tests scripts/package.py
-.venv/bin/ruff format --check private_git_manager/app tests scripts/package.py
+.venv/bin/python -m ruff check private_git_manager/app tests scripts/package.py
+.venv/bin/python -m ruff format --check private_git_manager/app tests scripts/package.py
 node --check private_git_manager/app/static/app.js
-.venv/bin/pip check
-podman build --format docker -t localhost/ha-private-git-manager:0.9.0 private_git_manager
+.venv/bin/python -m pip check
+podman build --format docker -t localhost/ha-private-git-manager:0.10.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
