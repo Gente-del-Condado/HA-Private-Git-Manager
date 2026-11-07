@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.11.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.11.1 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -107,7 +107,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.11.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.11.1** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -115,7 +115,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.11.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.11.1** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -289,7 +289,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.11.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.11.1 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
