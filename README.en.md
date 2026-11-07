@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.11.1
+# HA Private Git Manager 0.12.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.11.1 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.12.0 package while preserving persistent data, reload apps and update/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -55,7 +55,7 @@ A lost Supervisor connection does not prove an operation failed. Both source tre
 
 Check Supervisor logs and ensure the build/update is no longer active. Select **Review recovery**, then restore previous source or accept the verified current version. Acceptance checks both installed version and source-tree digest. Restoring source does not roll back images or app data; rebuild or restart through Home Assistant as needed.
 
-Hidden `.pgm-stage-*` and `.pgm-backup-*` folders under `/addons` may hold recovery data. Do not remove them during recovery. The journal is in `/data/state.json`.
+Hidden `.pgm-stage-*` and `.pgm-backup-*` folders under `/addons` may hold recovery data. Do not remove them during recovery. The journal is in `/config/private-git-manager/state.json`.
 
 Manage the full lifecycle here: **Install** installs through Supervisor; **Uninstall** removes the installed app while keeping its source for reinstallation. **Delete app** removes the reviewed `/addons/<slug>` folder and record; when installed, its dialog offers **Uninstall and delete** with explicit consent. Other apps and the downloaded/remote Git repository are kept.
 
@@ -86,6 +86,12 @@ Installed apps declaring `ingress: true` offer **Open web interface**. Start the
 Home Assistant handles authentication and session renewal with the current user. No direct ports or external `webui` URLs are opened, and the manager does not return or store Ingress session tokens. Apps do not need to be pinned to the sidebar.
 
 The destination is `/app/<slug>` on Core 2026.2 or later, or `/hassio/ingress/<slug>` on older versions, selected from Supervisor’s Core version. Use Home Assistant navigation or Back to return.
+
+## Keeping manager data on reinstall
+
+On first start, 0.12.0 copies existing keys, repositories and state from `/data` to `/config/private-git-manager` in the app's dedicated configuration folder. Update in place before uninstalling an older version. To keep this folder, leave the removal option unchecked and reinstall the same app. Keep access to the folder restricted because it contains credentials.
+
+If the store shows an update but clicking it fails to start the operation, check the installed app with `ha apps info APP_ID` and run `ha apps update APP_ID --backup` from the Home Assistant terminal. Older CLI versions use `ha addons`. Supervisor logs show any update errors.
 
 ## Per-app backups
 
@@ -121,7 +127,7 @@ Deletion runs in the background and verifies the result. Unconfirmed or partial 
 
 ## Logs and privacy
 
-The UI provides filtering, search and JSONL export. It retains 500 events and up to 100 completed jobs. Container logs are Spanish JSONL; `/data/manager.log` rotates at 1 MiB with three older copies.
+The UI provides filtering, search and JSONL export. It retains 500 events and up to 100 completed jobs. Container logs are Spanish JSONL; `/config/private-git-manager/manager.log` rotates at 1 MiB with three older copies.
 
 Private data lives under `/data`: keys, repository checkouts, tokens, job records and transaction state. Directories use `0700`; state, private keys and logs use `0600`. Tokens are redacted from API responses and logs and passed to Git through `GIT_ASKPASS`. Secrets have filesystem protection, not additional encryption. Protect app backups: they contain credentials.
 
