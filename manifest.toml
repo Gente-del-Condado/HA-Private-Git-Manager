@@ -1,9 +1,9 @@
 packaging_format = 2
 id = "privategit"
 name = "Private Git Manager"
-description.en = "Browse and sync private Git repositories and review Home Assistant app catalogs."
-description.es = "Sincroniza repositorios Git privados y revisa catálogos de aplicaciones de Home Assistant."
-version = "0.13.0~ynh1"
+description.en = "Install and manage YunoHost apps from private Git repositories."
+description.es = "Instala y administra aplicaciones de YunoHost desde repositorios Git privados."
+version = "0.14.0~ynh1"
 maintainers = ["wolfbelmi88"]
 
 [upstream]
