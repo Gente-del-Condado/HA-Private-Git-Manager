@@ -1,8 +1,10 @@
-# HA Private Git Manager 0.12.0
+# HA Private Git Manager 0.13.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
 A native Home Assistant OS app for private Git repositories and local apps, with Spanish and English UI, light/dark themes and an Ingress-only administration panel.
+
+**Using YunoHost?** See the [installation guide and feature scope](YUNOHOST.md).
 
 ## Install
 
@@ -39,7 +41,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.12.0 package while preserving persistent data, reload apps and update/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.13.0 package while preserving persistent data, reload apps and update/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -89,7 +91,7 @@ The destination is `/app/<slug>` on Core 2026.2 or later, or `/hassio/ingress/<s
 
 ## Keeping manager data on reinstall
 
-On first start, 0.12.0 copies existing keys, repositories and state from `/data` to `/config/private-git-manager` in the app's dedicated configuration folder. Update in place before uninstalling an older version. To keep this folder, leave the removal option unchecked and reinstall the same app. Keep access to the folder restricted because it contains credentials.
+On first start, version 0.12.0 or later copies existing keys, repositories and state from `/data` to `/config/private-git-manager` in the app's dedicated configuration folder. Update in place before uninstalling an older version. To keep this folder, leave the removal option unchecked and reinstall the same app. Keep access to the folder restricted because it contains credentials.
 
 If the store shows an update but clicking it fails to start the operation, check the installed app with `ha apps info APP_ID` and run `ha apps update APP_ID --backup` from the Home Assistant terminal. Older CLI versions use `ha addons`. Supervisor logs show any update errors.
 

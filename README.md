@@ -2,13 +2,15 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.12.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.13.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
 ![Identidad de la aplicación](private_git_manager/logo.png)
 
 [English documentation](README.en.md) · [Guía dentro de Home Assistant](private_git_manager/DOCS.md) · [Validación técnica](VALIDATION.md)
+
+**¿Quieres usarlo en YunoHost?** Consulta la [guía de instalación y alcance](YUNOHOST.md).
 
 ## Qué incluye
 
@@ -107,7 +109,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.12.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.13.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -117,7 +119,7 @@ ha addons start local_private_git_manager
 
 Si lo instalaste desde la tienda, recarga el catálogo y actualiza desde la ficha de la aplicación instalada. Si el botón no inicia la operación, prueba desde la terminal de Home Assistant con `ha apps list`, `ha apps info IDENTIFICADOR` y `ha apps update IDENTIFICADOR --backup`. En versiones antiguas de la CLI, usa `ha addons`. Conserva el identificador de la instalación para que el Supervisor mantenga su almacenamiento. El registro del Supervisor muestra el motivo si la actualización falla.
 
-La primera vez que arranca la 0.12.0, el gestor copia las claves, repositorios y estado de `/data` a `/config/private-git-manager` dentro de su carpeta de configuración dedicada. Actualiza antes de desinstalar una versión anterior. Desde la 0.12.0, Home Assistant conserva esa carpeta si dejas desmarcada la opción de borrarla y reinstalas la misma aplicación. La carpeta incluye credenciales y debe mantenerse con acceso restringido. Si ya perdiste los datos con una versión anterior, necesitas una copia de seguridad que los contenga.
+La primera vez que arranca una versión 0.12.0 o posterior, el gestor copia las claves, repositorios y estado de `/data` a `/config/private-git-manager` dentro de su carpeta de configuración dedicada. Actualiza antes de desinstalar una versión anterior. Desde la 0.12.0, Home Assistant conserva esa carpeta si dejas desmarcada la opción de borrarla y reinstalas la misma aplicación. La carpeta incluye credenciales y debe mantenerse con acceso restringido. Si ya perdiste los datos con una versión anterior, necesitas una copia de seguridad que los contenga.
 
 ## Primer repositorio de Forgejo
 
@@ -291,7 +293,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.12.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.13.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

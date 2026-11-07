@@ -1,0 +1,15 @@
+#!/bin/bash
+source /usr/share/yunohost/helpers
+
+ynh_restore "$install_dir"
+ynh_restore "$data_dir"
+ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore "/etc/systemd/system/$app.service"
+chown -R root:"$app" "$install_dir"
+chown -hR "$app:$app" "$data_dir"
+chmod 0700 "$data_dir"
+systemctl daemon-reload
+systemctl enable "$app.service" --quiet
+yunohost service add "$app" --description="Private Git Manager"
+ynh_systemctl --service="$app" --action=start --wait_until="Application startup complete" --log_path=systemd
+ynh_systemctl --service=nginx --action=reload

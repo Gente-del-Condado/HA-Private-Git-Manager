@@ -1,0 +1,47 @@
+packaging_format = 2
+id = "privategit"
+name = "Private Git Manager"
+description.en = "Browse and sync private Git repositories and review Home Assistant app catalogs."
+description.es = "Sincroniza repositorios Git privados y revisa catálogos de aplicaciones de Home Assistant."
+version = "0.13.0~ynh1"
+maintainers = ["wolfbelmi88"]
+
+[upstream]
+license = "non-free"
+code = "https://github.com/Gente-del-Condado/HA-Private-Git-Manager"
+
+[integration]
+yunohost = ">= 12.1.17"
+helpers_version = "2.1"
+architectures = ["amd64", "arm64"]
+multi_instance = true
+ldap = false
+sso = true
+disk = "200M"
+ram.build = "256M"
+ram.runtime = "128M"
+
+[install.domain]
+type = "domain"
+
+[install.path]
+type = "path"
+default = "/private-git"
+
+[resources.system_user]
+
+[resources.install_dir]
+owner = "root:rwx"
+group = "__APP__:rx"
+
+[resources.data_dir]
+group = "__APP__:---"
+
+[resources.permissions]
+main.url = "/"
+main.allowed = "admins"
+main.protected = true
+main.auth_header = false
+
+[resources.apt]
+packages = "acl, ca-certificates, git, openssh-client, python3-venv"
