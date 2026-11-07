@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.10.0 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.11.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -107,7 +107,7 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.10.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.11.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
@@ -115,7 +115,7 @@ ha addons rebuild local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.10.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.11.0** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
 
 ## Primer repositorio de Forgejo
 
@@ -240,6 +240,14 @@ Ambas operaciones son trabajos en segundo plano con progreso e historial en espa
 
 Estas copias nativas de datos son distintas de las copias temporales de código `.pgm-backup-*` usadas para recuperar instalaciones fallidas.
 
+### Actualizaciones con copia, importación y programación
+
+En la revisión de una aplicación instalada verás la versión actual, la propuesta y el changelog disponible en el repositorio. **Crear copia y actualizar** guarda primero una copia local sin cifrar. Si no se confirma la copia, el gestor detiene la actualización. **Cambios de la última sincronización** agrupa aplicaciones nuevas, modificadas y retiradas del catálogo, incluso si el código cambió con la misma versión.
+
+En **Copias de seguridad → Importar copia** puedes subir un .tar nativo de hasta 512 MiB. El gestor comprueba que contiene la aplicación y lo incorpora al listado del Supervisor. Después se abre la revisión con la versión de la copia y la confirmación habitual de restauración.
+
+En **Programar copias** eliges un intervalo de 1 a 720 horas y cuántas copias conservar, entre 1 y 30. Usa 0 horas para desactivar la programación. La primera copia vence al cumplirse el intervalo y se muestran la próxima fecha y la última copia completada. Las copias automáticas se guardan localmente sin cifrar. Después de una copia correcta, la retención elimina solo copias locales creadas por esa programación.
+
 ### Descargar y borrar copias
 
 En **Copias de seguridad**, cada archivo ofrece **Descargar copia** y **Borrar copia**. Ambos permiten revisar nombre, fecha, tamaño, cifrado y si contiene otros datos. **La descarga y el borrado afectan al archivo completo**, también cuando la copia incluye Core, carpetas u otras aplicaciones; la restauración sigue siendo únicamente de la aplicación elegida.
@@ -281,7 +289,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.10.0 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.11.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```

@@ -1,4 +1,4 @@
-# HA Private Git Manager 0.10.0
+# HA Private Git Manager 0.11.0
 
 [Upload to Forgejo (Spanish)](FORGEJO.md)
 
@@ -39,7 +39,7 @@ Click **Install** to inspect the destination. Empty folders can be reused. An ex
 
 An already-installed local app is updated/rebuilt instead of installed twice; an identical installed version can be registered without rebuilding. Failed adoption restores source, and uncertain Supervisor results retain both trees for explicit recovery. This is not a backup of app images or data.
 
-For a local installation, stop the manager, replace its program directory with the 0.10.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
+For a local installation, stop the manager, replace its program directory with the 0.11.0 package while preserving persistent data, reload apps and rebuild/start `local_private_git_manager`. Store installations can use the update available after refreshing their repository.
 
 ## Updates and jobs
 
@@ -100,6 +100,14 @@ Restoring can stop/restart the app and change its installed version, shown on it
 Both operations use background jobs with translated progress and history and continue after closing the manager. Passwords are kept only in memory during the operation, never in state, jobs, logs or browser storage; retain them securely because the manager cannot recover them. A lost Supervisor connection produces an uncertain outcome with no automatic retry. Refresh backups and check the app before repeating. Interrupted jobs are never replayed on restart.
 
 These native data backups are separate from temporary `.pgm-backup-*` source trees used for deployment recovery.
+
+### Backup before updating, import and schedules
+
+The update review shows the installed and proposed versions plus the repository changelog when available. **Back up and update** creates a local unencrypted backup first. The update stops if the backup cannot be confirmed. **Changes from the last sync** groups added, changed and removed apps, including source changes with the same version.
+
+Use **Backups → Import backup** to upload a native .tar archive up to 512 MiB. The manager checks that the archive contains the selected app and imports it into Supervisor. The restore review then shows its version and asks for the usual confirmation.
+
+In **Schedule backups**, choose a 1–720 hour interval and keep 1–30 backups. Enter 0 hours to disable the schedule. The first backup becomes due after the interval. The next due time and last successful backup appear in the form. Scheduled copies are stored locally without encryption. After a successful backup, retention removes only local copies created by that schedule.
 
 ### Download and delete backups
 
