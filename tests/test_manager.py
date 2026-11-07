@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 
 import pytest
@@ -266,6 +267,27 @@ def test_real_git_sync_is_transactional(manager, tmp_path, monkeypatch):
     first = repo["commit"]
     assert first == git("rev-parse", "HEAD")
     assert repo["apps"][0]["slug"] == "demo"
+    assert repo["sync_changes"] == {"added": ["Demo"], "changed": [], "removed": []}
+    addon(remote / "retired", slug="retired")
+    git("add", ".")
+    git("-c", "user.email=test@example.org", "-c", "user.name=Test", "commit", "-m", "add retired")
+    manager.sync(repo_id)
+    shutil.rmtree(remote / "retired")
+    addon(remote / "new", slug="new")
+    (remote / "demo" / "payload").write_text("change without version bump")
+    git("add", "-A")
+    git(
+        "-c",
+        "user.email=test@example.org",
+        "-c",
+        "user.name=Test",
+        "commit",
+        "-m",
+        "catalog changes",
+    )
+    manager.sync(repo_id)
+    assert repo["sync_changes"] == {"added": ["Demo"], "changed": ["Demo"], "removed": ["Demo"]}
+    first = repo["commit"]
     repo["ref"] = "missing"
     with pytest.raises(Problem):
         manager.sync(repo_id)
