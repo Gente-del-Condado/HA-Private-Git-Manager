@@ -1,0 +1,63 @@
+/* Paleta del manual. Los colores del portal instalado se definen en su propio CSS. */
+:root {
+  color-scheme: light dark;
+  --fondo: #f4f8f8;
+  --panel: #fff;
+  --texto: #102a30;
+  --secundario: #3e5c63;
+  --acento: #006659;
+  --borde: #c3d8d8;
+  --codigo: #10262d;
+  --codigo-texto: #edfafa;
+  font: 100%/1.65 system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0e1920;
+    --panel: #172831;
+    --texto: #eefafa;
+    --secundario: #bed1d6;
+    --acento: #87e8cf;
+    --borde: #3c5963;
+    --codigo: #09151a;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); color: var(--texto); }
+a { color: var(--acento); text-underline-offset: .18em; }
+:focus-visible { outline: 3px solid var(--acento); outline-offset: 4px; }
+.salto { position: fixed; inset: 1rem auto auto 1rem; z-index: 2; padding: .6rem; background: var(--panel); transform: translateY(-200%); }
+.salto:focus { transform: none; }
+.marco { width: min(76rem, calc(100% - 2rem)); margin-inline: auto; }
+.cabecera { border-bottom: 1px solid var(--borde); background: var(--panel); }
+.barra, .pie { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; padding-block: 1rem; }
+.marca { display: inline-flex; align-items: center; gap: .55rem; font-weight: 750; text-decoration: none; }
+.lectura { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: clamp(1rem, 4vw, 4rem); padding-block: clamp(1.25rem, 5vw, 4rem); align-items: start; }
+nav { position: sticky; top: 1.25rem; padding: .9rem 1.25rem; background: var(--panel); border: 1px solid var(--borde); border-radius: .9rem; }
+nav ol { padding-inline-start: 1.25rem; margin-block: .5rem; }
+nav li { padding-block: .24rem; }
+.etiqueta { margin: 0 0 .5rem; color: var(--acento); font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; }
+h1, h2, h3 { line-height: 1.16; text-wrap: balance; }
+h1 { margin: 0; max-width: 19ch; font-size: clamp(2rem, 5vw, 4.25rem); letter-spacing: -.045em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); margin-top: 0; }
+h3 { margin-top: 1.65rem; }
+.entradilla { max-width: 59ch; font-size: 1.18rem; color: var(--secundario); }
+.plataformas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: .8rem; margin-block: 1.5rem; }
+.plataformas a { display: grid; padding: 1rem; background: var(--panel); border: 1px solid var(--borde); border-radius: .9rem; }
+.plataformas span { color: var(--secundario); }
+section { border-top: 1px solid var(--borde); margin-top: 2.8rem; padding-top: 1.6rem; scroll-margin-top: 1rem; }
+main p, main ol, main ul, main dl { max-width: 74ch; }
+main li + li { margin-top: .45rem; }
+code { overflow-wrap: anywhere; }
+pre { overflow-x: auto; background: var(--codigo); color: var(--codigo-texto); padding: 1rem; border-radius: .7rem; }
+pre code { overflow-wrap: normal; }
+figure { margin: 1.5rem 0; }
+figure img { display: block; width: 100%; height: auto; border: 1px solid var(--borde); border-radius: .9rem; }
+figcaption { margin-top: .5rem; color: var(--secundario); font-size: .95rem; }
+dt { font-weight: 750; }
+dd { margin: .25rem 0 1rem; }
+.pie { border-top: 1px solid var(--borde); color: var(--secundario); }
+@media (max-width: 52rem) {
+  .lectura { grid-template-columns: minmax(0, 1fr); }
+  nav { position: static; }
+}

@@ -1,0 +1,1 @@
+Conecta repositorios Git privados mediante SSH verificado o HTTPS. Revisa su documentación y administra aplicaciones nativas de YunoHost con la sesión de administrador del navegador. El portal está disponible en español e inglés.

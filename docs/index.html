@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Manual ilustrado de Private Git Manager para Home Assistant OS y YunoHost.">
+  <title>Manual · Private Git Manager</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+  <a class="salto" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="marco barra">
+      <a class="marca" href="./"><img src="assets/mark.svg" alt="" width="32" height="32"> Private Git Manager</a>
+      <a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager">Código en GitHub ↗</a>
+    </div>
+  </header>
+
+  <div class="marco lectura">
+    <nav aria-label="Índice del manual">
+      <p class="etiqueta">Índice</p>
+      <ol>
+        <li><a href="#empezar">Instalación</a></li>
+        <li><a href="#conectar">Conectar Git privado</a></li>
+        <li><a href="#catalogos">Paquetes y catálogos</a></li>
+        <li><a href="#home-assistant">Operar en Home Assistant</a></li>
+        <li><a href="#copias">Copias y recuperación</a></li>
+        <li><a href="#yunohost">Operar en YunoHost</a></li>
+        <li><a href="#problemas">Resolver problemas</a></li>
+        <li><a href="#desarrollo">Editar el proyecto</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <p class="etiqueta">Manual de usuario</p>
+      <h1 id="contenido" tabindex="-1">Tus aplicaciones Git privadas, en un solo sitio</h1>
+      <p class="entradilla">Conecta Forgejo, GitHub o Gitea, revisa el código sincronizado y administra aplicaciones nativas en Home Assistant OS o YunoHost.</p>
+      <div class="plataformas">
+        <a href="#home-assistant"><strong>Home Assistant OS</strong><span>Supervisor, Ingress, configuración y copias</span></a>
+        <a href="#yunohost"><strong>YunoHost</strong><span>Paquetes nativos y sesión de administración</span></a>
+      </div>
+      <figure>
+        <a href="assets/repositorios.png"><img src="assets/repositorios.png" width="1280" height="800" alt="Vista del gestor con un repositorio de ejemplo, su rama y una aplicación detectada."></a>
+        <figcaption>El portal en modo oscuro. Las capturas de este manual usan datos ficticios. Pulsa una captura para ampliarla.</figcaption>
+      </figure>
+
+      <section id="empezar">
+        <h2>01 · Instalar el gestor</h2>
+        <h3>Home Assistant OS</h3>
+        <ol>
+          <li>Añade <a href="https://github.com/Gente-del-Condado/Mis-app">Mis-app</a> como repositorio de la tienda de aplicaciones.</li>
+          <li>Busca <strong>HA Private Git Manager</strong>, instálalo y pulsa <strong>Iniciar</strong>.</li>
+          <li>Abre la interfaz web a través de Home Assistant. Puedes fijarla a la barra lateral.</li>
+        </ol>
+        <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
+        <h3>YunoHost</h3>
+        <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
+        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.14.1</code></pre>
+      </section>
+
+      <section id="conectar">
+        <h2>02 · Conectar un repositorio privado</h2>
+        <ol>
+          <li>En <strong>Claves SSH</strong>, crea una clave Ed25519. Copia su parte pública y añádela al repositorio de Forgejo como clave de despliegue de solo lectura.</li>
+          <li>En <strong>Repositorios</strong>, indica la URL, la rama o etiqueta y la clave. Para un puerto SSH personalizado usa el formato <code>ssh://forgejo@git.example.org:2233/equipo/apps.git</code>.</li>
+          <li>Compara la huella SHA256 que muestra el gestor con la huella del servidor que te facilite su administrador por un canal de confianza. Regístrala y vuelve a sincronizar.</li>
+          <li>Abre <strong>Ver catálogo</strong> o <strong>Ver README</strong> para revisar la presentación, las aplicaciones y el commit descargado.</li>
+        </ol>
+        <figure>
+          <a href="assets/claves.png"><img src="assets/claves.png" width="1280" height="800" loading="lazy" alt="Formulario de creación de una clave SSH dentro de la sección Claves SSH."></a>
+          <figcaption>El gestor genera la identidad. En Forgejo se registra únicamente su clave pública.</figcaption>
+        </figure>
+        <p>Para HTTPS, usa <code>https://git.example.org/equipo/apps.git</code> y completa usuario y token en los campos de credenciales. Para rotar una clave, prueba la nueva con una sincronización antes de revocar la anterior.</p>
+      </section>
+
+      <section id="catalogos">
+        <h2>03 · Organizar aplicaciones y catálogos</h2>
+        <h3>Una aplicación de Home Assistant</h3>
+        <p>Incluye <code>config.yaml</code>, <code>config.yml</code> o <code>config.json</code> con los campos <code>name</code>, <code>version</code>, <code>slug</code>, <code>description</code> y <code>arch</code>. Añade un <code>Dockerfile</code> o indica una <code>image</code> en el manifiesto. El <code>slug</code> es el identificador estable de la aplicación.</p>
+        <h3>Varias aplicaciones de Home Assistant</h3>
+        <p>Usa un <code>repository.yaml</code> y un <code>README.md</code> en la raíz, y una carpeta por aplicación. Cada manifiesto debe tener un slug distinto. Coloca las plantillas de empaquetado con una extensión como <code>config.yaml.in</code> para que se reconozcan únicamente los manifiestos instalables.</p>
+        <pre><code>mi-catalogo/
+├── repository.yaml
+├── README.md
+├── sensor_local/
+│   ├── config.yaml
+│   ├── Dockerfile
+│   └── DOCS.md
+└── pasarela/
+    ├── config.yaml
+    └── Dockerfile</code></pre>
+        <h3>Un paquete nativo de YunoHost</h3>
+        <p>Usa un repositorio por paquete con <code>manifest.toml</code> de formato 2 en la raíz y los scripts <code>scripts/install</code>, <code>scripts/upgrade</code> y <code>scripts/remove</code>. La edición YunoHost muestra los complementos de Home Assistant como catálogo.</p>
+      </section>
+
+      <section id="home-assistant">
+        <h2>04 · Instalar, configurar y actualizar en Home Assistant</h2>
+        <ol>
+          <li>En la ficha del paquete, pulsa <strong>Instalar</strong> y comprueba la versión y el commit. Si el gestor detecta una copia local compatible, revisa la ruta antes de adoptarla.</li>
+          <li>Cuando termine el trabajo, abre <strong>Configurar</strong>. El formulario usa el esquema nativo del complemento y ofrece YAML avanzado. Guarda los cambios e inicia la aplicación.</li>
+          <li>Usa <strong>Logs de la aplicación</strong> para buscar, refrescar o descargar su salida. Si está en marcha y ofrece Ingress, <strong>Abrir interfaz web</strong> abre el panel nativo.</li>
+          <li>Sincroniza cuando haya cambios en Git. Revisa el changelog y selecciona <strong>Actualizar / reconstruir</strong> o <strong>Crear copia y actualizar</strong>. La sincronización programada solo descarga cambios.</li>
+        </ol>
+        <figure>
+          <a href="assets/revision.png"><img src="assets/revision.png" width="1280" height="800" loading="lazy" alt="Confirmación del gestor para adoptar una copia local, con versión y autorización explícita."></a>
+          <figcaption>Revisión de una carpeta local existente antes de adoptarla.</figcaption>
+        </figure>
+        <p><strong>Desinstalar</strong> retira la aplicación del Supervisor y conserva el código local. La desinstalación elimina datos internos y opciones, por lo que conviene hacer una copia antes. <strong>Desvincular</strong> conserva el código y retira el registro. <strong>Borrar aplicación</strong> también elimina el código de esa aplicación y permite ocultarla del catálogo.</p>
+      </section>
+
+      <section id="copias">
+        <h2>05 · Copias y recuperación en Home Assistant</h2>
+        <p>Desde <strong>Copias de seguridad</strong>, crea una copia nativa de la aplicación, restaura sus datos, descarga el archivo original, importa un <code>.tar</code> nativo de hasta 512 MiB o elimina una copia. La restauración reemplaza los datos de la aplicación elegida. Descargar o borrar afecta al archivo completo, incluso si contiene otras aplicaciones.</p>
+        <p>Programa copias locales con un intervalo entre 1 y 720 horas y una retención entre 1 y 30. Las copias programadas se guardan sin cifrar. Para una copia manual cifrada, conserva la contraseña fuera del gestor.</p>
+        <p>Consulta <strong>Registros y actividad</strong> para comprobar el resultado de cada trabajo. Si ves <strong>Recuperación pendiente</strong>, verifica primero el estado en Supervisor. Después revisa si debes restaurar la copia de código o aceptar la versión actual. La recuperación del código y la restauración de datos son operaciones distintas.</p>
+      </section>
+
+      <section id="yunohost">
+        <h2>06 · Administrar paquetes en YunoHost</h2>
+        <ol>
+          <li>Abre el gestor por HTTPS en el mismo dominio donde tienes una sesión de administrador en <code>/yunohost/admin/</code>.</li>
+          <li>Conecta y sincroniza un repositorio con un paquete nativo. Abre <strong>Instalar</strong> y completa las preguntas que define su manifiesto.</li>
+          <li>Al actualizar, elige la instancia y revisa el commit. YunoHost ejecuta los scripts con privilegios de administrador y mantiene su copia de seguridad habitual.</li>
+          <li><strong>Desinstalar</strong> ejecuta la desinstalación nativa de la instancia seleccionada sin solicitar purgar sus datos. Revisa el resultado y los registros en la administración de YunoHost.</li>
+        </ol>
+        <p>Los paquetes que piden cargar un archivo se instalan desde la administración nativa. Actualiza también el propio gestor desde YunoHost. Si se interrumpe la conexión, comprueba el estado real de la operación antes de repetirla.</p>
+        <p><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/YUNOHOST.md">Ver los comandos de instalación, actualización y mantenimiento</a></p>
+      </section>
+
+      <section id="problemas">
+        <h2>07 · Resolver problemas</h2>
+        <dl>
+          <dt>Slug duplicado</dt><dd>Si falla al sincronizar, busca dos manifiestos con el mismo slug en la rama descargada. Si solo falla al instalar, revisa también <code>/addons</code> en Home Assistant y sus copias de carpetas antiguas. Conserva el identificador del complemento instalado.</dd>
+          <dt>La carpeta local ya existe</dt><dd>Comprueba el manifiesto de <code>/addons/&lt;slug&gt;</code>. Si coincide, revisa y autoriza la adopción. Si pertenece a otro complemento, localiza el conflicto antes de mover archivos.</dd>
+          <dt>La huella SSH ha cambiado</dt><dd>Confirma con el administrador del servidor que se trata de una rotación prevista. Actualiza la identidad de confianza solo después de comparar la nueva huella.</dd>
+          <dt>La actualización del gestor no aparece</dt><dd>Actualiza el catálogo de Mis-app y verifica que la tienda muestra una versión superior. En YunoHost elige una etiqueta publicada al ejecutar la actualización.</dd>
+          <dt>Reinstalación y datos</dt><dd>Haz una copia del gestor. En Home Assistant sus datos están en <code>/config/private-git-manager</code>. En YunoHost la copia del gestor incluye las claves, credenciales, catálogos y actividad. Guarda las copias con acceso restringido.</dd>
+        </dl>
+      </section>
+
+      <section id="desarrollo">
+        <h2>08 · Mantener el código y este manual</h2>
+        <p>El manual es HTML y CSS estático. Su código y sus capturas viven en <code>docs/</code>. La guía de desarrollo explica qué módulos cambiar, qué contratos mantener y cómo reproducir las pruebas.</p>
+        <ul>
+          <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/CONTRIBUTING.md">Guía de desarrollo y validación</a></li>
+          <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/private_git_manager/DOCS.md">Documentación incluida en Home Assistant</a></li>
+          <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/PUBLISHING.md">Publicación de paquetes y GitHub Pages</a></li>
+          <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/README.en.md" hreflang="en">English documentation</a></li>
+        </ul>
+      </section>
+    </main>
+  </div>
+  <footer class="marco pie">
+    <p>Private Git Manager · Gente del Condado</p>
+    <a href="#contenido">Volver al inicio ↑</a>
+  </footer>
+</body>
+</html>

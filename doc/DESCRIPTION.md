@@ -1,0 +1,1 @@
+Connect private Git repositories using verified SSH or HTTPS. Review their documentation and manage native YunoHost applications through the browser’s YunoHost admin session. The portal supports Spanish and English.

@@ -1,5 +1,7 @@
 # Private Git Manager en YunoHost
 
+[Manual ilustrado](https://gente-del-condado.github.io/HA-Private-Git-Manager/#yunohost) · [Ayuda integrada en español](doc/ADMIN_es.md) · [English admin guide](doc/ADMIN.md)
+
 La edición de YunoHost permite crear claves SSH, verificar la huella del servidor, conectar repositorios privados por SSH o HTTPS, sincronizar ramas y etiquetas y consultar los README y catálogos detectados. También puedes revisar los cambios de cada sincronización y programar la descarga de cambios.
 
 Puedes conectar las mismas URLs de Forgejo, GitHub o Gitea en YunoHost y Home Assistant. Cada instalación mantiene su propio estado y claves. Registra la clave pública que genere YunoHost en los repositorios que quieras consultar.
@@ -22,7 +24,7 @@ Los paquetes con preguntas de carga de archivos requieren usar la administració
 Requiere YunoHost 12.1.17 o posterior y arquitectura amd64 o arm64. Desde la terminal de tu servidor, ejecuta:
 
 ```sh
-sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.14.0
+sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.14.1
 ```
 
 Elige el dominio y la ruta. La propuesta es `/private-git`. Abre **Private Git Manager** desde el portal de YunoHost. El permiso inicial corresponde al grupo **admins**. Puedes revisar el grupo autorizado en **Usuarios → Grupos y permisos**.
@@ -40,3 +42,10 @@ sudo yunohost app upgrade privategit -u https://github.com/Gente-del-Condado/HA-
 Sustituye `ETIQUETA` por la versión nueva y usa el identificador real si instalaste más de una instancia.
 
 La edición de Home Assistant se publica por separado en Mis-app.
+
+## Diagnóstico rápido
+
+- Si la sesión ha caducado, abre la administración de YunoHost en el mismo dominio por HTTPS, inicia sesión y vuelve al gestor.
+- Si no aparecen las operaciones nativas, comprueba que el manifiesto de formato 2 y los scripts están en la raíz de la rama sincronizada.
+- Si el portal no responde, revisa el estado de la aplicación en la administración y los registros del servicio. Desde terminal puedes usar `sudo journalctl -u privategit -n 100 --no-pager`, adaptando el identificador a tu instancia.
+- Si el resultado de una operación es incierto, comprueba las aplicaciones instaladas y los registros de YunoHost antes de volver a confirmar.

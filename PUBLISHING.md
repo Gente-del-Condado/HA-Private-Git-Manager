@@ -43,3 +43,24 @@ la política de publicación.
 
 La app se construye en Home Assistant desde su `Dockerfile` para `amd64` o
 `aarch64`. Esta publicación copia código; no genera imágenes precompiladas.
+
+Para generar el archivo de instalación local, ejecuta `python3 scripts/package.py`
+y verifica el SHA-256 que acompaña al archivo de `dist/`. El contenido parte de
+una lista explícita y excluye datos de ejecución.
+
+## Manual en GitHub Pages
+
+En el repositorio de código, abre **Settings → Pages → Build and deployment**
+y elige **GitHub Actions** como origen. Luego ejecuta **Publicar el manual en
+GitHub Pages** desde Actions. Los siguientes cambios en `docs/` publicados a
+`main` activan el mismo flujo. El artefacto contiene solo el manual estático.
+
+La URL prevista es [gente-del-condado.github.io/HA-Private-Git-Manager](https://gente-del-condado.github.io/HA-Private-Git-Manager/).
+Comprueba que la ejecución terminó y abre el enlace de su despliegue.
+
+## YunoHost
+
+El paquete se instala desde la raíz de una etiqueta de Git. Coordina
+`manifest.toml`, la versión de la aplicación y el changelog. Las notas que
+aparecen en la administración de YunoHost están en `doc/`. Revisa los
+comandos de instalación y actualización en [YUNOHOST.md](YUNOHOST.md).
