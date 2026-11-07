@@ -2,7 +2,7 @@
 
 [Subir a Forgejo](FORGEJO.md)
 
-**Versión 0.11.1 · Español / English · Aplicación nativa de Home Assistant OS**
+**Versión 0.12.0 · Español / English · Aplicación nativa de Home Assistant OS**
 
 Gestor privado de repositorios Git y aplicaciones locales. Genera claves SSH, verifica servidores, descarga código de GitHub, Forgejo o Gitea y solicita la instalación o actualización al Supervisor. La interfaz se abre dentro de Home Assistant mediante **Ingress**, sin publicar puertos del host.
 
@@ -47,19 +47,19 @@ La carpeta de la app se publica automáticamente con GitHub Actions al actualiza
 4. Abre **Ajustes → Aplicaciones → Tienda → Aplicaciones locales → HA Private Git Manager**. Activa el modo avanzado de tu perfil si hace falta para ver aplicaciones locales.
 5. Instala, inicia y pulsa **Abrir interfaz web**. Puedes activar su entrada del panel lateral.
 
-La construcción inicial requiere Internet. El gestor utiliza el rol `manager`, acceso de escritura a aplicaciones locales y su carpeta privada `/data`. Su panel está reservado a administradores. No requiere abrir SSH ni otro puerto del gestor en el host, desactivar el modo de protección ni montar `/config`.
+La construcción inicial requiere Internet. El gestor utiliza el rol `manager`, acceso de escritura a aplicaciones locales y su carpeta de configuración dedicada. Su panel está reservado a administradores. No requiere abrir SSH ni otro puerto del gestor en el host, desactivar el modo de protección ni montar la configuración general de Home Assistant.
 
 ### Actualizar desde la versión 0.1.0
 
-Detén el gestor desde Home Assistant, reemplaza **solo sus archivos de programa** en `/addons/private_git_manager` por los de esta versión y reconstruye:
+Detén el gestor desde Home Assistant, reemplaza **solo sus archivos de programa** en `/addons/private_git_manager` por los de esta versión y actualiza:
 
 ```sh
 ha addons reload
-ha addons rebuild local_private_git_manager
+ha addons update local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Conserva su `/data`: los registros existentes de claves, repositorios y despliegues se migran al arrancar. Realiza una copia de seguridad de la aplicación antes de reemplazarla. Si tu instalación asignó otro identificador, utiliza el mostrado por `ha addons list`.
+Conserva la instalación y su almacenamiento: los registros existentes de claves, repositorios y despliegues se migran al arrancar. Realiza una copia de seguridad de la aplicación antes de reemplazarla. Si tu instalación asignó otro identificador, utiliza el mostrado por `ha addons list`.
 
 ## Repositorios individuales y catálogos maestros privados
 
@@ -107,15 +107,17 @@ Si ya estaba instalada como aplicación local, se actualiza/reconstruye en vez d
 
 ### Aplicar la corrección a un gestor instalado localmente
 
-Detén HA Private Git Manager, extrae el paquete **0.11.1** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
+Detén HA Private Git Manager, extrae el paquete **0.12.0** y reemplaza los archivos de `/addons/private_git_manager` con la carpeta del mismo nombre del paquete. Conserva sus datos persistentes. Después ejecuta en una terminal de Home Assistant:
 
 ```sh
 ha addons reload
-ha addons rebuild local_private_git_manager
+ha addons update local_private_git_manager
 ha addons start local_private_git_manager
 ```
 
-Si lo instalaste desde un repositorio de la tienda, recarga la tienda y actualiza el gestor a **0.11.1** desde su ficha. Usa el identificador real mostrado por `ha addons list` si es distinto del ejemplo local.
+Si lo instalaste desde la tienda, recarga el catálogo y actualiza desde la ficha de la aplicación instalada. Si el botón no inicia la operación, prueba desde la terminal de Home Assistant con `ha apps list`, `ha apps info IDENTIFICADOR` y `ha apps update IDENTIFICADOR --backup`. En versiones antiguas de la CLI, usa `ha addons`. Conserva el identificador de la instalación para que el Supervisor mantenga su almacenamiento. El registro del Supervisor muestra el motivo si la actualización falla.
+
+La primera vez que arranca la 0.12.0, el gestor copia las claves, repositorios y estado de `/data` a `/config/private-git-manager` dentro de su carpeta de configuración dedicada. Actualiza antes de desinstalar una versión anterior. Desde la 0.12.0, Home Assistant conserva esa carpeta si dejas desmarcada la opción de borrarla y reinstalas la misma aplicación. La carpeta incluye credenciales y debe mantenerse con acceso restringido. Si ya perdiste los datos con una versión anterior, necesitas una copia de seguridad que los contenga.
 
 ## Primer repositorio de Forgejo
 
@@ -262,11 +264,11 @@ El borrado se ejecuta en segundo plano y comprueba el resultado. Si no se puede 
 
 | Ruta | Contenido |
 | --- | --- |
-| `/data/keys` | Claves privadas y públicas |
-| `/data/repos` | Copias de trabajo privadas |
-| `/data/state.json` | Metadatos, tokens y diario de recuperación |
-| `/data/jobs.json` | Trabajos y errores persistentes |
-| `/data/manager.log` | Registro JSONL; rotación a 1 MiB con tres copias anteriores |
+| `/config/private-git-manager/keys` | Claves privadas y públicas |
+| `/config/private-git-manager/repos` | Copias de trabajo privadas |
+| `/config/private-git-manager/state.json` | Metadatos, tokens y diario de recuperación |
+| `/config/private-git-manager/jobs.json` | Trabajos y errores persistentes |
+| `/config/private-git-manager/manager.log` | Registro JSONL; rotación a 1 MiB con tres copias anteriores |
 
 Las carpetas privadas utilizan permisos `0700`; los archivos de estado, claves privadas, trabajos y registros, `0600`. Los tokens no se devuelven por la API, no se guardan en la configuración Git y no se incorporan a mensajes de procesos. La autenticación HTTPS utiliza `GIT_ASKPASS`.
 
@@ -289,7 +291,7 @@ Abre `http://127.0.0.1:8099`. En desarrollo se permiten claves, repositorios y d
 ```sh
 .venv/bin/python -m pytest -q
 node --check private_git_manager/app/static/app.js
-podman build --format docker -t localhost/ha-private-git-manager:0.11.1 private_git_manager
+podman build --format docker -t localhost/ha-private-git-manager:0.12.0 private_git_manager
 scripts/container-smoke.sh
 python3 scripts/package.py
 ```
