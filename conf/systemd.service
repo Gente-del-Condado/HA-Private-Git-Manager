@@ -13,7 +13,8 @@ Environment="PGM_ADDONS=__DATA_DIR__/local-catalog"
 Environment="PYTHONDONTWRITEBYTECODE=1"
 Environment="PYTHONUNBUFFERED=1"
 RuntimeDirectory=__APP__
-RuntimeDirectoryMode=0700
+# El bit de grupo permite que systemd conserve la máscara de la ACL de www-data.
+RuntimeDirectoryMode=0710
 UMask=0077
 ExecStartPre=/usr/bin/setfacl -m u:www-data:--x /run/__APP__
 ExecStart=__INSTALL_DIR__/venv/bin/python -m uvicorn app.main:app --uds /run/__APP__/http.sock --no-proxy-headers --no-access-log

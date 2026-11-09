@@ -5,7 +5,7 @@ ynh_restore "$install_dir"
 ynh_restore "$data_dir"
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_restore "/etc/systemd/system/$app.service"
-chown -R root:"$app" "$install_dir"
+chown -hR root:"$app" "$install_dir"
 chown -hR "$app:$app" "$data_dir"
 chmod 0700 "$data_dir"
 systemctl daemon-reload

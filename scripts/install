@@ -2,7 +2,7 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-ynh_script_progression "Installing Private Git Manager..."
+ynh_script_progression "Instalando Private Git Manager…"
 chown -hR "$app:$app" "$data_dir"
 chmod 0700 "$data_dir"
 install_private_git

@@ -16,6 +16,8 @@ def test_native_actions_from_portal_subpath(adoption_server):
     stage = {"id": "a" * 32, "path": "/home/yunohost.app/privategit/staging", "package": package}
     native_mutations, preparations = [], []
     authenticated = False
+    requirement_error = conditional = False
+    native_status = 200
 
     with playwright.sync_playwright() as runtime:
         browser = runtime.chromium.launch(executable_path=executable, headless=True)
@@ -51,13 +53,22 @@ def test_native_actions_from_portal_subpath(adoption_server):
                         json={
                             **package,
                             "integration": {"multi_instance": True},
+                            "requirements": {
+                                "arch": {
+                                    "passed": not requirement_error,
+                                    "error": "Arquitectura incompatible",
+                                }
+                            },
                             "install": [
                                 {
                                     "id": "domain",
                                     "type": "domain",
                                     "ask": "Domain",
+                                    "help": "Elige el dominio",
+                                    "visible": "other == 'yes'" if conditional else True,
                                     "choices": {"site.example": "site.example"},
-                                }
+                                },
+                                {"id": "hidden_file", "type": "file", "visible": False},
                             ],
                         }
                     )
@@ -75,7 +86,7 @@ def test_native_actions_from_portal_subpath(adoption_server):
                     native_mutations.append(
                         (request.method, parsed.path, parse_qs(request.post_data or ""))
                     )
-                    route.fulfill(json={})
+                    route.fulfill(status=native_status, json={})
 
             page.route(url + "private-git/**", portal)
             page.route(url + "yunohost/api/**", native)
@@ -89,7 +100,10 @@ def test_native_actions_from_portal_subpath(adoption_server):
             authenticated = True
             row.get_by_role("button", name="Instalar", exact=True).click()
             playwright.expect(dialog.get_by_role("button", name="Cancelar")).to_be_focused()
-            dialog.get_by_label("Domain").select_option("site.example")
+            domain = dialog.get_by_label("Domain")
+            playwright.expect(domain).to_have_accessible_description("Elige el dominio")
+            assert dialog.locator('[name="arg:hidden_file"]').count() == 0
+            domain.select_option("site.example")
             dialog.get_by_role("button", name="Instalar", exact=True).click()
             assert not native_mutations
             dialog.get_by_role("checkbox").check()
@@ -118,5 +132,27 @@ def test_native_actions_from_portal_subpath(adoption_server):
                 ("PUT", "/yunohost/api/apps/testapp__2/upgrade", {"file": [stage["path"]]}),
                 ("DELETE", "/yunohost/api/apps/testapp__2", {}),
             ]
+            requirement_error = True
+            row.get_by_role("button", name="Instalar", exact=True).click()
+            playwright.expect(dialog).to_contain_text("Arquitectura incompatible")
+            assert len(native_mutations) == 3
+            dialog.locator("#modal-actions").get_by_role("button", name="Cerrar").click()
+
+            requirement_error = False
+            conditional = True
+            row.get_by_role("button", name="Instalar", exact=True).click()
+            playwright.expect(dialog).to_contain_text("preguntas condicionales")
+            assert len(native_mutations) == 3
+            dialog.locator("#modal-actions").get_by_role("button", name="Cerrar").click()
+
+            native_status = 504
+            row.get_by_role("button", name="Actualizar", exact=True).click()
+            dialog.get_by_label("Instancia instalada").select_option("testapp__2")
+            dialog.get_by_role("checkbox").check()
+            submit = dialog.get_by_role("button", name="Actualizar", exact=True)
+            submit.click()
+            playwright.expect(dialog).to_contain_text("No se pudo confirmar el resultado")
+            playwright.expect(submit).to_be_disabled()
+            assert len(native_mutations) == 4
         finally:
             browser.close()

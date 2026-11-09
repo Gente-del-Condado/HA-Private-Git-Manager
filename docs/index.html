@@ -65,7 +65,7 @@
         <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
         <h3>YunoHost</h3>
         <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
-        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.2</code></pre>
+        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.3</code></pre>
       </section>
 
       <section id="conectar">
@@ -177,8 +177,8 @@ sha256sum backup.tar</code></pre>
           <li>Al actualizar, elige la instancia y revisa el commit. YunoHost ejecuta los scripts con privilegios de administrador y mantiene su copia de seguridad habitual.</li>
           <li><strong>Desinstalar</strong> ejecuta la desinstalación nativa de la instancia seleccionada sin solicitar purgar sus datos. Revisa el resultado y los registros en la administración de YunoHost.</li>
         </ol>
-        <p>Los paquetes que piden cargar un archivo se instalan desde la administración nativa. Actualiza también el propio gestor desde YunoHost. Si se interrumpe la conexión, comprueba el estado real de la operación antes de repetirla.</p>
-        <p><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/YUNOHOST.md">Ver los comandos de instalación, actualización y mantenimiento</a></p>
+        <p>Usa el instalador nativo para los paquetes con preguntas condicionales o de carga de archivos. El gestor avisa si YunoHost detecta un requisito incumplido. Actualiza también el propio gestor desde YunoHost. Si se interrumpe la conexión, comprueba el estado real de la operación antes de repetirla.</p>
+        <p><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/YUNOHOST.md">Ver los comandos de instalación, cambio de URL, copia y restauración</a></p>
       </section>
 
       <section id="problemas">

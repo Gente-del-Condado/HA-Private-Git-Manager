@@ -44,7 +44,7 @@ def native_repo(tmp_path, monkeypatch):
     source = manager.data / "repos" / repo_id
     source.mkdir()
     (source / "manifest.toml").write_text(
-        'packaging_format = 2\nid = "2fauth"\nname = "Private package"\nversion = "1.0~ynh1"\n'
+        'packaging_format = 2\nid = "2fa_auth"\nname = "Private package"\nversion = "1.0~ynh1"\n'
     )
     (source / ".gitignore").write_text("local-secret\n")
     (source / "scripts").mkdir()
@@ -90,7 +90,7 @@ async def test_native_package_is_pinned_and_clean(native_repo):
     ) as client:
         state = (await client.get("/api/state")).json()
         assert state["repos"][repo_id]["yunohost_package"] == {
-            "id": "2fauth",
+            "id": "2fa_auth",
             "name": "Private package",
             "version": "1.0~ynh1",
         }

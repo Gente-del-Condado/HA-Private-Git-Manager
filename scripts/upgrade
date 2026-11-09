@@ -2,6 +2,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-ynh_script_progression "Installing Private Git Manager..."
+ynh_script_progression "Actualizando Private Git Manager…"
 ynh_systemctl --service="$app" --action=stop
 install_private_git
