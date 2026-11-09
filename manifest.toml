@@ -3,7 +3,7 @@ id = "privategit"
 name = "Private Git Manager"
 description.en = "Install and manage YunoHost apps from private Git repositories."
 description.es = "Instala y administra aplicaciones de YunoHost desde repositorios Git privados."
-version = "0.15.1~ynh1"
+version = "0.15.2~ynh1"
 maintainers = ["wolfbelmi88"]
 
 [upstream]

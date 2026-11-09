@@ -25,7 +25,8 @@
         <li><a href="#conectar">Conectar Git privado</a></li>
         <li><a href="#catalogos">Paquetes y catálogos</a></li>
         <li><a href="#home-assistant">Operar en Home Assistant</a></li>
-        <li><a href="#copias">Copias y recuperación</a></li>
+        <li><a href="#componentes">Componentes de Core</a></li>
+        <li><a href="#copias">Copias por aplicación</a></li>
         <li><a href="#copias-forgejo">Copias completas en Forgejo</a></li>
         <li><a href="#yunohost">Operar en YunoHost</a></li>
         <li><a href="#problemas">Resolver problemas</a></li>
@@ -48,6 +49,13 @@
 
       <section id="empezar">
         <h2>01 · Instalar el gestor</h2>
+        <h3>Qué repositorio usar</h3>
+        <dl>
+          <dt>Mis-app</dt><dd>Tienda desde la que instalas el gestor en Home Assistant OS.</dd>
+          <dt>Mis-component</dt><dd>Catálogo privado que conectas dentro del gestor para instalar integraciones como Forgejo Backup.</dd>
+          <dt>Tu repositorio de copias</dt><dd>Destino privado donde Forgejo Backup guarda los archivos cifrados.</dd>
+          <dt>HA-Private-Git-Manager</dt><dd>Repositorio de código fuente y documentación del proyecto.</dd>
+        </dl>
         <h3>Home Assistant OS</h3>
         <ol>
           <li>Añade <a href="https://github.com/Gente-del-Condado/Mis-app">Mis-app</a> como repositorio de la tienda de aplicaciones.</li>
@@ -57,7 +65,7 @@
         <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
         <h3>YunoHost</h3>
         <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
-        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.1</code></pre>
+        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.2</code></pre>
       </section>
 
       <section id="conectar">
@@ -110,32 +118,49 @@
         <p><strong>Desinstalar</strong> retira la aplicación del Supervisor y conserva el código local. La desinstalación elimina datos internos y opciones, por lo que conviene hacer una copia antes. <strong>Desvincular</strong> conserva el código y retira el registro. <strong>Borrar aplicación</strong> también elimina el código de esa aplicación y permite ocultarla del catálogo.</p>
       </section>
 
+      <section id="componentes">
+        <h2>05 · Instalar y actualizar componentes de Core</h2>
+        <ol>
+          <li>En <strong>Repositorios</strong>, añade Mis-component por SSH, con una clave de despliegue de lectura, y sincroniza <code>main</code>. Copia la URL SSH de tu catálogo en <a href="https://gentedelcondado.es/forgejo/wolfbelmi88/Mis-component">Forgejo</a> o <a href="https://github.com/Gente-del-Condado/Mis-component">GitHub</a>.</li>
+          <li>Abre <strong>Componentes</strong>. Busca por nombre, dominio o repositorio. La ficha muestra la versión del catálogo, la versión en disco, el README y el estado.</li>
+          <li>Pulsa <strong>Instalar integración</strong> o <strong>Actualizar integración</strong>, revisa el commit y confirma. Espera a que termine y reinicia Home Assistant Core. Si es la primera instalación, da de alta la integración en <strong>Ajustes → Dispositivos y servicios</strong>.</li>
+        </ol>
+        <p>Para publicar una integración propia, coloca <code>manifest.json</code> y <code>__init__.py</code> en <code>custom_components/&lt;dominio&gt;/</code>. El dominio del manifiesto debe coincidir con la carpeta. Instala código Python solo de repositorios y commits de confianza.</p>
+      </section>
+
       <section id="copias">
-        <h2>05 · Copias y recuperación en Home Assistant</h2>
+        <h2>06 · Copias y recuperación en Home Assistant</h2>
         <p>Desde <strong>Copias de seguridad</strong>, crea una copia nativa de la aplicación, restaura sus datos, descarga el archivo original, importa un <code>.tar</code> nativo de hasta 512 MiB o elimina una copia. La restauración reemplaza los datos de la aplicación elegida. Descargar o borrar afecta al archivo completo, incluso si contiene otras aplicaciones.</p>
         <p>Programa copias locales con un intervalo entre 1 y 720 horas y una retención entre 1 y 30. Las copias programadas se guardan sin cifrar. Para una copia manual cifrada, conserva la contraseña fuera del gestor.</p>
         <p>Consulta <strong>Registros y actividad</strong> para comprobar el resultado de cada trabajo. Si ves <strong>Recuperación pendiente</strong>, verifica primero el estado en Supervisor. Después revisa si debes restaurar la copia de código o aceptar la versión actual. La recuperación del código y la restauración de datos son operaciones distintas.</p>
       </section>
 
       <section id="copias-forgejo">
-        <h2>06 · Copias completas de Home Assistant en Forgejo</h2>
-        <p>Private Git Manager · Forgejo Backup es una integración complementaria. Añade un repositorio Forgejo privado como ubicación en <strong>Ajustes → Sistema → Copias de seguridad</strong>. Home Assistant programa, cifra y restaura las copias con sus herramientas nativas.</p>
+        <h2>07 · Copias completas de Home Assistant en Forgejo</h2>
+        <p><img class="icono-integracion" src="assets/forgejo-backup.svg" width="32" height="32" alt=""> <strong>Forgejo Backup</strong> añade Forgejo como ubicación de las copias nativas de Home Assistant. Core programa, cifra y restaura las copias.</p>
+        <h3>Configurar el destino de copias</h3>
         <ol>
-          <li>Conecta y sincroniza el repositorio de Private Git Manager en el panel. En <strong>Componentes</strong>, pulsa <strong>Instalar integración</strong> en Forgejo Backup, revisa el commit y confirma. Reinicia Home Assistant Core cuando termine el trabajo.</li>
-          <li>Añade la integración en <strong>Dispositivos y servicios</strong> e introduce la URL de clonación SSH del repositorio privado dedicado a copias.</li>
-          <li>Añade la clave pública generada como clave de despliegue con escritura. Compara la huella SSH del servidor con la que te facilite su administrador por un canal de confianza.</li>
-          <li>Selecciona Forgejo como ubicación de las copias automáticas, activa el cifrado y elige las aplicaciones y carpetas que quieras incluir. Guarda el kit de emergencia fuera del equipo.</li>
+          <li>Instala Forgejo Backup desde <a href="#componentes">Componentes</a> y reinicia Core. Crea en Forgejo un repositorio privado dedicado a copias. Puedes dejarlo vacío.</li>
+          <li>En <strong>Ajustes → Dispositivos y servicios</strong>, añade <strong>Private Git Manager · Forgejo Backup</strong> e introduce la URL SSH del repositorio de copias.</li>
+          <li>Añade la clave pública que muestra el asistente como clave de despliegue con escritura. Verifica la huella del servidor por un canal de confianza.</li>
+          <li>En <strong>Ajustes → Sistema → Copias de seguridad</strong>, selecciona Forgejo como ubicación, activa el cifrado y elige qué incluir. Guarda el kit de emergencia fuera del equipo.</li>
         </ol>
-        <h3>Actualizar integraciones desde el gestor</h3>
-        <p>El gestor detecta paquetes con <code>custom_components/&lt;dominio&gt;/manifest.json</code> y <code>__init__.py</code> en repositorios sincronizados. Pulsa <strong>Actualizar integración</strong>, revisa el commit y reinicia Core al terminar. La configuración que ya creaste en Home Assistant se conserva.</p>
-        <p>Las integraciones ejecutan código Python dentro de Core. Instala solo commits de confianza. Supervisor concede a la aplicación acceso de escritura a la configuración de Core y el instalador usa la carpeta <code>custom_components</code>.</p>
-        <h3>Recuperar el sistema</h3>
-        <p>Puedes restaurar directamente desde la ubicación Forgejo cuando esté configurada. Para restaurar en otra instalación, descarga el <code>.tar</code> cifrado e impórtalo en Home Assistant. Introduce la clave del kit de emergencia y selecciona las aplicaciones y carpetas que quieras restaurar. Si el equipo original no arranca, la guía incluye los comandos para recuperar el archivo directamente desde Forgejo.</p>
-        <p><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/FORGEJO_BACKUPS.md">Instalación y recuperación de copias en Forgejo</a></p>
+        <h3>Encontrar y descargar una copia en la web</h3>
+        <p>Forgejo Backup crea un README si el destino carece de ramas. La integración actualiza el apartado <strong>Copias recientes</strong> al subir o borrar una copia. Muestra las 20 últimas, con fecha UTC, nombre y tamaño. Si el repositorio tiene un README propio, consulta las etiquetas <code>pgm-meta-*</code> y <code>pgm-data-*</code> desde <strong>Código → Etiquetas</strong>.</p>
+        <ol>
+          <li>Abre <strong>Ficha</strong> y anota el <code>sha256</code>. Descarga el ZIP de esa misma fila y extráelo en una carpeta nueva.</li>
+          <li>En la carpeta que contiene los archivos <code>part-000000</code>, <code>part-000001</code>, etc., ejecuta estos comandos y compara la huella con la ficha.
+            <pre><code>LC_ALL=C cat part-* &gt; backup.tar
+sha256sum backup.tar</code></pre>
+          </li>
+          <li>Importa <code>backup.tar</code> en Home Assistant y usa la clave del kit de emergencia para restaurar.</li>
+        </ol>
+        <p>Si Home Assistant sigue operativo y tiene configurada la ubicación Forgejo, también puedes descargar o restaurar la copia desde su lista nativa de copias de seguridad.</p>
+        <p><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/FORGEJO_BACKUPS.md">Guía de instalación, recuperación por SSH y diagnóstico de Forgejo Backup</a></p>
       </section>
 
       <section id="yunohost">
-        <h2>07 · Administrar paquetes en YunoHost</h2>
+        <h2>08 · Administrar paquetes en YunoHost</h2>
         <ol>
           <li>Abre el gestor por HTTPS en el mismo dominio donde tienes una sesión de administrador en <code>/yunohost/admin/</code>.</li>
           <li>Conecta y sincroniza un repositorio con un paquete nativo. Abre <strong>Instalar</strong> y completa las preguntas que define su manifiesto.</li>
@@ -147,24 +172,26 @@
       </section>
 
       <section id="problemas">
-        <h2>08 · Resolver problemas</h2>
+        <h2>09 · Resolver problemas</h2>
         <dl>
           <dt>Slug duplicado</dt><dd>Si falla al sincronizar, busca dos manifiestos con el mismo slug en la rama descargada. Si solo falla al instalar, revisa también <code>/addons</code> en Home Assistant y sus copias de carpetas antiguas. Conserva el identificador del complemento instalado.</dd>
           <dt>La carpeta local ya existe</dt><dd>Comprueba el manifiesto de <code>/addons/&lt;slug&gt;</code>. Si coincide, revisa y autoriza la adopción. Si pertenece a otro complemento, localiza el conflicto antes de mover archivos.</dd>
           <dt>La huella SSH ha cambiado</dt><dd>Confirma con el administrador del servidor que se trata de una rotación prevista. Actualiza la identidad de confianza solo después de comparar la nueva huella.</dd>
           <dt>La actualización del gestor no aparece</dt><dd>Actualiza el catálogo de Mis-app y verifica que la tienda muestra una versión superior. En YunoHost elige una etiqueta publicada al ejecutar la actualización.</dd>
+          <dt>Forgejo Backup no aparece en Componentes</dt><dd>Comprueba que usas Home Assistant OS y que has sincronizado Mis-component. Si el componente está en disco pero falta en Dispositivos y servicios, reinicia Core.</dd>
+          <dt>El README no muestra la última copia</dt><dd>Confirma que la copia figura en la ubicación Forgejo en Home Assistant. El índice se actualiza al subir o borrar copias en un README gestionado. Las etiquetas permiten acceder a ellas si el índice no está disponible.</dd>
           <dt>Reinstalación y datos</dt><dd>Haz una copia del gestor. En Home Assistant sus datos están en <code>/config/private-git-manager</code>. En YunoHost la copia del gestor incluye las claves, credenciales, catálogos y actividad. Guarda las copias con acceso restringido.</dd>
         </dl>
       </section>
 
       <section id="desarrollo">
-        <h2>09 · Mantener el código y este manual</h2>
+        <h2>10 · Mantener el código y este manual</h2>
         <p>El manual es HTML y CSS estático. Su código y sus capturas viven en <code>docs/</code>. La guía de desarrollo explica qué módulos cambiar, qué contratos mantener y cómo reproducir las pruebas.</p>
         <ul>
           <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/CONTRIBUTING.md">Guía de desarrollo y validación</a></li>
           <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/private_git_manager/DOCS.md">Documentación incluida en Home Assistant</a></li>
           <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/PUBLISHING.md">Publicación de paquetes y GitHub Pages</a></li>
-          <li><a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/README.en.md" hreflang="en">English documentation</a></li>
+          <li><a href="https://gentedelcondado.es/forgejo/wolfbelmi88/HA-Private-Git-Manager">Código fuente en Forgejo</a></li>
         </ul>
       </section>
     </main>

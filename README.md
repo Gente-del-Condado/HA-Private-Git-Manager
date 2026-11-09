@@ -1,10 +1,12 @@
 # Private Git Manager
 
+![Icono de Private Git Manager](icon.png)
+
 Gestiona repositorios Git privados y aplicaciones nativas de **Home Assistant OS** o **YunoHost**. El gestor sincroniza por SSH o HTTPS, muestra README y catálogos privados, y permite revisar el commit antes de aplicar cambios.
 
 - [Manual web ilustrado](https://gente-del-condado.github.io/HA-Private-Git-Manager/) · [fuente del manual](docs/index.html)
 - [Documentación de Home Assistant](private_git_manager/DOCS.md) · [Documentación de YunoHost](YUNOHOST.md)
-- [Conectar Forgejo](FORGEJO.md) · [English](README.en.md)
+- [Conectar Forgejo](FORGEJO.md) · [Copias completas en Forgejo](FORGEJO_BACKUPS.md)
 
 ## Instalar
 
@@ -21,7 +23,11 @@ Gestiona repositorios Git privados y aplicaciones nativas de **Home Assistant OS
 
 Home Assistant ofrece configuración, logs, Ingress y copias nativas por aplicación. En YunoHost las operaciones de instalación, actualización y desinstalación usan la sesión nativa de administración.
 
-Para guardar copias completas cifradas en un repositorio privado, instala la [integración complementaria de copias para Forgejo](FORGEJO_BACKUPS.md).
+## Componentes y copias completas
+
+En Home Assistant OS, añade **Mis-component** por SSH dentro del gestor y sincroniza la rama `main`. En **Componentes** puedes instalar o actualizar integraciones de Core y revisar el commit. Reinicia Core después de aplicar un cambio. El catálogo está disponible en [GitHub](https://github.com/Gente-del-Condado/Mis-component) y [Forgejo](https://gentedelcondado.es/forgejo/wolfbelmi88/Mis-component).
+
+**Forgejo Backup** añade un destino privado para las copias cifradas de Home Assistant. El repositorio de copias usa una clave propia con escritura. El README automático enlaza las últimas copias y sus descargas. Consulta la [guía de instalación y recuperación](FORGEJO_BACKUPS.md).
 
 ## Mantener el proyecto
 

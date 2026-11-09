@@ -1,10 +1,12 @@
 # Copias nativas de Home Assistant en Forgejo
 
+![Icono de Forgejo Backup](custom_components/pgm_forgejo_backup/brand/icon.png)
+
 **Private Git Manager · Forgejo Backup** es una integración complementaria del proyecto. Registra un destino en **Ajustes → Sistema → Copias de seguridad**. Home Assistant crea, cifra y restaura los archivos. El módulo los guarda en un repositorio Forgejo privado usando Git por SSH.
 
 ## Instalar y conectar
 
-1. En Private Git Manager 0.15.0 o posterior, añade y sincroniza el repositorio que contiene este código. Busca **Forgejo Backup** en **Componentes** (o en la ficha del repositorio en la versión 0.15.0) y pulsa **Instalar integración**, revisa el commit y espera el resultado del trabajo. Reinicia Core. Para una instalación manual, copia `custom_components/pgm_forgejo_backup` a `/config/custom_components/`. Usa Home Assistant 2026.11 o posterior con Git y OpenSSH en Core.
+1. En Private Git Manager 0.15.0 o posterior, añade por SSH y sincroniza la rama `main` de **Mis-component** en [Forgejo](https://gentedelcondado.es/forgejo/wolfbelmi88/Mis-component) o [GitHub](https://github.com/Gente-del-Condado/Mis-component). El catálogo usa una clave de despliegue de lectura. Busca **Forgejo Backup** en **Componentes** (o en la ficha del repositorio en la versión 0.15.0) y pulsa **Instalar integración**, revisa el commit y espera el resultado del trabajo. Reinicia Core. Para una instalación manual, copia `custom_components/pgm_forgejo_backup` a `/config/custom_components/`. Usa Home Assistant 2026.11 o posterior con Git y OpenSSH en Core.
 2. Crea un repositorio **privado y dedicado a copias** en Forgejo. Puedes dejarlo vacío. Forgejo Backup 0.1.1 o posterior crea la rama `main` y un README al subir la primera copia si el repositorio carece de ramas. La misma inicialización se aplica en la próxima subida a repositorios que solo tienen etiquetas de copias. Si ya hay una rama, se conserva. Copia la URL SSH de clonación, por ejemplo `ssh://git@forgejo.example.org:2222/equipo/copias.git`.
 3. En **Ajustes → Dispositivos y servicios → Añadir integración**, busca **Private Git Manager · Forgejo Backup** e introduce la URL.
 4. Añade la clave pública que muestra el asistente en **Ajustes del repositorio → Claves de despliegue**, con permiso de escritura. La clave es exclusiva de este destino. Conserva las claves de lectura del gestor para los repositorios de aplicaciones.
@@ -49,11 +51,17 @@ git fetch --no-tags --depth=1 origin "refs/tags/pgm-meta-$id"
 git show FETCH_HEAD:metadata.json
 git fetch --no-tags --depth=1 origin "refs/tags/pgm-data-$id"
 git archive FETCH_HEAD | tar -xf -
-cat part-* > backup.tar
+LC_ALL=C cat part-* > backup.tar
 sha256sum backup.tar
 ```
 
 Ejecuta estos pasos en una carpeta de trabajo nueva y compara el SHA-256 con el campo `sha256` de los metadatos antes de importar el archivo. La copia se restaura desde el asistente nativo de Home Assistant.
+
+## Resolver problemas
+
+- **La copia se subió pero falta en el README.** El índice se refresca al subir o borrar copias. Solo actualiza el README creado por Forgejo Backup. Usa **Código → Etiquetas** para encontrar la ficha y los datos si tienes un README propio o si la copia queda fuera de las 20 recientes.
+- **Forgejo rechaza la subida.** Comprueba el permiso de escritura de la clave de despliegue, la huella registrada y el espacio disponible. Consulta los registros de Home Assistant para ver el error concreto.
+- **Home Assistant no acepta el archivo.** Comprueba que importas el `.tar` reconstruido, que el SHA-256 coincide y que la clave de emergencia corresponde a esa copia.
 
 ## Almacenamiento y mantenimiento
 

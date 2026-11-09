@@ -1,58 +1,26 @@
-# Subir el proyecto a Forgejo
+# Conectar Forgejo con Private Git Manager
 
-El proyecto ya es un repositorio Git local con rama `main`, commit inicial y etiqueta `v0.2.0`. No se ha creado ningun repositorio remoto ni se ha subido contenido.
-
-## 1. Crear un repositorio vacio
-
-En tu Forgejo crea un repositorio llamado, por ejemplo, **HA-Private-Git-Manager**. Elige su visibilidad y deja desmarcadas las opciones de inicializar con README, licencia o `.gitignore`, porque esos archivos e historial ya estan en tu copia local.
-
-Copia la URL SSH que te muestre Forgejo. Puede tener esta forma, si ese es el nombre y propietario que elegiste:
+Usa la URL **SSH** del botón **Clonar** del repositorio. Si el servidor usa un puerto personalizado, conserva el usuario, puerto y ruta indicados por Forgejo.
 
 ```text
-ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/HA-Private-Git-Manager.git
+ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/Mis-component.git
 ```
 
-Usa la URL real de tu repositorio. No introduzcas tokens ni claves privadas en ella.
+## Conectar un catálogo
 
-## 2. Configurar el remoto y subir
+1. Abre **Claves SSH** en Private Git Manager y crea una clave Ed25519.
+2. Copia su parte pública y añádela en **Ajustes → Claves de despliegue** del repositorio de Forgejo. Para que el gestor descargue el catálogo basta con permiso de lectura.
+3. En el gestor, añade el repositorio, elige la clave y selecciona la rama `main` o la referencia que quieras seguir.
+4. Verifica la huella del servidor SSH con su administrador por un canal de confianza. Registra la huella en el gestor y pulsa **Sincronizar**.
+5. Usa **Componentes** para las integraciones de Home Assistant Core. Para las aplicaciones, abre la ficha del repositorio. Revisa el commit antes de instalar.
 
-Desde la carpeta del proyecto, sustituye `URL_SSH_DE_TU_REPOSITORIO` por la URL copiada:
+Si el servidor rechaza la clave, comprueba que la parte pública está registrada en el repositorio correcto y que seleccionaste la clave correspondiente en el gestor. Si cambia la huella, confirma primero la rotación con el administrador.
 
-```sh
-git remote add origin 'URL_SSH_DE_TU_REPOSITORIO'
-git remote -v
-git push -u origin main
-git push origin v0.2.0
-```
+## Distinguir los repositorios y las claves
 
-Si ya configuraste `origin` anteriormente, cambia su URL con `git remote set-url origin 'URL_SSH_DE_TU_REPOSITORIO'`.
+- **Mis-app** distribuye las aplicaciones de la tienda de Home Assistant.
+- **Mis-component** distribuye las integraciones que instalas desde el gestor. Tu instancia usa una clave de lectura.
+- **Repositorio de copias** es el destino privado de Forgejo Backup. La integración genera una clave propia y necesita escritura para subir y aplicar la retención.
+- **Repositorio de código fuente** es donde se desarrolla el proyecto. GitHub Actions publica en los catálogos con claves de despliegue de escritura específicas de cada destino.
 
-Las credenciales SSH para publicar son las de tu PC. Las claves de despliegue creadas por la aplicacion de Home Assistant son independientes y deben seguir siendo de solo lectura.
-
-## 3. Publicar el paquete de la version (opcional)
-
-Genera el paquete localmente:
-
-```sh
-python3 scripts/package.py
-```
-
-En Forgejo crea una publicacion a partir de la etiqueta `v0.2.0` y adjunta estos archivos de `dist/`:
-
-- `ha-private-git-manager-0.2.0.tar.gz`
-- `ha-private-git-manager-0.2.0.tar.gz.sha256`
-
-Los paquetes generados no se versionan en Git. Tampoco se incluyen entornos Python, caches, registros, configuracion local, claves ni datos de desarrollo. Los iconos y el logotipo de la aplicacion si forman parte del codigo fuente.
-
-## Siguientes cambios
-
-```sh
-git status
-git add -- archivos_que_has_modificado
-git commit -m 'Describe el cambio'
-git push
-```
-
-La autoria del commit inicial utiliza la misma identidad Git configurada localmente en tu proyecto Pivigia. Puedes revisar o cambiar la identidad de este repositorio con `git config user.name` y `git config user.email`; no se modifico la configuracion global.
-
-El repositorio privado de Forgejo guarda el codigo. La instalacion inicial del gestor en Home Assistant sigue el procedimiento de aplicaciones locales descrito en `README.md`.
+Para configurar el destino de copias, sigue la [guía de Forgejo Backup](FORGEJO_BACKUPS.md). Para publicar o mantener el código y los catálogos, consulta [Publicación](PUBLISHING.md).

@@ -61,3 +61,8 @@ dd { margin: .25rem 0 1rem; }
   .lectura { grid-template-columns: minmax(0, 1fr); }
   nav { position: static; }
 }
+
+.icono-integracion {
+  vertical-align: middle;
+  margin-inline-end: 0.35rem;
+}
