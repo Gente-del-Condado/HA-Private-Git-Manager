@@ -1,15 +1,14 @@
-import importlib.util
+# Importa el paquete de proveedores sin iniciar Home Assistant.
+import sys
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pytest
 
-PROVIDER = (
-    Path(__file__).resolve().parents[1]
-    / "custom_components/pgm_forgejo_backup/providers/forgejo.py"
+sys.path.insert(
+    0, str(Path(__file__).resolve().parents[1] / "custom_components/pgm_forgejo_backup")
 )
-spec = importlib.util.spec_from_file_location("pgm_forgejo_provider", PROVIDER)
-forgejo = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(forgejo)
+from providers import forgejo  # noqa: E402
 
 
 @pytest.fixture
@@ -83,3 +82,39 @@ def test_readme_index_updates_on_upload_and_delete(backup_remote):
     assert "Vieja" in readme
     provider.delete("fixture")
     assert "Todavía no hay copias guardadas" in git("show", "main:README.md")
+
+
+def test_failed_direct_upload_keeps_recoverable_git_copy(backup_remote):
+    provider, source, metadata, git = backup_remote
+
+    class UnavailableReleases:
+        def upload(self, *args):
+            raise forgejo.ReleaseError("Forgejo rechazó el adjunto.")
+
+        def available(self, *args):
+            return False
+
+    provider.releases = UnavailableReleases()
+    provider.upload(source, metadata)
+    assert provider.get("fixture") == metadata
+    target = source.with_name("restored.tar")
+    provider.download("fixture", target)
+    assert target.read_bytes() == source.read_bytes()
+    readme = git("show", "main:README.md")
+    assert "Descargar backup.tar" not in readme
+    assert "Descargar ZIP" in readme
+
+
+def test_readme_uses_home_assistant_zone_and_orders_the_repeated_hour(backup_remote):
+    provider, source, metadata, git = backup_remote
+    provider.time_zone = ZoneInfo("Europe/Madrid")
+    summer = {**metadata, "name": "Verano", "date": "2026-10-25T00:45:00Z"}
+    winter = {**metadata, "backup_id": "second", "name": "Invierno", "date": "2026-10-25T01:15:00Z"}
+    provider.upload(source, summer)
+    provider.upload(source, winter)
+
+    readme = git("show", "main:README.md")
+    assert "Fecha (Europe/Madrid)" in readme
+    first = readme.index("2026-10-25 02:15:00+01:00 | Invierno")
+    second = readme.index("2026-10-25 02:45:00+02:00 | Verano")
+    assert first < second

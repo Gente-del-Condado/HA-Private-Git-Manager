@@ -23,9 +23,25 @@ En la lista de copias de Home Assistant, abre la copia y elige descargarla desde
 
 ### Desde la web de Forgejo
 
+**Descarga directa del TAR cifrado (0.1.4 o posterior).** En Home Assistant,
+abre **Ajustes → Dispositivos y servicios → Forgejo Backup → Configurar**.
+Introduce la URL web HTTPS del mismo repositorio de copias y un token de
+Forgejo limitado a ese repositorio, con permiso `write:repository`. Conserva
+la clave SSH de la integración. El token se usa desde Home Assistant para
+publicar el adjunto y nunca se incorpora al README.
+
+Las nuevas copias mostrarán **Descargar backup.tar** cuando se publique el
+adjunto. Abre el enlace con tu sesión web de Forgejo y verifica el SHA-256
+de **Ficha** antes de importar el archivo. El adjunto conserva el cifrado de
+Home Assistant y ocupa espacio adicional en Forgejo. Si el servidor o el
+proxy rechaza su tamaño, revisa los registros y usa la descarga por ZIP.
+Las copias anteriores conservan su enlace al ZIP. Mantén configurado el
+token para que Home Assistant pueda retirar los adjuntos al aplicar la retención.
+
 Desde la versión 0.1.2, Forgejo Backup actualiza su README automático al subir o
-eliminar copias. En **Copias recientes** aparecen las 20 últimas, con fecha UTC,
-nombre, tamaño y enlaces a su ficha y al ZIP. La integración escribe el índice
+eliminar copias. En **Copias recientes** aparecen las 20 últimas, con fecha,
+nombre, tamaño y enlaces a su ficha y al ZIP. Desde la versión 0.1.4, la fecha
+usa la zona horaria de Home Assistant y muestra el desfase respecto a UTC. La integración escribe el índice
 por SSH. Si el repositorio ya tiene un README propio, lo conserva y puedes
 acceder a las copias desde **Código → Etiquetas**.
 
