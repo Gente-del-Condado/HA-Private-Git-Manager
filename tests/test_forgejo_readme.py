@@ -62,3 +62,24 @@ def test_backup_preserves_existing_repository_branch(backup_remote):
     assert git("for-each-ref", "--format=%(refname)", "refs/heads") == "refs/heads/manual"
     assert git("rev-parse", "refs/heads/manual") == original
     assert provider.get("second") == newer
+
+
+def test_readme_index_updates_on_upload_and_delete(backup_remote):
+    provider, source, metadata, git = backup_remote
+    old = {**metadata, "name": "Vieja", "date": "2026-11-08T18:00:00+01:00"}
+    new = {**metadata, "backup_id": "second", "name": "Nueva | [1]", "date": "2026-11-09T09:00:00Z"}
+    provider.upload(source, old)
+    provider.upload(source, new)
+    readme = git("show", "main:README.md")
+    assert readme.index("Nueva") < readme.index("Vieja")
+    assert "Nueva &#124; &#91;1&#93;" in readme
+    assert "2026-11-08 17:00:00" in readme
+    assert "(../../../src/tag/pgm-meta-second/metadata.json)" in readme
+    assert "(../../../archive/pgm-data-second.zip)" in readme
+
+    provider.delete("second")
+    readme = git("show", "main:README.md")
+    assert "pgm-data-second.zip" not in readme
+    assert "Vieja" in readme
+    provider.delete("fixture")
+    assert "Todavía no hay copias guardadas" in git("show", "main:README.md")

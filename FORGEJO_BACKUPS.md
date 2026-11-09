@@ -19,6 +19,23 @@ Si Forgejo está configurado en Home Assistant, abre la copia y elige restaurarl
 
 En la lista de copias de Home Assistant, abre la copia y elige descargarla desde la ubicación Forgejo. Selecciona la descarga cifrada si vas a conservar el archivo. En una instalación limpia, carga el `.tar` descargado y usa la clave del kit de emergencia para restaurar.
 
+### Desde la web de Forgejo
+
+Desde la versión 0.1.2, Forgejo Backup actualiza su README automático al subir o
+eliminar copias. En **Copias recientes** aparecen las 20 últimas, con fecha UTC,
+nombre, tamaño y enlaces a su ficha y al ZIP. La integración escribe el índice
+por SSH. Si el repositorio ya tiene un README propio, lo conserva y puedes
+acceder a las copias desde **Código → Etiquetas**.
+
+1. Abre **Ficha** y anota el SHA-256 de la copia que quieras recuperar.
+2. Pulsa **Descargar ZIP** para la misma copia. Extrae el ZIP en una carpeta nueva.
+3. Abre una terminal en la carpeta que contiene `part-000000`, `part-000001`,
+   etc. Ejecuta `LC_ALL=C cat part-* > backup.tar` y luego `sha256sum backup.tar`.
+4. Compara la huella con la ficha. Si coincide, importa `backup.tar` en Home
+   Assistant y usa la clave del kit de emergencia.
+
+### Por SSH desde otro equipo
+
 Si solo tienes acceso a Forgejo, puedes recuperar el `.tar` desde otro equipo con Git y una clave SSH autorizada. Sustituye la URL y el identificador por tus valores. Verifica primero la huella SSH por un canal de confianza.
 
 ```sh
