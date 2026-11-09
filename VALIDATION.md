@@ -14,4 +14,12 @@ Para comprobar el contenedor con Podman, construye la imagen a partir de `privat
 
 Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home Assistant OS comprueba la instalación desde Mis-app, un complemento privado, una copia y la recuperación. En YunoHost comprueba la sesión de administrador en el mismo dominio, la instalación, actualización y desinstalación de un paquete privado, y la copia del propio gestor. Usa paquetes de prueba sin datos importantes.
 
+## Copia externa en Forgejo
+
+En un laboratorio con Home Assistant Container 2026.11.0 y Forgejo 17 se probó el alta con clave de despliegue SSH y la verificación de huella. Se generó una copia con la configuración automática y el cifrado nativo activado, se descargó desde Forgejo con la API de Home Assistant y se importó en una segunda instancia limpia. La clave incorrecta fue rechazada. Con la clave correcta se recuperaron el archivo de prueba y la configuración original.
+
+Para repetir la prueba, usa la [guía de Forgejo](FORGEJO_BACKUPS.md) y crea antes un archivo de prueba identificable en la configuración. Después de restaurar, comprueba que reaparece con el mismo contenido. Home Assistant Container cubre la restauración de Core en una instancia limpia.
+
+En Home Assistant OS 18.5, con Core 2026.11.0 y Supervisor 2026.10.5, se probó la misma integración contra Forgejo 17.0.1. La copia automática cifrada incluía Core, una aplicación local y las carpetas `share`, `media`, `ssl` y código de aplicaciones locales. Se descargó el `.tar` desde Forgejo y se verificó su indicador de cifrado. En la misma VM se desinstaló la aplicación y se retiraron cuatro marcadores. La restauración nativa desde Forgejo rechazó la clave incorrecta y recuperó la aplicación 1.0.0, su archivo de datos y los cuatro marcadores con la clave correcta.
+
 El historial de versiones se mantiene en el [changelog](private_git_manager/CHANGELOG.md) y en Git.

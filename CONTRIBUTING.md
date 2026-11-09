@@ -36,6 +36,7 @@ Las operaciones nativas requieren Supervisor o una sesión real de YunoHost. Par
 | `private_git_manager/app/static/` | Portal sin compilador, esquema de formularios y traducciones ES/EN |
 | `private_git_manager/config.yaml`, `Dockerfile` y `DOCS.md` | Distribución y ayuda de Home Assistant |
 | `manifest.toml`, `conf/`, `scripts/` y `doc/` | Paquete, servicio, ciclo de vida y ayuda nativa de YunoHost |
+| `custom_components/pgm_forgejo_backup/` | Integración opcional de copias nativas. El agente adapta Home Assistant y el proveedor Git/SSH vive en `providers/forgejo.py` |
 | `docs/` | Manual web estático y capturas de demostración |
 | `tests/` | Contratos de API, estado, seguridad, empaquetado y navegador |
 

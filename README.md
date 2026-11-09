@@ -21,6 +21,8 @@ Gestiona repositorios Git privados y aplicaciones nativas de **Home Assistant OS
 
 Home Assistant ofrece configuración, logs, Ingress y copias nativas por aplicación. En YunoHost las operaciones de instalación, actualización y desinstalación usan la sesión nativa de administración.
 
+Para guardar copias completas cifradas en un repositorio privado, instala la [integración complementaria de copias para Forgejo](FORGEJO_BACKUPS.md).
+
 ## Mantener el proyecto
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) describe la arquitectura, los datos y el entorno de desarrollo.
