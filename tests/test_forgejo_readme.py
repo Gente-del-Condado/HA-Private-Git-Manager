@@ -1,6 +1,8 @@
 # Importa el paquete de proveedores sin iniciar Home Assistant.
 import sys
+from email.message import Message
 from pathlib import Path
+from urllib.error import HTTPError
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -8,7 +10,7 @@ import pytest
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[1] / "custom_components/pgm_forgejo_backup")
 )
-from providers import forgejo  # noqa: E402
+from providers import forgejo, forgejo_releases  # noqa: E402
 
 
 @pytest.fixture
@@ -118,3 +120,27 @@ def test_readme_uses_home_assistant_zone_and_orders_the_repeated_hour(backup_rem
     first = readme.index("2026-10-25 02:15:00+01:00 | Invierno")
     second = readme.index("2026-10-25 02:45:00+02:00 | Verano")
     assert first < second
+
+
+@pytest.mark.parametrize("suffix", ["", "/", ".git", ".git/"])
+def test_web_url_accepts_clone_suffix_with_yunohost_subpath(suffix):
+    url = "https://forgejo.example.test/forgejo/wolfbelmi88/CopiasHA"
+    ssh = "ssh://forgejo@forgejo.example.test:2233/wolfbelmi88/CopiasHA.git"
+    assert forgejo_releases.validate_web_url(url + suffix, ssh) == url
+    with pytest.raises(forgejo_releases.ReleaseError):
+        forgejo_releases.validate_web_url(url.replace("CopiasHA", "OtrasCopias"), ssh)
+
+
+def test_release_check_reports_yunohost_sso_redirect(monkeypatch):
+    releases = forgejo_releases.Releases(
+        "https://forgejo.example.test/forgejo/user/backups", "test"
+    )
+    headers = Message()
+    headers["Location"] = "https://forgejo.example.test/yunohost/sso/?r=test"
+
+    def redirect(request, **kwargs):
+        raise HTTPError(request.full_url, 302, "Found", headers, None)
+
+    monkeypatch.setattr(releases.opener, "open", redirect)
+    with pytest.raises(forgejo_releases.SSORequired):
+        releases.check()

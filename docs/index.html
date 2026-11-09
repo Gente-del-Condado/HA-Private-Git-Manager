@@ -149,12 +149,15 @@
         <p>Forgejo Backup crea un README si el destino carece de ramas. La integración actualiza <strong>Copias recientes</strong> al subir o borrar una copia. Muestra las 20 últimas con nombre, tamaño y fecha en la zona horaria de Home Assistant, con el desfase respecto a UTC.</p>
         <h4>Descargar el TAR cifrado directamente</h4>
         <ol>
-          <li>Actualiza Forgejo Backup a <strong>0.1.4</strong> y reinicia Core. En <strong>Ajustes → Dispositivos y servicios → Forgejo Backup → Configurar</strong>, indica la URL HTTPS del mismo repositorio de copias.</li>
+          <li>Actualiza Forgejo Backup a <strong>0.1.5</strong> o posterior y reinicia Core. En <strong>Ajustes → Dispositivos y servicios → Forgejo Backup → Configurar</strong>, indica la URL HTTPS del mismo repositorio de copias. Puedes usarla con o sin <code>.git</code>.</li>
           <li>En Forgejo, crea un token limitado a ese repositorio con permiso <code>write:repository</code>. Pégalo en el campo del token de Home Assistant. La clave SSH existente sigue guardando las copias por Git.</li>
           <li>En el README, abre <strong>Ficha</strong> para consultar el <code>sha256</code>. Pulsa <strong>Descargar backup.tar</strong> en esa misma fila con tu sesión web de Forgejo iniciada.</li>
           <li>Ejecuta <code>sha256sum backup.tar</code> y compara el resultado con la ficha. Importa el TAR cifrado en Home Assistant y usa la clave del kit de emergencia.</li>
         </ol>
         <p>El enlace aparece en las nuevas copias cuando Forgejo acepta el adjunto. El adjunto ocupa espacio adicional y puede estar sujeto a los límites de Forgejo o del proxy. Conserva el token configurado para que Home Assistant pueda retirar los adjuntos al aplicar la retención.</p>
+        <h4>Si Forgejo está detrás de YunoHost</h4>
+        <p>Si el asistente indica que YunoHost redirige la API al inicio de sesión, abre <strong>Usuarios → Grupos y permisos</strong> en YunoHost y comprueba que <strong>Forgejo API</strong> está permitido para <strong>Visitantes</strong>. Ese permiso cubre la ruta <code>/forgejo/api/</code> si instalaste Forgejo en <code>/forgejo</code>. Forgejo sigue exigiendo un token válido para acceder al repositorio privado.</p>
+        <p>Puedes comprobar el acceso abriendo <code>/forgejo/api/v1/version</code> en una ventana privada. La API debe responder con JSON. Si aparece el portal de YunoHost, revisa el permiso de la API o la versión del paquete de Forgejo. Mientras tanto, las copias siguen guardándose por SSH.</p>
         <h4>Recuperar una copia desde el ZIP</h4>
         <p>Usa el ZIP para las copias anteriores o si falta el enlace al TAR. Si el repositorio tiene un README propio, busca las etiquetas <code>pgm-meta-*</code> y <code>pgm-data-*</code> con el mismo identificador desde <strong>Código → Etiquetas</strong>.</p>
         <ol>

@@ -30,6 +30,16 @@ Forgejo limitado a ese repositorio, con permiso `write:repository`. Conserva
 la clave SSH de la integración. El token se usa desde Home Assistant para
 publicar el adjunto y nunca se incorpora al README.
 
+Si Forgejo está detrás de YunoHost, la integración necesita que las peticiones a
+`/forgejo/api/` lleguen a Forgejo para que pueda comprobar el token. Si esa ruta
+redirige al portal de YunoHost, abre **Usuarios → Grupos y permisos** y
+comprueba que **Forgejo API** está permitido para **Visitantes**.
+El [paquete oficial de Forgejo para YunoHost](https://github.com/YunoHost-Apps/forgejo_ynh/blob/master/manifest.toml)
+declara acceso de visitantes únicamente para esa ruta. Forgejo sigue validando
+el token y los permisos del repositorio privado. Prueba `/forgejo/api/v1/version`
+en una ventana privada. Si llega a Forgejo, devuelve JSON. Usa la URL del repositorio
+sin `.git` en 0.1.4. Desde 0.1.5 se admiten ambas formas.
+
 Las nuevas copias mostrarán **Descargar backup.tar** cuando se publique el
 adjunto. Abre el enlace con tu sesión web de Forgejo y verifica el SHA-256
 de **Ficha** antes de importar el archivo. El adjunto conserva el cifrado de
