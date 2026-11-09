@@ -4,7 +4,7 @@
 
 ## Instalar y conectar
 
-1. Copia la carpeta `custom_components/pgm_forgejo_backup` de este repositorio a `/config/custom_components/pgm_forgejo_backup` en Home Assistant. Reinicia Core. Usa Home Assistant 2026.11 o posterior con Git y las herramientas de OpenSSH en el entorno de Core.
+1. En Private Git Manager 0.15.0 o posterior, añade y sincroniza el repositorio que contiene este código. En la fila de **Forgejo Backup**, pulsa **Instalar integración**, revisa el commit y espera el resultado del trabajo. Reinicia Core. Para una instalación manual, copia `custom_components/pgm_forgejo_backup` a `/config/custom_components/`. Usa Home Assistant 2026.11 o posterior con Git y OpenSSH en Core.
 2. Crea un repositorio **privado y dedicado a copias** en Forgejo. Inicialízalo con un README. Copia la URL SSH de clonación, por ejemplo `ssh://git@forgejo.example.org:2222/equipo/copias.git`.
 3. En **Ajustes → Dispositivos y servicios → Añadir integración**, busca **Private Git Manager · Forgejo Backup** e introduce la URL.
 4. Añade la clave pública que muestra el asistente en **Ajustes del repositorio → Claves de despliegue**, con permiso de escritura. La clave es exclusiva de este destino. Conserva las claves de lectura del gestor para los repositorios de aplicaciones.

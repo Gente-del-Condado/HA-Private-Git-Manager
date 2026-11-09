@@ -23,3 +23,7 @@ Para repetir la prueba, usa la [guía de Forgejo](FORGEJO_BACKUPS.md) y crea ant
 En Home Assistant OS 18.5, con Core 2026.11.0 y Supervisor 2026.10.5, se probó la misma integración contra Forgejo 17.0.1. La copia automática cifrada incluía Core, una aplicación local y las carpetas `share`, `media`, `ssl` y código de aplicaciones locales. Se descargó el `.tar` desde Forgejo y se verificó su indicador de cifrado. En la misma VM se desinstaló la aplicación y se retiraron cuatro marcadores. La restauración nativa desde Forgejo rechazó la clave incorrecta y recuperó la aplicación 1.0.0, su archivo de datos y los cuatro marcadores con la clave correcta.
 
 El historial de versiones se mantiene en el [changelog](private_git_manager/CHANGELOG.md) y en Git.
+
+## Instalar y actualizar integraciones por SSH
+
+En Home Assistant OS 18.5, con Core 2026.11.0 y Supervisor 2026.10.5, se instaló Private Git Manager 0.15.0 como aplicación local. Desde el panel por Ingress se sincronizó un repositorio privado de Forgejo 17.0.1 con una clave de despliegue Ed25519 de lectura. Se instaló Forgejo Backup 0.1.0 y se actualizó a 0.1.1 tras publicar un segundo commit de prueba. En ambas operaciones se comprobó el commit en el diálogo. En disco quedaron la nueva versión y la anterior. Tras reiniciar Core, la API nativa volvió a listar el agente Forgejo de la configuración existente.
