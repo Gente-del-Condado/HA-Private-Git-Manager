@@ -4,8 +4,8 @@
 
 ## Instalar y conectar
 
-1. En Private Git Manager 0.15.0 o posterior, añade y sincroniza el repositorio que contiene este código. En la fila de **Forgejo Backup**, pulsa **Instalar integración**, revisa el commit y espera el resultado del trabajo. Reinicia Core. Para una instalación manual, copia `custom_components/pgm_forgejo_backup` a `/config/custom_components/`. Usa Home Assistant 2026.11 o posterior con Git y OpenSSH en Core.
-2. Crea un repositorio **privado y dedicado a copias** en Forgejo. Inicialízalo con un README. Copia la URL SSH de clonación, por ejemplo `ssh://git@forgejo.example.org:2222/equipo/copias.git`.
+1. En Private Git Manager 0.15.0 o posterior, añade y sincroniza el repositorio que contiene este código. Busca **Forgejo Backup** en **Componentes** (o en la ficha del repositorio en la versión 0.15.0) y pulsa **Instalar integración**, revisa el commit y espera el resultado del trabajo. Reinicia Core. Para una instalación manual, copia `custom_components/pgm_forgejo_backup` a `/config/custom_components/`. Usa Home Assistant 2026.11 o posterior con Git y OpenSSH en Core.
+2. Crea un repositorio **privado y dedicado a copias** en Forgejo. Puedes dejarlo vacío. Forgejo Backup 0.1.1 o posterior crea la rama `main` y un README al subir la primera copia si el repositorio carece de ramas. La misma inicialización se aplica en la próxima subida a repositorios que solo tienen etiquetas de copias. Si ya hay una rama, se conserva. Copia la URL SSH de clonación, por ejemplo `ssh://git@forgejo.example.org:2222/equipo/copias.git`.
 3. En **Ajustes → Dispositivos y servicios → Añadir integración**, busca **Private Git Manager · Forgejo Backup** e introduce la URL.
 4. Añade la clave pública que muestra el asistente en **Ajustes del repositorio → Claves de despliegue**, con permiso de escritura. La clave es exclusiva de este destino. Conserva las claves de lectura del gestor para los repositorios de aplicaciones.
 5. Obtén por un canal de confianza una huella SHA256 del servidor SSH de Forgejo e introdúcela en el asistente. La integración fija esa clave de servidor y verifica el acceso con la identidad generada.
@@ -22,8 +22,9 @@ En la lista de copias de Home Assistant, abre la copia y elige descargarla desde
 Si solo tienes acceso a Forgejo, puedes recuperar el `.tar` desde otro equipo con Git y una clave SSH autorizada. Sustituye la URL y el identificador por tus valores. Verifica primero la huella SSH por un canal de confianza.
 
 ```sh
-git clone --no-tags --depth=1 ssh://git@forgejo.example.org:2222/equipo/copias.git copias-ha
+git init copias-ha
 cd copias-ha
+git remote add origin ssh://git@forgejo.example.org:2222/equipo/copias.git
 git ls-remote --tags origin 'refs/tags/pgm-data-*'
 
 id=IDENTIFICADOR_DE_LA_COPIA

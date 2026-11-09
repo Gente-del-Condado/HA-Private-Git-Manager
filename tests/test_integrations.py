@@ -46,6 +46,8 @@ def test_deploy_integration_from_reviewed_checkout(tmp_path):
     first = installer.inspect(repo_id, source.name)
     assert first["installed_version"] is None
     installer.deploy(repo_id, source.name, first["commit"], None, False)
+    assert installer.summary(repo_id, source.name)["other_source"] is False
+    assert installer.summary("otro-catalogo", source.name)["other_source"] is True
 
     commit("1.1.0")
     next_ = installer.inspect(repo_id, source.name)

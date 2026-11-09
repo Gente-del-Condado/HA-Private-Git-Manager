@@ -57,7 +57,7 @@
         <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
         <h3>YunoHost</h3>
         <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
-        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.0</code></pre>
+        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.1</code></pre>
       </section>
 
       <section id="conectar">
@@ -121,7 +121,7 @@
         <h2>06 · Copias completas de Home Assistant en Forgejo</h2>
         <p>Private Git Manager · Forgejo Backup es una integración complementaria. Añade un repositorio Forgejo privado como ubicación en <strong>Ajustes → Sistema → Copias de seguridad</strong>. Home Assistant programa, cifra y restaura las copias con sus herramientas nativas.</p>
         <ol>
-          <li>Conecta y sincroniza el repositorio de Private Git Manager en el panel. Pulsa <strong>Instalar integración</strong> en Forgejo Backup, revisa el commit y confirma. Reinicia Home Assistant Core cuando termine el trabajo.</li>
+          <li>Conecta y sincroniza el repositorio de Private Git Manager en el panel. En <strong>Componentes</strong>, pulsa <strong>Instalar integración</strong> en Forgejo Backup, revisa el commit y confirma. Reinicia Home Assistant Core cuando termine el trabajo.</li>
           <li>Añade la integración en <strong>Dispositivos y servicios</strong> e introduce la URL de clonación SSH del repositorio privado dedicado a copias.</li>
           <li>Añade la clave pública generada como clave de despliegue con escritura. Compara la huella SSH del servidor con la que te facilite su administrador por un canal de confianza.</li>
           <li>Selecciona Forgejo como ubicación de las copias automáticas, activa el cifrado y elige las aplicaciones y carpetas que quieras incluir. Guarda el kit de emergencia fuera del equipo.</li>
