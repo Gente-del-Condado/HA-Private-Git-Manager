@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[1] / "custom_components/pgm_forgejo_backup")
 )
-from providers import forgejo, forgejo_releases  # noqa: E402
+from providers import forgejo, forgejo_releases, github  # noqa: E402
 
 
 @pytest.fixture
@@ -144,3 +144,53 @@ def test_release_check_reports_yunohost_sso_redirect(monkeypatch):
     monkeypatch.setattr(releases.opener, "open", redirect)
     with pytest.raises(forgejo_releases.SSORequired):
         releases.check()
+
+
+def test_github_backup_uses_github_readme_links_and_roundtrips(backup_remote, monkeypatch):
+    local, source, metadata, git = backup_remote
+    provider = github.GitHub("ssh://git@github.com/example/backups.git", "", "")
+    monkeypatch.setattr(local, "url", provider.url)
+    provider.upload(source, metadata)
+
+    readme = git("show", "main:README.md")
+    assert "https://github.com/example/backups/blob/pgm-meta-fixture/metadata.json" in readme
+    assert "https://github.com/example/backups/archive/refs/tags/pgm-data-fixture.zip" in readme
+    assert provider.list() == [metadata]
+    destination = source.with_name("download.tar")
+    provider.download("fixture", destination)
+    assert destination.read_bytes() == source.read_bytes()
+    provider.delete("fixture")
+    assert provider.list() == []
+    assert "pgm-data-fixture.zip" not in git("show", "main:README.md")
+
+
+def test_github_release_sends_raw_file_to_official_upload_host(tmp_path, monkeypatch):
+    releases = github.GitHubReleases("https://github.com/example/backups", "fixture")
+    source = tmp_path / "backup.tar"
+    source.write_bytes(b"tar-fixture")
+
+    def request(method, path, *, base, body, headers):
+        assert method == "POST"
+        assert base == "https://uploads.github.com/repos/example/backups"
+        assert path == "/releases/42/assets?name=backup.tar"
+        assert headers == {"Content-Type": "application/octet-stream", "Content-Length": "11"}
+        assert body.read() == b"tar-fixture"
+
+    monkeypatch.setattr(releases, "_request", request)
+    releases._upload_asset(42, source, 11)
+    assert releases.repo == "https://api.github.com/repos/example/backups"
+    assert releases._asset_path(42, 7) == "/releases/assets/7"
+
+
+def test_github_urls_and_size_limit():
+    ssh = github.normalize_ssh_url("git@github.com:example/backups.git")
+    assert ssh == "ssh://git@github.com/example/backups.git"
+    assert github.is_github(ssh)
+    assert github.validate_github_web_url("https://github.com/example/backups.git", ssh) == (
+        "https://github.com/example/backups"
+    )
+    with pytest.raises(forgejo_releases.ReleaseError):
+        github.validate_github_web_url("https://other.example/example/backups", ssh)
+    provider = github.GitHub(ssh, "", "")
+    with pytest.raises(forgejo.ForgejoError, match="1900 MiB"):
+        provider.upload(None, {"backup_id": "too_large", "size": 2 * 1024**3, "protected": True})

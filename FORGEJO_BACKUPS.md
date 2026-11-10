@@ -1,4 +1,4 @@
-# Copias nativas de Home Assistant en Forgejo
+# Copias nativas de Home Assistant en Forgejo y GitHub
 
 ![Icono de Forgejo Backup](custom_components/pgm_forgejo_backup/brand/icon.png)
 
@@ -14,6 +14,34 @@
 6. En **Ajustes → Sistema → Copias de seguridad**, configura las copias automáticas, marca Forgejo como ubicación y deja activado el cifrado para esa ubicación. Selecciona los datos que quieras incluir, como aplicaciones, base de datos y carpetas en HA OS. Guarda el **kit de emergencia** en un lugar independiente.
 
 Home Assistant conserva la programación y la retención. Puedes mantener la ubicación local y Forgejo a la vez. La integración rechaza la subida cuando Home Assistant le entrega una copia sin cifrado. El registro Git contiene también los metadatos de inventario, como nombre, fecha y versiones. La privacidad de esos metadatos depende de los permisos del repositorio.
+
+## Usar GitHub como destino
+
+Desde **Forgejo Backup 0.2.0**, puedes añadir un repositorio **privado** de
+GitHub.com como otra ubicación. Crea un repositorio dedicado a las copias y
+sigue el mismo asistente SSH. Puedes pegar la URL de clonación
+`git@github.com:equipo/copias-ha.git` o `ssh://git@github.com/equipo/copias-ha.git`.
+Registra la clave de despliegue generada con **Allow write access** en ese
+repositorio y compara la huella con la documentación oficial de GitHub.
+Selecciona **GitHub** como ubicación de la copia en Home Assistant y activa
+el cifrado para esa ubicación.
+
+Para habilitar **Descargar backup.tar** desde el README, abre **Configurar**
+en la entrada de GitHub. Usa la URL web del repositorio y un token de acceso
+personal detallado, limitado a ese repositorio privado, con **Contents → Read
+and write**. GitHub publica el TAR cifrado como adjunto de un lanzamiento.
+El navegador descarga el archivo con tu sesión de GitHub iniciada. GitHub
+también conserva los fragmentos por SSH y el enlace al ZIP como alternativa.
+El índice muestra la zona horaria de Home Assistant.
+
+El límite del proveedor GitHub es **1900 MiB por copia**, para dejar margen
+dentro de los límites de GitHub por envío Git y por adjunto. GitHub y Forgejo
+se configuran como entradas separadas y pueden utilizarse a la vez. Las
+copias de aplicaciones individuales siguen gestionándose desde el Supervisor.
+
+- [Huellas SSH de GitHub](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints)
+- [Permisos de la API de adjuntos de GitHub](https://docs.github.com/en/rest/releases/assets)
+- [Límite por envío Git](https://docs.github.com/en/get-started/using-git/troubleshooting-the-2-gb-push-limit)
 
 ## Descargar y restaurar
 

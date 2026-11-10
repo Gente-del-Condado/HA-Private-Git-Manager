@@ -27,7 +27,7 @@ Home Assistant ofrece configuración, logs, Ingress y copias nativas por aplicac
 
 En Home Assistant OS, añade **Mis-component** por SSH dentro del gestor y sincroniza la rama `main`. En **Componentes** puedes instalar o actualizar integraciones de Core y revisar el commit. Reinicia Core después de aplicar un cambio. El catálogo está disponible en [GitHub](https://github.com/Gente-del-Condado/Mis-component) y [Forgejo](https://gentedelcondado.es/forgejo/wolfbelmi88/Mis-component).
 
-**Forgejo Backup** añade un destino privado para las copias cifradas de Home Assistant. El repositorio de copias usa una clave propia con escritura. El README automático enlaza las últimas copias y sus descargas. Consulta la [guía de instalación y recuperación](FORGEJO_BACKUPS.md).
+**Forgejo Backup** añade destinos privados de Forgejo y GitHub para las copias cifradas de Home Assistant. El repositorio de copias usa una clave propia con escritura. El README automático enlaza las últimas copias y sus descargas. Consulta la [guía de instalación y recuperación](FORGEJO_BACKUPS.md).
 
 ## Mantener el proyecto
 

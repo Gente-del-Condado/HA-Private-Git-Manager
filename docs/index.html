@@ -27,7 +27,7 @@
         <li><a href="#home-assistant">Operar en Home Assistant</a></li>
         <li><a href="#componentes">Componentes de Core</a></li>
         <li><a href="#copias">Copias por aplicación</a></li>
-        <li><a href="#copias-forgejo">Copias completas en Forgejo</a></li>
+        <li><a href="#copias-forgejo">Copias completas en Forgejo y GitHub</a></li>
         <li><a href="#yunohost">Operar en YunoHost</a></li>
         <li><a href="#problemas">Resolver problemas</a></li>
         <li><a href="#desarrollo">Editar el proyecto</a></li>
@@ -136,7 +136,7 @@
       </section>
 
       <section id="copias-forgejo">
-        <h2>07 · Copias completas de Home Assistant en Forgejo</h2>
+        <h2>07 · Copias completas de Home Assistant en Forgejo y GitHub</h2>
         <p><img class="icono-integracion" src="assets/forgejo-backup.svg" width="32" height="32" alt=""> <strong>Forgejo Backup</strong> añade Forgejo como ubicación de las copias nativas de Home Assistant. Core programa, cifra y restaura las copias.</p>
         <h3>Configurar el destino de copias</h3>
         <ol>
@@ -145,6 +145,9 @@
           <li>Añade la clave pública que muestra el asistente como clave de despliegue con escritura. Verifica la huella del servidor por un canal de confianza.</li>
           <li>En <strong>Ajustes → Sistema → Copias de seguridad</strong>, selecciona Forgejo como ubicación, activa el cifrado y elige qué incluir. Guarda el kit de emergencia fuera del equipo.</li>
         </ol>
+        <h3>Configurar GitHub como destino de copias</h3>
+        <p>Desde Forgejo Backup 0.2.0 puedes usar un repositorio privado de GitHub.com como otra ubicación. Añade una entrada de la integración con la URL SSH de GitHub, registra la clave de despliegue con escritura y verifica la huella. En las copias nativas de Home Assistant, selecciona GitHub y activa el cifrado.</p>
+        <p>Para publicar el TAR cifrado como adjunto, usa la URL web del repositorio y un token detallado con <strong>Contents → Read and write</strong>, limitado a ese repositorio. El límite del proveedor es <strong>1900 MiB por copia</strong>. El README enlaza al TAR si se publicó el adjunto y al ZIP con los fragmentos.</p>
         <h3>Encontrar y descargar una copia en la web</h3>
         <p>Forgejo Backup crea un README si el destino carece de ramas. La integración actualiza <strong>Copias recientes</strong> al subir o borrar una copia. Muestra las 20 últimas con nombre, tamaño y fecha en la zona horaria de Home Assistant, con el desfase respecto a UTC.</p>
         <h4>Descargar el TAR cifrado directamente</h4>
