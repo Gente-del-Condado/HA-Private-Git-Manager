@@ -24,7 +24,7 @@ Los paquetes con preguntas condicionales o de carga de archivos requieren el ins
 Requiere YunoHost 12.1.17 o posterior y arquitectura amd64 o arm64. Desde la terminal de tu servidor, ejecuta:
 
 ```sh
-sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.3
+sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.16.0
 ```
 
 Elige el dominio y la ruta. La propuesta es `/private-git`. Abre **Private Git Manager** desde el portal de YunoHost. El permiso inicial corresponde al grupo **admins**. Puedes revisar el grupo autorizado en **Usuarios → Grupos y permisos**.
@@ -40,6 +40,14 @@ sudo yunohost app upgrade privategit -u https://github.com/Gente-del-Condado/HA-
 ```
 
 Sustituye `ETIQUETA` por la versión nueva y usa el identificador real si instalaste más de una instancia.
+
+### Migrar el catálogo cifrado
+
+En **Preferencias → Copia y migración del gestor**, puedes exportar e importar los
+repositorios desde un destino privado de Forgejo o GitHub por SSH. El archivo
+se cifra con age antes de subirlo. El catálogo portable excluye claves privadas
+y tokens. Para recuperar también esas credenciales usa la copia nativa de
+YunoHost. Consulta los pasos de [exportación e importación](https://gente-del-condado.github.io/HA-Private-Git-Manager/#migracion).
 
 ### Cambiar la URL y recuperar el gestor
 

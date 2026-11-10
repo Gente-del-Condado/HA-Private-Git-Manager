@@ -23,6 +23,7 @@
       <ol>
         <li><a href="#empezar">Instalación</a></li>
         <li><a href="#conectar">Conectar Git privado</a></li>
+        <li><a href="#migracion">Migrar el catálogo</a></li>
         <li><a href="#catalogos">Paquetes y catálogos</a></li>
         <li><a href="#home-assistant">Operar en Home Assistant</a></li>
         <li><a href="#componentes">Componentes de Core</a></li>
@@ -65,7 +66,7 @@
         <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
         <h3>YunoHost</h3>
         <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
-        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.15.3</code></pre>
+        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.16.0</code></pre>
       </section>
 
       <section id="conectar">
@@ -76,6 +77,14 @@
           <li>Compara la huella SHA256 que muestra el gestor con la huella del servidor que te facilite su administrador por un canal de confianza. Regístrala y vuelve a sincronizar.</li>
           <li>Abre <strong>Ver catálogo</strong> o <strong>Ver README</strong> para revisar la presentación, las aplicaciones y el commit descargado.</li>
         </ol>
+        <h3 id="migracion">Migrar el catálogo cifrado</h3>
+        <ol>
+          <li>Conecta por SSH un repositorio privado de recuperación en Forgejo o GitHub. Autoriza escritura para exportar. Una clave de lectura basta en la instalación nueva.</li>
+          <li>En un equipo de confianza, genera la clave con <code>age-keygen -o recuperacion-pgm.txt</code> y obtén la parte pública con <code>age-keygen -y recuperacion-pgm.txt</code>. Guarda el archivo de recuperación fuera del gestor.</li>
+          <li>En <strong>Preferencias → Copia y migración del gestor</strong>, elige <strong>Exportar configuración cifrada</strong>. Selecciona el destino y pega la clave pública <code>age1…</code>.</li>
+          <li>En el gestor nuevo, conecta el repositorio de recuperación y elige <strong>Importar desde repositorio</strong>. Selecciona la copia, introduce la línea privada de age y revisa el catálogo antes de confirmar.</li>
+        </ol>
+        <p>Funciona en Home Assistant OS y YunoHost. Se importan los repositorios que falten. Vuelve a configurar sus claves y tokens y verifica las huellas antes de sincronizar. Los datos de las aplicaciones se recuperan con sus copias nativas.</p>
         <figure>
           <a href="assets/claves.png"><img src="assets/claves.png" width="1280" height="800" loading="lazy" alt="Formulario de creación de una clave SSH dentro de la sección Claves SSH."></a>
           <figcaption>El gestor genera la identidad. En Forgejo se registra únicamente su clave pública.</figcaption>

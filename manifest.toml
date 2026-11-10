@@ -3,7 +3,7 @@ id = "privategit"
 name = "Private Git Manager"
 description.en = "Install and manage YunoHost apps from private Git repositories."
 description.es = "Instala y administra aplicaciones de YunoHost desde repositorios Git privados."
-version = "0.15.3~ynh1"
+version = "0.16.0~ynh1"
 maintainers = ["wolfbelmi88"]
 
 [upstream]
@@ -44,4 +44,4 @@ main.protected = true
 main.auth_header = false
 
 [resources.apt]
-packages = "acl, ca-certificates, git, openssh-client, python3-venv"
+packages = "acl, age, ca-certificates, git, openssh-client, python3-venv"

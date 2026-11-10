@@ -14,6 +14,16 @@ Para comprobar el contenedor con Podman, construye la imagen a partir de `privat
 
 Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home Assistant OS comprueba la instalación desde Mis-app, un complemento privado, una copia y la recuperación. En YunoHost comprueba la sesión de administrador en el mismo dominio, la instalación, actualización y desinstalación de un paquete privado, y la copia del propio gestor. Usa paquetes de prueba sin datos importantes.
 
+## Migración cifrada del catálogo
+
+En un laboratorio con Forgejo 17.0.1 se exportó el catálogo por SSH desde la
+imagen de Home Assistant con un estado nuevo y se importó en otro gestor
+recién inicializado en modo YunoHost, por socket Unix. Chromium verificó la
+revisión y la confirmación del portal. La clave age incorrecta fue rechazada
+y repetir la importación conservó una sola entrada por repositorio y referencia.
+También se comprobó el formato de envío por SSH a un GitHub privado con un
+`push --dry-run`, sin escribir en ese catálogo.
+
 ## Aceptación en YunoHost
 
 En desarrollo se comprueba el socket Unix de Uvicorn, la preparación de una
