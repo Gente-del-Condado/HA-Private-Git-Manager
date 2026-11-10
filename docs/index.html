@@ -66,7 +66,7 @@
         <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
         <h3>YunoHost</h3>
         <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
-        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.16.0</code></pre>
+        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.17.0</code></pre>
       </section>
 
       <section id="conectar">
@@ -140,7 +140,14 @@
       <section id="copias">
         <h2>06 · Copias y recuperación en Home Assistant</h2>
         <p>Desde <strong>Copias de seguridad</strong>, crea una copia nativa de la aplicación, restaura sus datos, descarga el archivo original, importa un <code>.tar</code> nativo de hasta 512 MiB o elimina una copia. La restauración reemplaza los datos de la aplicación elegida. Descargar o borrar afecta al archivo completo, incluso si contiene otras aplicaciones.</p>
-        <p>Programa copias locales con un intervalo entre 1 y 720 horas y una retención entre 1 y 30. Las copias programadas se guardan sin cifrar. Para una copia manual cifrada, conserva la contraseña fuera del gestor.</p>
+        <h3>Guardar copias cifradas por aplicación en Git</h3>
+        <ol>
+          <li>Crea un repositorio <strong>privado</strong> en Forgejo o GitHub. Añádelo en <strong>Repositorios</strong> por SSH, verifica la huella y asigna una clave de despliegue con escritura. El repositorio puede estar vacío. Para recuperar copias desde otro gestor basta una clave de lectura.</li>
+          <li>Abre <strong>Copias de seguridad → Programar copias</strong>. Elige un intervalo de 1 a 720 horas, una retención local de 1 a 30 copias y el repositorio privado. Introduce la contraseña que usará el Supervisor para cifrarlas. El gestor guarda la contraseña en su estado local privado para poder ejecutar la tarea. Conserva también la contraseña fuera del gestor.</li>
+          <li>Para un envío puntual, pulsa <strong>Guardar en Git</strong> en una copia parcial cifrada. El gestor guarda el <code>.tar</code> original en fragmentos, hasta 512 MiB por copia. Cada copia tiene su propia etiqueta Git y la retención local no elimina esas etiquetas.</li>
+          <li>Para recuperarla, pulsa <strong>Recuperar desde Git</strong>, elige el destino y selecciona la copia. El gestor verifica la revisión y la integridad antes de importar al Supervisor. Cuando termine, revisa la versión, introduce su contraseña y confirma con <strong>Restaurar copia</strong>. Si cierras el portal durante la importación, podrás restaurarla desde <strong>Copias de seguridad</strong>.</li>
+        </ol>
+        <p>Si eliges solo el destino <strong>Local</strong>, la programación guarda copias sin cifrar. Usa 0 horas para desactivarla. Si falla un envío a Git, el gestor conserva la copia local y reintenta en el siguiente intervalo.</p>
         <p>Consulta <strong>Registros y actividad</strong> para comprobar el resultado de cada trabajo. Si ves <strong>Recuperación pendiente</strong>, verifica primero el estado en Supervisor. Después revisa si debes restaurar la copia de código o aceptar la versión actual. La recuperación del código y la restauración de datos son operaciones distintas.</p>
       </section>
 

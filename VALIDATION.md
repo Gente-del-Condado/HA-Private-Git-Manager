@@ -52,6 +52,21 @@ este recorrido con un paquete y unas claves de prueba:
 4. Restaura la copia en un entorno de prueba y verifica que puedes sincronizar
    de nuevo por SSH. Las copias incluyen credenciales.
 
+## Copias cifradas de aplicaciones por SSH
+
+El flujo de Private Git Manager 0.17.0 se probó con un Supervisor simulado y un
+repositorio privado desechable en Forgejo 17.0.1. Se verificó la programación,
+el reintento tras un fallo de envío, la importación del mismo `.tar` byte por
+byte y la restauración con la contraseña correcta. Chrome, con un ancho de
+390 píxeles, cubrió el envío manual y la revisión de la restauración. Se
+comprobó el envío de una etiqueta a GitHub privado en modo de simulación.
+
+Para aceptar el flujo con un Supervisor real, instala una aplicación de
+prueba, añade un dato reconocible y programa una copia a un repositorio
+privado. Espera a que termine el envío, cambia el dato y retira la copia
+local. Recupera la copia desde Git y verifica que la contraseña incorrecta
+falla y que la correcta recupera el dato original.
+
 ## Copia externa en Forgejo
 
 En un laboratorio con Home Assistant Container 2026.11.0 y Forgejo 17 se probó el alta con clave de despliegue SSH y la verificación de huella. Se generó una copia con la configuración automática y el cifrado nativo activado, se descargó desde Forgejo con la API de Home Assistant y se importó en una segunda instancia limpia. La clave incorrecta fue rechazada. Con la clave correcta se recuperaron el archivo de prueba y la configuración original.

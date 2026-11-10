@@ -30,6 +30,7 @@ Las operaciones nativas requieren Supervisor o una sesión real de YunoHost. Par
 | `private_git_manager/app/core.py` | Git y SSH, inventario, estado, despliegues y cliente del Supervisor |
 | `private_git_manager/app/jobs.py` | Cola de trabajos y programación |
 | `private_git_manager/app/application.py` y `backups.py` | Operaciones nativas de Home Assistant y copias |
+| `private_git_manager/app/backup_git.py` | Etiquetas Git, transferencia SSH e integridad del archivo cifrado de cada aplicación |
 | `private_git_manager/app/yunohost.py` | Detección y preparación de paquetes para la API nativa de YunoHost |
 | `private_git_manager/app/documentation.py` | Lectura y entrega segura del Markdown y sus recursos |
 | `private_git_manager/app/storage.py` | Migración y conservación del estado persistente |
