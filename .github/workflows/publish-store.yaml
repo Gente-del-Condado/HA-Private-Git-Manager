@@ -29,22 +29,21 @@ jobs:
           path: source
           persist-credentials: false
 
-      - name: Comprobar credencial de publicación
+      - name: Descargar el catálogo de Forgejo
         env:
-          DEPLOY_KEY: ${{ secrets.MIS_APP_DEPLOY_KEY }}
+          DEPLOY_KEY: ${{ secrets.MIS_APP_FORGEJO_DEPLOY_KEY }}
         run: |
-          if [ -z "$DEPLOY_KEY" ]; then
-            echo '::error::Falta el secreto MIS_APP_DEPLOY_KEY. Consulta PUBLISHING.md.'
-            exit 1
-          fi
-
-      - name: Descargar la tienda con su clave de despliegue
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          repository: Gente-del-Condado/Mis-app
-          ref: main
-          path: store
-          ssh-key: ${{ secrets.MIS_APP_DEPLOY_KEY }}
+          set -euo pipefail
+          : "${DEPLOY_KEY:?Falta el secreto MIS_APP_FORGEJO_DEPLOY_KEY}"
+          key_dir=$(mktemp -d "$RUNNER_TEMP/catalog-ssh.XXXXXX")
+          chmod 700 "$key_dir"
+          (umask 077; printf '%s\n' "$DEPLOY_KEY" > "$key_dir/key")
+          unset DEPLOY_KEY
+          printf '%s\n' '[gentedelcondado.es]:2233 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEV4EWbIkELBR3ba0QeSh+K7ceSXVLavPtUjRI+4kwHL' > "$key_dir/known_hosts"
+          ssh_command="ssh -i '$key_dir/key' -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile='$key_dir/known_hosts'"
+          git -c core.sshCommand="$ssh_command" clone --branch main --single-branch \
+            ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/Mis-app.git store
+          git -C store config core.sshCommand "$ssh_command"
 
       - name: Sincronizar únicamente la carpeta de la app
         run: bash source/scripts/publish-store.sh store
@@ -62,5 +61,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m "Update private_git_manager from ${SOURCE_COMMIT}"
-          git push origin HEAD:main
-          echo "Publicada private_git_manager desde ${SOURCE_COMMIT} en Gente-del-Condado/Mis-app." >> "$GITHUB_STEP_SUMMARY"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+            git pull --rebase origin main
+          done
+          echo "Publicada private_git_manager desde ${SOURCE_COMMIT} en el catálogo Mis-app de Forgejo." >> "$GITHUB_STEP_SUMMARY"

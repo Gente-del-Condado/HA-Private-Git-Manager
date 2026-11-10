@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - 'custom_components/pgm_forgejo_backup/**'
-      - 'scripts/publish-component.sh'
       - '.github/workflows/publish-components.yaml'
   workflow_dispatch:
 
@@ -19,64 +18,56 @@ concurrency:
 jobs:
   publish:
     if: github.repository == 'Gente-del-Condado/HA-Private-Git-Manager' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: GitHub
-            remote: git@github.com:Gente-del-Condado/Mis-component.git
-            key: MIS_COMPONENT_GITHUB_DEPLOY_KEY
-          - target: Forgejo
-            remote: ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/Mis-component.git
-            key: MIS_COMPONENT_FORGEJO_DEPLOY_KEY
-    name: Publicar en ${{ matrix.target }}
     steps:
-      - name: Descargar la última versión de main
+      - name: Descargar las fuentes actuales
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: main
+          path: source
           persist-credentials: false
 
-      - name: Actualizar el catálogo
+      - name: Descargar el catálogo de Forgejo
         env:
-          TARGET: ${{ matrix.target }}
-          REMOTE: ${{ matrix.remote }}
-          DEPLOY_KEY: ${{ secrets[matrix.key] }}
-          FORGEJO_KNOWN_HOSTS: ${{ vars.MIS_COMPONENT_FORGEJO_KNOWN_HOSTS }}
+          DEPLOY_KEY: ${{ secrets.MIS_COMPONENT_FORGEJO_DEPLOY_KEY_V2 }}
         run: |
           set -euo pipefail
-          if [ -z "$DEPLOY_KEY" ]; then
-            echo "::notice::Publicación en $TARGET pendiente de configurar. Consulta PUBLISHING.md."
-            exit 0
-          fi
-          umask 077
-          publish_dir=$(mktemp -d)
-          trap 'rm -rf -- "$publish_dir"' EXIT
-          printf '%s\n' "$DEPLOY_KEY" > "$publish_dir/deploy_key"
-
-          if [ "$TARGET" = Forgejo ]; then
-            : "${FORGEJO_KNOWN_HOSTS:?Falta la clave de host verificada de Forgejo. Consulta PUBLISHING.md.}"
-            printf '%s\n' "$FORGEJO_KNOWN_HOSTS" > "$publish_dir/known_hosts"
-          else
-            # La API oficial de GitHub publica las claves de host SSH.
-            curl --fail --silent --show-error --max-time 15 https://api.github.com/meta |
-              jq -er '.ssh_keys[] | "github.com " + .' > "$publish_dir/known_hosts"
-          fi
-
-          export GIT_SSH_COMMAND="ssh -i $publish_dir/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$publish_dir/known_hosts -o ConnectTimeout=15"
+          : "${DEPLOY_KEY:?Falta el secreto MIS_COMPONENT_FORGEJO_DEPLOY_KEY_V2}"
+          key_dir=$(mktemp -d "$RUNNER_TEMP/catalog-ssh.XXXXXX")
+          chmod 700 "$key_dir"
+          (umask 077; printf '%s\n' "$DEPLOY_KEY" > "$key_dir/key")
           unset DEPLOY_KEY
-          catalog="$publish_dir/catalog"
-          git clone --branch main --single-branch -- "$REMOTE" "$catalog"
-          bash scripts/publish-component.sh "$catalog"
-          git -C "$catalog" add -- custom_components/pgm_forgejo_backup
-          if git -C "$catalog" diff --cached --quiet; then
-            echo "El catálogo de $TARGET ya está actualizado." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          source_commit=$(git rev-parse HEAD)
-          git -C "$catalog" -c user.name='github-actions[bot]' \
-            -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
-            commit -m "Publicar Forgejo Backup desde $source_commit"
-          git -C "$catalog" push origin HEAD:main
+          printf '%s\n' '[gentedelcondado.es]:2233 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEV4EWbIkELBR3ba0QeSh+K7ceSXVLavPtUjRI+4kwHL' > "$key_dir/known_hosts"
+          ssh_command="ssh -i '$key_dir/key' -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile='$key_dir/known_hosts'"
+          git -c core.sshCommand="$ssh_command" clone --branch main --single-branch \
+            ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/Mis-component.git catalog
+          git -C catalog config core.sshCommand "$ssh_command"
+
+      - name: Publicar únicamente pgm_forgejo_backup
+        run: |
+          set -euo pipefail
+          component=custom_components/pgm_forgejo_backup
+          jq -e '.domain == "pgm_forgejo_backup" and (.version | type == "string" and length > 0)' "source/$component/manifest.json" >/dev/null
+          source_sha=$(git -C source rev-parse HEAD)
+          for attempt in 1 2 3; do
+            rm -rf -- "catalog/$component"
+            git -C source archive "$source_sha" "$component" | tar -x -C catalog
+            git -C catalog add -- "$component"
+            if git -C catalog diff --cached --quiet; then
+              echo 'La integración ya está actualizada.' >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            git -C catalog -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m "Publicar pgm_forgejo_backup desde $source_sha"
+            if git -C catalog push origin HEAD:main; then
+              echo "Publicada pgm_forgejo_backup desde $source_sha en Forgejo." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            if [ "$attempt" != 3 ]; then
+              git -C catalog fetch origin main
+              git -C catalog reset --hard FETCH_HEAD
+            fi
+          done
+          exit 1
