@@ -6,6 +6,8 @@
 
 ## Instalar y conectar
 
+En Home Assistant 2026.11 o posterior, abre [Forgejo Backup en el Marketplace](https://my.home-assistant.io/redirect/marketplace_repository/?owner=Gente-del-Condado&repository=HA-Private-Git-Manager&category=integration). Si se solicita, conecta GitHub, añade el repositorio como **Integración** y pulsa **Instalar**. Después sigue desde el paso 2 para configurar el destino.
+
 1. En Private Git Manager 0.15.0 o posterior, añade por SSH y sincroniza la rama `main` de **Mis-component** en [Forgejo](https://gentedelcondado.es/forgejo/wolfbelmi88/Mis-component) o [GitHub](https://github.com/Gente-del-Condado/Mis-component). El catálogo usa una clave de despliegue de lectura. Busca **Forgejo Backup** en **Componentes** (o en la ficha del repositorio en la versión 0.15.0) y pulsa **Instalar integración**, revisa el commit y espera el resultado del trabajo. Reinicia Core. Para una instalación manual, copia `custom_components/pgm_forgejo_backup` a `/config/custom_components/`. Usa Home Assistant 2026.11 o posterior con Git y OpenSSH en Core.
 2. Crea un repositorio **privado y dedicado a copias** en Forgejo. Puedes dejarlo vacío. Forgejo Backup 0.1.1 o posterior crea la rama `main` y un README al subir la primera copia si el repositorio carece de ramas. La misma inicialización se aplica en la próxima subida a repositorios que solo tienen etiquetas de copias. Si ya hay una rama, se conserva. Copia la URL SSH de clonación, por ejemplo `ssh://git@forgejo.example.org:2222/equipo/copias.git`.
 3. En **Ajustes → Dispositivos y servicios → Añadir integración**, busca **Private Git Manager · Forgejo Backup** e introduce la URL.
