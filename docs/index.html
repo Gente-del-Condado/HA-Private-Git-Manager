@@ -52,14 +52,14 @@
         <h2>01 · Instalar el gestor</h2>
         <h3>Qué repositorio usar</h3>
         <dl>
-          <dt>Mis-app</dt><dd>Tienda desde la que instalas el gestor en Home Assistant OS.</dd>
-          <dt>Mis-component</dt><dd>Catálogo privado que conectas dentro del gestor para instalar integraciones como Forgejo Backup.</dd>
+          <dt>Mis_app_ha</dt><dd>Tienda desde la que instalas el gestor en Home Assistant OS.</dd>
+          <dt>Mis_componente_ha</dt><dd>Catálogo público que conectas dentro del gestor para instalar integraciones como Forgejo Backup.</dd>
           <dt>Tu repositorio de copias</dt><dd>Destino privado donde Forgejo Backup guarda los archivos cifrados.</dd>
           <dt>HA-Private-Git-Manager</dt><dd>Repositorio de código fuente y documentación del proyecto.</dd>
         </dl>
         <h3>Home Assistant OS</h3>
         <ol>
-          <li>Añade <a href="https://github.com/Gente-del-Condado/Mis-app">Mis-app</a> como repositorio de la tienda de aplicaciones.</li>
+          <li>Añade <a href="https://github.com/Gente-del-Condado/Mis_app_ha">Mis_app_ha</a> como repositorio de la tienda de aplicaciones.</li>
           <li>Busca <strong>HA Private Git Manager</strong>, instálalo y pulsa <strong>Iniciar</strong>.</li>
           <li>Abre la interfaz web a través de Home Assistant. Puedes fijarla a la barra lateral.</li>
         </ol>
@@ -130,7 +130,7 @@
       <section id="componentes">
         <h2>05 · Instalar y actualizar componentes de Core</h2>
         <ol>
-          <li>En <strong>Repositorios</strong>, añade Mis-component por SSH, con una clave de despliegue de lectura, y sincroniza <code>main</code>. Copia la URL SSH de tu catálogo en <a href="https://gentedelcondado.es/forgejo/wolfbelmi88/Mis-component">Forgejo</a> o <a href="https://github.com/Gente-del-Condado/Mis-component">GitHub</a>.</li>
+          <li>En <strong>Repositorios</strong>, añade Mis_componente_ha por SSH, con una clave de despliegue de lectura, y sincroniza <code>main</code>. Copia la URL SSH de tu catálogo en <a href="https://github.com/Gente-del-Condado/Mis_componente_ha">GitHub</a>.</li>
           <li>Abre <strong>Componentes</strong>. Busca por nombre, dominio o repositorio. La ficha muestra la versión del catálogo, la versión en disco, el README y el estado.</li>
           <li>Pulsa <strong>Instalar integración</strong> o <strong>Actualizar integración</strong>, revisa el commit y confirma. Espera a que termine y reinicia Home Assistant Core. Si es la primera instalación, da de alta la integración en <strong>Ajustes → Dispositivos y servicios</strong>.</li>
         </ol>
@@ -209,8 +209,8 @@ sha256sum backup.tar</code></pre>
           <dt>Slug duplicado</dt><dd>Si falla al sincronizar, busca dos manifiestos con el mismo slug en la rama descargada. Si solo falla al instalar, revisa también <code>/addons</code> en Home Assistant y sus copias de carpetas antiguas. Conserva el identificador del complemento instalado.</dd>
           <dt>La carpeta local ya existe</dt><dd>Comprueba el manifiesto de <code>/addons/&lt;slug&gt;</code>. Si coincide, revisa y autoriza la adopción. Si pertenece a otro complemento, localiza el conflicto antes de mover archivos.</dd>
           <dt>La huella SSH ha cambiado</dt><dd>Confirma con el administrador del servidor que se trata de una rotación prevista. Actualiza la identidad de confianza solo después de comparar la nueva huella.</dd>
-          <dt>La actualización del gestor no aparece</dt><dd>Actualiza el catálogo de Mis-app y verifica que la tienda muestra una versión superior. En YunoHost elige una etiqueta publicada al ejecutar la actualización.</dd>
-          <dt>Forgejo Backup no aparece en Componentes</dt><dd>Comprueba que usas Home Assistant OS y que has sincronizado Mis-component. Si el componente está en disco pero falta en Dispositivos y servicios, reinicia Core.</dd>
+          <dt>La actualización del gestor no aparece</dt><dd>Actualiza el catálogo de Mis_app_ha y verifica que la tienda muestra una versión superior. En YunoHost elige una etiqueta publicada al ejecutar la actualización.</dd>
+          <dt>Forgejo Backup no aparece en Componentes</dt><dd>Comprueba que usas Home Assistant OS y que has sincronizado Mis_componente_ha. Si el componente está en disco pero falta en Dispositivos y servicios, reinicia Core.</dd>
           <dt>El README no muestra la última copia</dt><dd>Confirma que la copia figura en la ubicación Forgejo en Home Assistant. El índice se actualiza al subir o borrar copias en un README gestionado. Las etiquetas permiten acceder a ellas si el índice no está disponible.</dd>
           <dt>Reinstalación y datos</dt><dd>Haz una copia del gestor. En Home Assistant sus datos están en <code>/config/private-git-manager</code>. En YunoHost la copia del gestor incluye las claves, credenciales, catálogos y actividad. Guarda las copias con acceso restringido.</dd>
         </dl>

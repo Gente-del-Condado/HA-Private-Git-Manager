@@ -75,7 +75,7 @@ Tras restaurar, comprueba la ruta recuperada y sincroniza un repositorio por SSH
 para verificar que la clave sigue siendo válida. El archivo de copia incluye
 credenciales y debe quedar bajo acceso restringido.
 
-La edición de Home Assistant se publica por separado en Mis-app.
+La edición de Home Assistant se publica por separado en Mis_app_ha.
 
 ## Diagnóstico rápido
 

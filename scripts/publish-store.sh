@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SOURCE_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-STORE_ROOT=$(cd -- "${1:?Indica la carpeta del repositorio Mis-app}" && pwd)
+STORE_ROOT=$(cd -- "${1:?Indica la carpeta del repositorio Mis_app_ha}" && pwd)
 APP=private_git_manager
 
 test "$SOURCE_ROOT" != "$STORE_ROOT"

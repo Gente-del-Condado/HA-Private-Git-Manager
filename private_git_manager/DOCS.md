@@ -4,7 +4,7 @@
 
 ## Instalación y actualización del gestor
 
-Desde Mis-app, instala e inicia **HA Private Git Manager** y abre su interfaz web. Si lo instalas como aplicación local, copia la carpeta completa del paquete a `/addons/private_git_manager`, recarga la tienda con `ha addons reload` y busca el gestor en **Aplicaciones locales**.
+Desde Mis_app_ha, instala e inicia **HA Private Git Manager** y abre su interfaz web. Si lo instalas como aplicación local, copia la carpeta completa del paquete a `/addons/private_git_manager`, recarga la tienda con `ha addons reload` y busca el gestor en **Aplicaciones locales**.
 
 Para actualizar una instalación local, haz primero una copia, detén el gestor, reemplaza su carpeta de programa y recarga la tienda. Actualiza y vuelve a iniciar desde su ficha. Si usas la terminal, consulta el identificador con `ha addons list` y usa ese mismo identificador en `ha addons update` y `ha addons start`.
 
@@ -110,7 +110,7 @@ Se exportan nombres, URL, referencias y huellas de origen. Las claves SSH privad
 
 Abre **Componentes** en el menú del gestor para consultar los catálogos sincronizados, comparar las versiones y filtrar por estado. Desde la ficha de cada integración puedes abrir el README del repositorio, sincronizarlo y revisar el commit antes de instalar o actualizar.
 
-Añade y sincroniza por SSH **Mis-component** o un repositorio con `custom_components/<dominio>/manifest.json` y `__init__.py`. Usa una clave de despliegue de lectura para el catálogo. En la fila de la integración, pulsa **Instalar integración** o **Actualizar integración**, revisa el commit y confirma. Tras finalizar el trabajo, reinicia Home Assistant Core. Usa **Ajustes → Dispositivos y servicios** para configurar una integración nueva.
+Añade y sincroniza por SSH **Mis_componente_ha** o un repositorio con `custom_components/<dominio>/manifest.json` y `__init__.py`. Usa una clave de despliegue de lectura para el catálogo. En la fila de la integración, pulsa **Instalar integración** o **Actualizar integración**, revisa el commit y confirma. Tras finalizar el trabajo, reinicia Home Assistant Core. Usa **Ajustes → Dispositivos y servicios** para configurar una integración nueva.
 
 Supervisor monta la configuración de Core con escritura para habilitar este flujo. Instala código Python solo de repositorios en los que confíes. Una copia existente se conserva antes de reemplazarla, incluso cuando proviene de una instalación manual. La copia queda bajo una carpeta oculta `.pgm-<dominio>-*` en `custom_components`. Para volver a esa versión, detén Core, mueve la carpeta activa aparte, coloca `previous` con el nombre del dominio y vuelve a iniciar Core.
 

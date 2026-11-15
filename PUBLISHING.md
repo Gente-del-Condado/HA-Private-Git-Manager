@@ -1,17 +1,15 @@
-> Distribución actual: GitHub publica directamente en `Mis_app_ha` y
-> `Mis_componente_ha`, conservando las claves GitHub existentes
-> `MIS_APP_DEPLOY_KEY` y `MIS_COMPONENT_GITHUB_DEPLOY_KEY`.
-> Los publicadores no escriben en Forgejo. La integración sigue permitiendo
-> guardar sus copias en el repositorio elegido por el usuario.
+# Publicación automática en Mis_app_ha
 
-# Publicación automática en Mis-app
-
-El código se desarrolla en este repositorio. La tienda pública de Home Assistant es
-[Mis-app](https://github.com/Gente-del-Condado/Mis_app_ha).
+El código se desarrolla en el origen de
+[Forgejo](https://gentedelcondado.es/forgejo/wolfbelmi88/HA-Private-Git-Manager).
+[GitHub](https://github.com/Gente-del-Condado/HA-Private-Git-Manager) es su espejo
+público y ejecuta los publicadores. Sube y fusiona las revisiones en Forgejo;
+no edites el espejo. No hay publicación de regreso a Forgejo. La tienda pública de Home Assistant es
+[Mis_app_ha](https://github.com/Gente-del-Condado/Mis_app_ha).
 
 Al subir cambios a `main` dentro de `private_git_manager/`, GitHub Actions ejecuta
-**Publicar en Mis-app** y copia esa carpeta completa a la raíz de la tienda.
-También se puede ejecutar desde **Actions → Publicar en Mis-app → Run workflow**.
+**Publicar en Mis_app_ha** y copia esa carpeta completa a la raíz de la tienda.
+También se puede ejecutar desde **Actions → Publicar en Mis_app_ha → Run workflow**.
 Los cambios en el script de publicación o en el workflow también lo ejecutan.
 No hace falta ejecutar ningún programa en tu ordenador después del push.
 
@@ -19,7 +17,7 @@ La sincronización incluye archivos añadidos, modificados y eliminados. Solo to
 `private_git_manager/`; conserva las demás apps y los archivos de la tienda.
 Si no hay diferencias, no crea ningún commit. La copia siempre toma el último
 `main` al empezar para evitar publicar una versión antigua de una ejecución en cola.
-No edites esta carpeta en Mis-app: la siguiente publicación la sustituirá.
+No edites esta carpeta en Mis_app_ha: la siguiente publicación la sustituirá.
 
 ## Credencial de GitHub Actions (una sola vez)
 
@@ -27,14 +25,14 @@ El `GITHUB_TOKEN` normal solo escribe en su propio repositorio. Para publicar en
 la tienda se utiliza una clave SSH de despliegue independiente:
 
 1. Genera una clave Ed25519 dedicada sin contraseña.
-2. En **Mis-app → Settings → Deploy keys**, registra su parte pública y marca
-   **Allow write access**. Esta clave solo concede acceso a Mis-app.
+2. En **Mis_app_ha → Settings → Deploy keys**, registra su parte pública y marca
+   **Allow write access**. Esta clave solo concede acceso a Mis_app_ha.
 3. En **HA-Private-Git-Manager → Settings → Secrets and variables → Actions**,
    crea el secreto `MIS_APP_DEPLOY_KEY` con el contenido completo de la clave
    privada, incluidas las líneas `BEGIN` y `END`.
 
 No uses tu clave SSH personal para esta automatización. La clave privada nunca
-se incorpora a un commit. GitHub Actions debe estar habilitado y `main` de Mis-app
+se incorpora a un commit. GitHub Actions debe estar habilitado y `main` de Mis_app_ha
 debe admitir los pushes de esta clave; si se protege esa rama, hay que adaptar
 la política de publicación.
 
@@ -43,7 +41,7 @@ la política de publicación.
 1. Modifica la app en `private_git_manager/`.
 2. Cambia `version` en `private_git_manager/config.yaml` cuando quieras que Home
    Assistant ofrezca una actualización y documenta el cambio en `CHANGELOG.md`.
-3. Sube los cambios a `main` y comprueba que **Publicar en Mis-app** termina en verde.
+3. Fusiona la revisión en `main` de Forgejo, verifica su réplica y comprueba que **Publicar en Mis_app_ha** termina en verde.
 4. Home Assistant detectará la versión al comprobar actualizaciones de la tienda.
    La publicación no instala ni actualiza automáticamente las instancias de los usuarios.
 
@@ -76,4 +74,8 @@ comandos de instalación y actualización en [YUNOHOST.md](YUNOHOST.md).
 El catálogo público https://github.com/Gente-del-Condado/Mis_componente_ha se
 conecta como repositorio Git en Private Git Manager. El publicador actualiza
 solo custom_components/pgm_forgejo_backup/ y conserva los demás componentes.
-El renombrado conserva la identidad del repositorio y su clave GitHub.
+Utiliza `MIS_COMPONENT_GITHUB_DEPLOY_KEY`, limitado a ese destino de GitHub.
+El publicador de la aplicación utiliza `MIS_APP_DEPLOY_KEY`. Son independientes;
+comprueba ambas ejecuciones cuando cambien los dos productos. Estos flujos se
+activan por cambios en `main`; no dependen del flujo de calidad de Headscale,
+PiVigia o JackSignal. Ejecuta primero las pruebas indicadas en VALIDATION.md.

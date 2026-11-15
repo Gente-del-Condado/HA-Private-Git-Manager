@@ -1,3 +1,8 @@
+# 0.17.1
+
+- Actualizados los enlaces de las tiendas y la documentación de sus publicadores.
+- Aclarado el origen Forgejo, la réplica GitHub y el catálogo público de componentes.
+
 # 0.17.0
 
 - Guarda copias parciales cifradas de cada aplicación de Home Assistant en un repositorio privado de Forgejo o GitHub por SSH.
@@ -17,7 +22,7 @@
 
 # 0.15.2
 
-- Ayuda en español para Mis-component, las claves SSH y la recuperación de copias desde Forgejo.
+- Ayuda en español para Mis_componente_ha, las claves SSH y la recuperación de copias desde Forgejo.
 
 # 0.15.1
 

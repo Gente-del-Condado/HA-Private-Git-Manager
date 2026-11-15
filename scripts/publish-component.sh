@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-catalog_root=$(cd -- "${1:?Indica la carpeta del repositorio Mis-component}" && pwd)
+catalog_root=$(cd -- "${1:?Indica la carpeta del repositorio Mis_componente_ha}" && pwd)
 component=custom_components/pgm_forgejo_backup
 
 test "$source_root" != "$catalog_root"
