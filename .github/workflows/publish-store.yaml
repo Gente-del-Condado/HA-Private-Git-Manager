@@ -1,4 +1,4 @@
-name: Publicar en Mis-app
+name: Publicar en Mis_app_ha
 
 on:
   push:
@@ -29,20 +29,21 @@ jobs:
           path: source
           persist-credentials: false
 
-      - name: Descargar el catálogo de Forgejo
+      - name: Descargar el catálogo público de GitHub
         env:
-          DEPLOY_KEY: ${{ secrets.MIS_APP_FORGEJO_DEPLOY_KEY }}
+          DEPLOY_KEY: ${{ secrets.MIS_APP_DEPLOY_KEY }}
         run: |
           set -euo pipefail
-          : "${DEPLOY_KEY:?Falta el secreto MIS_APP_FORGEJO_DEPLOY_KEY}"
+          : "${DEPLOY_KEY:?Falta el secreto MIS_APP_DEPLOY_KEY}"
           key_dir=$(mktemp -d "$RUNNER_TEMP/catalog-ssh.XXXXXX")
           chmod 700 "$key_dir"
           (umask 077; printf '%s\n' "$DEPLOY_KEY" > "$key_dir/key")
           unset DEPLOY_KEY
-          printf '%s\n' '[gentedelcondado.es]:2233 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEV4EWbIkELBR3ba0QeSh+K7ceSXVLavPtUjRI+4kwHL' > "$key_dir/known_hosts"
+          curl --fail --silent --show-error --max-time 15 https://api.github.com/meta |
+            jq -er '.ssh_keys[] | "github.com " + .' > "$key_dir/known_hosts"
           ssh_command="ssh -i '$key_dir/key' -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile='$key_dir/known_hosts'"
           git -c core.sshCommand="$ssh_command" clone --branch main --single-branch \
-            ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/Mis-app.git store
+            git@github.com:Gente-del-Condado/Mis_app_ha.git store
           git -C store config core.sshCommand "$ssh_command"
 
       - name: Sincronizar únicamente la carpeta de la app
@@ -66,4 +67,4 @@ jobs:
             if [ "$attempt" = 3 ]; then exit 1; fi
             git pull --rebase origin main
           done
-          echo "Publicada private_git_manager desde ${SOURCE_COMMIT} en el catálogo Mis-app de Forgejo." >> "$GITHUB_STEP_SUMMARY"
+          echo "Publicada private_git_manager desde ${SOURCE_COMMIT} en el catálogo Mis_app_ha de Forgejo." >> "$GITHUB_STEP_SUMMARY"

@@ -1,4 +1,4 @@
-name: Publicar en Mis-component
+name: Publicar en Mis_componente_ha
 
 on:
   push:
@@ -28,20 +28,21 @@ jobs:
           path: source
           persist-credentials: false
 
-      - name: Descargar el catálogo de Forgejo
+      - name: Descargar el catálogo público de GitHub
         env:
-          DEPLOY_KEY: ${{ secrets.MIS_COMPONENT_FORGEJO_DEPLOY_KEY_V2 }}
+          DEPLOY_KEY: ${{ secrets.MIS_COMPONENT_GITHUB_DEPLOY_KEY }}
         run: |
           set -euo pipefail
-          : "${DEPLOY_KEY:?Falta el secreto MIS_COMPONENT_FORGEJO_DEPLOY_KEY_V2}"
+          : "${DEPLOY_KEY:?Falta el secreto MIS_COMPONENT_GITHUB_DEPLOY_KEY}"
           key_dir=$(mktemp -d "$RUNNER_TEMP/catalog-ssh.XXXXXX")
           chmod 700 "$key_dir"
           (umask 077; printf '%s\n' "$DEPLOY_KEY" > "$key_dir/key")
           unset DEPLOY_KEY
-          printf '%s\n' '[gentedelcondado.es]:2233 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEV4EWbIkELBR3ba0QeSh+K7ceSXVLavPtUjRI+4kwHL' > "$key_dir/known_hosts"
+          curl --fail --silent --show-error --max-time 15 https://api.github.com/meta |
+            jq -er '.ssh_keys[] | "github.com " + .' > "$key_dir/known_hosts"
           ssh_command="ssh -i '$key_dir/key' -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile='$key_dir/known_hosts'"
           git -c core.sshCommand="$ssh_command" clone --branch main --single-branch \
-            ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/Mis-component.git catalog
+            git@github.com:Gente-del-Condado/Mis_componente_ha.git catalog
           git -C catalog config core.sshCommand "$ssh_command"
 
       - name: Publicar únicamente pgm_forgejo_backup
@@ -62,7 +63,7 @@ jobs:
               -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
               commit -m "Publicar pgm_forgejo_backup desde $source_sha"
             if git -C catalog push origin HEAD:main; then
-              echo "Publicada pgm_forgejo_backup desde $source_sha en Forgejo." >> "$GITHUB_STEP_SUMMARY"
+              echo "Publicada pgm_forgejo_backup desde $source_sha en GitHub." >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
             if [ "$attempt" != 3 ]; then
