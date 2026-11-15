@@ -531,7 +531,7 @@
   "integrationReviewAction": "Review and reinstall",
   "integrationCount": "Components in this repository: {count}",
   "integrationsEmpty": "No components yet",
-  "integrationsEmptyHelp": "Add and sync a repository such as Mis-component with integrations in custom_components/.",
+  "integrationsEmptyHelp": "Add and sync a repository such as Mis_componente_ha with integrations in custom_components/.",
   "integrationRestartHelp": "After installing or updating a component, restart Home Assistant Core to load the code.",
   "integrationBlockedStatus": "Local folder conflict",
   "migrationTitle": "Manager backup and migration",

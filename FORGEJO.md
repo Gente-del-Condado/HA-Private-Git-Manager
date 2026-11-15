@@ -3,8 +3,13 @@
 Usa la URL **SSH** del botón **Clonar** del repositorio. Si el servidor usa un puerto personalizado, conserva el usuario, puerto y ruta indicados por Forgejo.
 
 ```text
-ssh://forgejo@gentedelcondado.es:2233/wolfbelmi88/Mis-component.git
+ssh://forgejo@git.example.org:2233/equipo/catalogo.git
 ```
+
+El catálogo público [Mis_componente_ha](https://github.com/Gente-del-Condado/Mis_componente_ha)
+se distribuye exclusivamente en GitHub. Para él utiliza su URL de clonación de
+GitHub y sus permisos correspondientes; el ejemplo anterior representa un
+catálogo privado propio de Forgejo, no una segunda copia de esa tienda.
 
 ## Conectar un catálogo
 
@@ -18,8 +23,8 @@ Si el servidor rechaza la clave, comprueba que la parte pública está registrad
 
 ## Distinguir los repositorios y las claves
 
-- **Mis-app** distribuye las aplicaciones de la tienda de Home Assistant.
-- **Mis-component** distribuye las integraciones que instalas desde el gestor. Tu instancia usa una clave de lectura.
+- **Mis_app_ha** distribuye las aplicaciones de la tienda de Home Assistant.
+- **Mis_componente_ha** distribuye las integraciones que instalas desde el gestor. Tu instancia usa una clave de lectura.
 - **Repositorio de copias** es el destino privado de Forgejo Backup. La integración genera una clave propia y necesita escritura para subir y aplicar la retención.
 - **Repositorio de código fuente** es donde se desarrolla el proyecto. GitHub Actions publica en los catálogos con claves de despliegue de escritura específicas de cada destino.
 

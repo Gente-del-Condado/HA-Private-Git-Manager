@@ -531,7 +531,7 @@
   "integrationReviewAction": "Revisar y reinstalar",
   "integrationCount": "Componentes en el repositorio: {count}",
   "integrationsEmpty": "Todavía no hay componentes",
-  "integrationsEmptyHelp": "Añade y sincroniza un repositorio como Mis-component que contenga integraciones en custom_components/.",
+  "integrationsEmptyHelp": "Añade y sincroniza un repositorio como Mis_componente_ha que contenga integraciones en custom_components/.",
   "integrationRestartHelp": "Después de instalar o actualizar un componente, reinicia Home Assistant Core para que cargue el código.",
   "integrationBlockedStatus": "Carpeta local en conflicto",
   "migrationTitle": "Copia y migración del gestor",

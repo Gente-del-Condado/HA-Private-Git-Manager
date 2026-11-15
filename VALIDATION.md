@@ -12,7 +12,7 @@ Ejecuta las comprobaciones de [CONTRIBUTING.md](CONTRIBUTING.md) desde la raíz.
 
 Para comprobar el contenedor con Podman, construye la imagen a partir de `private_git_manager/` y pasa su nombre a `bash scripts/container-smoke.sh`. El script comprueba Ingress, bloqueo de accesos externos y recursos de interfaz.
 
-Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home Assistant OS comprueba la instalación desde Mis-app, un complemento privado, una copia y la recuperación. En YunoHost comprueba la sesión de administrador en el mismo dominio, la instalación, actualización y desinstalación de un paquete privado, y la copia del propio gestor. Usa paquetes de prueba sin datos importantes.
+Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home Assistant OS comprueba la instalación desde Mis_app_ha, un complemento privado, una copia y la recuperación. En YunoHost comprueba la sesión de administrador en el mismo dominio, la instalación, actualización y desinstalación de un paquete privado, y la copia del propio gestor. Usa paquetes de prueba sin datos importantes.
 
 ## Migración cifrada del catálogo
 
