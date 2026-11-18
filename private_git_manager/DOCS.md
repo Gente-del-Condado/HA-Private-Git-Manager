@@ -200,3 +200,7 @@ Each backup offers **Download backup** and **Delete backup**, with a review of i
 **Delete backup** shows all accessible locations to remove, requires a consent checkbox and initially focuses **Cancel**. It deletes the whole archive from those locations, keeping installed apps and their current data. Downloaded copies and Home Assistant Link are excluded. Deletion cannot be undone. If reviewed metadata or locations change before execution, refresh and review again.
 
 Deletion runs in the background and verifies the result. Unconfirmed or partial deletion is reported with no automatic retry. Downloading and deleting remain available for uninstalled apps that retain their manager link and local source.
+
+## AppArmor
+
+Desde 0.17.2 se carga un perfil propio en modo enforce. Mantiene Git SSH/HTTPS, claves Ed25519, age, migración, copias y despliegues. Se conserva el rol manager porque la aplicación administra aplicaciones y copias nativas; no requiere desactivar la protección. El acceso de escritura a Core se limita a `custom_components`. El shell y el ayudante `askpass.sh` siguen permitidos para la autenticación de Git; las copias Git no reciben permisos de ejecución y Git mantiene desactivados sus hooks.

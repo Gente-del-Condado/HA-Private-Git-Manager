@@ -1,3 +1,10 @@
+# 0.17.2
+
+- Perfil AppArmor propio para Git SSH/HTTPS, claves, age, copias, despliegues e Ingress.
+- Conserva el rol manager necesario, datos, credenciales y rutas de instalación.
+- Limita escritura en Core a `custom_components`; mantiene la preparación de migraciones y el ayudante de autenticación HTTPS.
+- Incluye el perfil también en el archivo de instalación local.
+
 # 0.17.1
 
 - Actualizados los enlaces de las tiendas y la documentación de sus publicadores.

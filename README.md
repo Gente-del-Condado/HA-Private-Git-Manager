@@ -22,6 +22,12 @@ Esta cadena distribuye el software. Las instalaciones del gestor siguen
 utilizando sus propias credenciales para sincronizar repositorios y guardar
 copias cifradas en los destinos Forgejo o GitHub elegidos por cada usuario.
 
+## AppArmor en Home Assistant
+
+La aplicación incluye un [perfil propio](private_git_manager/APPARMOR.md), validado
+en amd64 y aarch64. Mantiene Git, SSH, copias cifradas y el rol manager necesario
+para gestionar aplicaciones. La integración de copias de Core es independiente.
+
 ## Instalar
 
 **Home Assistant OS.** Añade [Mis_app_ha](https://github.com/Gente-del-Condado/Mis_app_ha) a la tienda de aplicaciones. Instala e inicia **HA Private Git Manager** y abre su interfaz web. Requiere Supervisor y admite `amd64` y `aarch64`.

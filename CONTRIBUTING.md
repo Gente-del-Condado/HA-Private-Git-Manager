@@ -60,3 +60,7 @@ Las operaciones nativas requieren Supervisor o una sesión real de YunoHost. Par
 Edita `docs/index.html` para cambiar el texto y `docs/assets/manual.css` para ajustar la presentación. Mantén las rutas de recursos relativas para que funcionen bajo la subruta de GitHub Pages. Sirve la carpeta con `python3 -m http.server 8080 --bind 127.0.0.1 --directory docs`.
 
 Las capturas proceden del portal real con un Supervisor simulado y datos de ejemplo, como los de `tests/test_adoption_ui.py`. Reemplaza la imagen, sus dimensiones y su texto alternativo juntos. Revisa el manual en escritorio y móvil. Actualiza también la ayuda correspondiente en `private_git_manager/DOCS.md` o `doc/ADMIN*.md`.
+
+## Perfil de Home Assistant
+
+Consulta [AppArmor y laboratorio](private_git_manager/APPARMOR.md). Cambia el perfil junto con cualquier nueva ruta o programa que necesite la aplicación; prueba en las dos arquitecturas antes de publicar.

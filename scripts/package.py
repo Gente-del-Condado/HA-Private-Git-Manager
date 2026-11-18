@@ -12,6 +12,8 @@ SOURCE = ROOT / "private_git_manager"
 FILES = {
     "config.yaml",
     "Dockerfile",
+    "apparmor.txt",
+    "APPARMOR.md",
     "requirements.txt",
     ".dockerignore",
     "README.md",
