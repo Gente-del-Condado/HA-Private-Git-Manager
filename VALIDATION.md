@@ -14,6 +14,36 @@ Para comprobar el contenedor con Podman, construye la imagen a partir de `privat
 
 Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home Assistant OS comprueba la instalación desde Mis_app_ha, un complemento privado, una copia y la recuperación. En YunoHost comprueba la sesión de administrador en el mismo dominio, la instalación, actualización y desinstalación de un paquete privado, y la copia del propio gestor. Usa paquetes de prueba sin datos importantes.
 
+## 0.17.3 — Publicación y actualización en HAOS — 18 de noviembre de 2026
+
+- Cambio pequeño en la etiqueta visible de la contraseña de las copias
+  programadas, en español e inglés. Ruff, JavaScript y ocho pruebas dirigidas
+  de navegador, copias y empaquetado completadas.
+- El código se publica en Forgejo y llega al espejo GitHub. Su publicador
+  actualiza `build-source` de Mis_app_ha. El flujo
+  [Construir y publicar aplicaciones precompiladas](https://github.com/Gente-del-Condado/Mis_app_ha/actions/runs/44372313236)
+  completa las compilaciones y pruebas de arranque nativas amd64 y aarch64,
+  verifica el índice y su acceso anónimo y publica la versión 0.17.3 en la tienda.
+- El contexto distribuido corresponde al árbol
+  `065a369176478eea6ed01d8d36c3895c8e0ae830` del proyecto. La etiqueta GHCR 0.17.3
+  anuncia las plataformas amd64 y arm64.
+- En dos instancias desechables de HAOS, una amd64 y otra ARM64, se instala
+  primero 0.17.2 y se crean una clave y un repositorio de prueba. El Supervisor
+  detecta 0.17.3 y aplica su actualización nativa desde la imagen publicada.
+- Ambas instancias arrancan en 0.17.3 y conservan el repositorio, la clave pública
+  y los bytes de la clave privada. El perfil sigue en **enforce** y la interfaz
+  sirve las nuevas traducciones desde la imagen actualizada.
+- Se consultan las versiones vigentes en el Supervisor antes y después del
+  ensayo. Para estas VM, HAOS 18.4 es la última disponible. Se usan Supervisor
+  2026.11.0 y Core 2026.11.2. La ficha habitual del gestor en la tienda también
+  anuncia la actualización 0.17.3.
+
+Durante la preparación, el primer refresco de la tienda agotó el tiempo de
+espera de la CLI. El Supervisor terminó la recarga y se comprobó su estado
+antes de continuar la instalación. La aceptación de conservación de estado
+contrasta el identificador del repositorio con los valores introducidos, porque
+el alta devuelve su identificador.
+
 ## 0.17.2 — AppArmor en HAOS — 18 de noviembre de 2026
 
 - HAOS 18.4, Supervisor 2026.11.0 y Core 2026.11.2, en dos VM independientes:

@@ -45,6 +45,10 @@ la política de publicación.
 4. Home Assistant detectará la versión al comprobar actualizaciones de la tienda.
    La publicación no instala ni actualiza automáticamente las instancias de los usuarios.
 
+Para contrastar una publicación reciente, consulta el SHA actual de `main` con
+`git ls-remote` y lee los archivos de ese commit. Las URL RAW que siguen el
+nombre de una rama pueden conservar temporalmente una respuesta anterior en caché.
+
 La app se prepara en GitHub Actions para `amd64` y `aarch64`; Home Assistant
 descarga de GHCR la imagen ya compilada que anuncia la tienda.
 
