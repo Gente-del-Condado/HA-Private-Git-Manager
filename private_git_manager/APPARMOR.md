@@ -34,7 +34,7 @@ imagen, con `custom_components/.apparmor-lab` igual a `isolated-core-fixture`.
 La marca `/data/.apparmor-lab` debe contener `disposable-lab`. Usa repositorios,
 claves y aplicaciones de prueba, sin credenciales de producción.
 
-`scripts/check_apparmor.py --confirm-disposable-lab`, ejecutado con Python dentro
+`python scripts/check_apparmor.py --confirm-disposable-lab`, ejecutado con Python dentro
 del proceso protegido, prueba Git, claves Ed25519, age, el ayudante HTTPS,
 DNS/TLS y denegaciones. El programa rechaza una instalación ajena al laboratorio.
 La aceptación desde Ingress añade sincronización SSH/HTTPS, revisión y despliegue,
@@ -52,3 +52,15 @@ pero el rol manager sigue siendo necesario. [Cálculo oficial de la puntuación]
 ## ABI de la política
 
 Se declara `abi <abi/3.0>,` explícitamente. En HAOS 18.4 con parser 3.1.7, omitirlo puede dejar sin mediar las reglas de red aunque el perfil figure en enforce. Las pruebas incluyen permisos efectivos, no solo la puntuación. No retires esa declaración ni desactives la protección para evitar una denegación.
+
+## Ejecutar el ayudante desde el clon
+
+Sustituye `haos-lab` por el acceso SSH de tu laboratorio y prepara primero la
+instalación desechable descrita arriba. El código se envía por stdin a Python;
+no necesita permiso de ejecución sobre archivos del contenedor:
+
+```sh
+ssh root@haos-lab \
+  'docker exec -i app_local_private_git_manager_apparmor_lab python - --confirm-disposable-lab' \
+  < scripts/check_apparmor.py
+```

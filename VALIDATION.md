@@ -27,7 +27,7 @@ Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home As
   real y Git HTTPS con autenticación y TLS verificado contra servidores locales,
   migración, revisión del commit, recuperación, copias y paquete reproducible.
   El aviso de Starlette/httpx es de obsolescencia del cliente de pruebas.
-- `scripts/check_apparmor.py --confirm-disposable-lab` comprueba en el proceso
+- `python scripts/check_apparmor.py --confirm-disposable-lab` comprueba en el proceso
   confinado Git, Ed25519, age, askpass, DNS/TLS y denegaciones de secretos de Core,
   modificación del programa y ejecución de pip. Git HTTPS también consultó la
   tienda pública con validación de certificados, sin credenciales ni escritura.
