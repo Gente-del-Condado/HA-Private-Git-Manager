@@ -1,24 +1,43 @@
 # Publicación automática en Mis_app_ha
 
-## Preparación del espejo privado
+## Transición a Forgejo → privado → público
 
-El repositorio `Gente-del-Condado/HA-Private-Git-Manager-private` conserva una
-copia de `main` y las etiquetas de Forgejo. GitHub Actions está deshabilitado
-en ese privado. La réplica automática y el cambio de productor se activan por
-separado; hasta verificarlos, la publicación pública descrita abajo continúa.
+El privado `Gente-del-Condado/HA-Private-Git-Manager-private` recibe main,
+ramas y etiquetas de Forgejo por su propia deploy key SSH. Actions permanece
+**deshabilitado** en ese privado. El workflow manual **Comprobar espejo privado
+de PGM** valida identidad, privacidad, SHA de Forgejo y sumas desde el público.
 
-El workflow manual **Comprobar espejo privado de PGM** solo se ejecuta en
-`main` del público `HA-Private-Git-Manager`. Recibe el SHA completo comprobado
-en Forgejo y necesita `MIRROR_READ_TOKEN`, un token fino limitado al nuevo
-privado, con Contents: read y Metadata: read. Comprueba la identidad privada,
-la referencia exacta y el archivo de fuentes. No ejecuta su código, no modifica
-repositorios y no publica versiones. El token solo está disponible durante
-la descarga; la comprobación de manifiestos, rutas y sumas se realiza después,
-sin credenciales. No se sube el archivo privado como artefacto de Actions.
+**Publicar PGM desde espejo privado** se instala inicialmente desactivado.
+Una ejecución manual con `publish=false` descarga main y la etiqueta de versión,
+exporta únicamente los 126 archivos enumerados en
+`.github/pgm-publication/public-files.txt` y ejecuta las pruebas del producto sin
+credenciales. Los archivos nuevos dentro de una distribución requieren revisar
+esa lista. Las fuentes privadas completas nunca se suben como artefacto.
 
-Las claves `MIS_APP_DEPLOY_KEY` y `MIS_COMPONENT_GITHUB_DEPLOY_KEY` todavía
-son necesarias para los publicadores existentes. No retirarlas hasta comprobar
-sus sustitutos de extremo a extremo.
+Después de validar la prueba se desactiva la réplica directa de Forgejo al
+público y se activa `ENABLE_MIRROR_PUBLICATION=true` en el público. La ejecución
+manual con `publish=true`, y después la consulta horaria, publican main y las
+etiquetas nuevas con el token efímero del propio repositorio. Las etiquetas
+anteriores nunca se mueven; se comprueba que su paquete sigue coincidiendo. Un
+recibo en `.publication/pgm.json` identifica el origen y sus sumas. Si main y
+la etiqueta privada no cambian, no se repiten pruebas ni publicaciones.
+
+La comprobación previa al push rechaza cambios de referencia. El exportador
+no reemplaza los workflows ni su controlador: esos cambios se revisan en Forgejo
+y se despliegan expresamente al público, como parte del mantenimiento de CI.
+No se ejecuta código descargado en el job que posee permiso de escritura.
+
+El workflow llama explícitamente a los publicadores de la app, componente y
+manual después del push, porque el GITHUB_TOKEN no encadena workflows por push.
+Se conservan la raíz YunoHost, los tags y la URL de Pages. Todo Actions corre
+en repositorios públicos. La aplicación conserva su versión, datos y permisos.
+
+`MIRROR_READ_TOKEN` solo lee Contents/Metadata del nuevo privado. Las claves
+`MIS_APP_DEPLOY_KEY` y `MIS_COMPONENT_GITHUB_DEPLOY_KEY` siguen siendo necesarias
+para los dos publicadores de tienda en esta fase. No retirarlas hasta sustituir
+esos enlaces por consumidores autónomos y comprobar sus resultados.
+
+La ruta antigua descrita abajo se mantiene operativa hasta completar este corte.
 
 El código se desarrolla en el origen de
 [Forgejo](https://gentedelcondado.es/forgejo/wolfbelmi88/HA-Private-Git-Manager).

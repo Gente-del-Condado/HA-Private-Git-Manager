@@ -8,6 +8,10 @@ on:
       - 'scripts/publish-store.sh'
       - '.github/workflows/publish-store.yaml'
   workflow_dispatch:
+  workflow_call:
+    secrets:
+      MIS_APP_DEPLOY_KEY:
+        required: true
 
 permissions:
   contents: read
