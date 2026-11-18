@@ -41,6 +41,9 @@ def test_new_backup_controls_use_the_manager_workflows(backup_server, monkeypatc
             dialog = page.locator("#modal")
             page.get_by_role("button", name="Copias de seguridad", exact=True).click()
             dialog.get_by_role("button", name="Programar copias", exact=True).click()
+            playwright.expect(
+                dialog.get_by_label("Contraseña de las copias programadas", exact=True)
+            ).to_be_visible()
             dialog.get_by_label("Intervalo en horas").fill("24")
             dialog.get_by_label("Número de copias a conservar").fill("2")
             dialog.get_by_role("button", name="Guardar", exact=True).click()

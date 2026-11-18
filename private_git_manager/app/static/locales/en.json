@@ -583,5 +583,6 @@
   "stage_backupGitImporting": "Recovering encrypted backup from Git",
   "job_backup_git_export": "Save encrypted backup to Git",
   "job_backup_git_import": "Recover encrypted backup from Git",
-  "backup_git_wait": "The import is still pending. Check Logs and activity."
+  "backup_git_wait": "The import is still pending. Check Logs and activity.",
+  "backupSchedulePassword": "Scheduled backup password"
 }

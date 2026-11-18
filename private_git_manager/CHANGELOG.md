@@ -1,3 +1,7 @@
+# 0.17.3
+
+- El formulario de programación muestra «Contraseña de las copias programadas» en español y su traducción en inglés, para distinguir este campo de la contraseña opcional de una copia manual.
+
 # 0.17.2
 
 - Perfil AppArmor propio para Git SSH/HTTPS, claves, age, copias, despliegues e Ingress.

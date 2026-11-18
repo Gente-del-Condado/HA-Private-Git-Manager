@@ -1088,7 +1088,7 @@ function openBackupSchedule(repo, slug) {
     ${field("backupKeep", "keep", schedule.keep ?? 3, 'type="number" min="1" max="30" step="1" required')}
     <p id="backup-git-help">${esc(t("backupGitScheduleHelp"))}</p>
     ${backupGitRepos(schedule.git_destination, true)}
-    <label for="backup-git-password">${esc(t("backupPassword"))}
+    <label for="backup-git-password">${esc(t("backupSchedulePassword"))}
       <input id="backup-git-password" name="password" type="password" maxlength="1024" autocomplete="new-password" aria-describedby="backup-git-help">
     </label>
     <p>${esc(t("backupNextRun"))} · ${esc(date(schedule.next_at))}</p>

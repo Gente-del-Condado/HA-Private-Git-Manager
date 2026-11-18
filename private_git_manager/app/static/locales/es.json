@@ -583,5 +583,6 @@
   "stage_backupGitImporting": "Recuperando copia cifrada de Git",
   "job_backup_git_export": "Guardar copia cifrada en Git",
   "job_backup_git_import": "Recuperar copia cifrada de Git",
-  "backup_git_wait": "La importación sigue pendiente. Comprueba el estado en Registros y actividad."
+  "backup_git_wait": "La importación sigue pendiente. Comprueba el estado en Registros y actividad.",
+  "backupSchedulePassword": "Contraseña de las copias programadas"
 }
