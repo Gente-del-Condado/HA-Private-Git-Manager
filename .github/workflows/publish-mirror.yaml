@@ -87,11 +87,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 .github/pgm-publication/publish_mirror.py publish --prepared "$RUNNER_TEMP/prepared"
-  store:
-    needs: publish
-    uses: ./.github/workflows/publish-store.yaml
-    secrets:
-      MIS_APP_DEPLOY_KEY: ${{ secrets.MIS_APP_DEPLOY_KEY }}
   manual:
     needs: publish
     permissions:
