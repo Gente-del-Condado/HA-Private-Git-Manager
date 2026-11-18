@@ -27,15 +27,19 @@ no reemplaza los workflows ni su controlador: esos cambios se revisan en Forgejo
 y se despliegan expresamente al público, como parte del mantenimiento de CI.
 No se ejecuta código descargado en el job que posee permiso de escritura.
 
-El workflow llama explícitamente a los publicadores de la app, componente y
+El workflow llama explícitamente a los publicadores de la app y del
 manual después del push, porque el GITHUB_TOKEN no encadena workflows por push.
 Se conservan la raíz YunoHost, los tags y la URL de Pages. Todo Actions corre
 en repositorios públicos. La aplicación conserva su versión, datos y permisos.
 
 `MIRROR_READ_TOKEN` solo lee Contents/Metadata del nuevo privado. Las claves
-`MIS_APP_DEPLOY_KEY` y `MIS_COMPONENT_GITHUB_DEPLOY_KEY` siguen siendo necesarias
-para los dos publicadores de tienda en esta fase. No retirarlas hasta sustituir
-esos enlaces por consumidores autónomos y comprobar sus resultados.
+`MIS_APP_DEPLOY_KEY` sigue siendo necesaria para la tienda de aplicaciones.
+El catálogo Mis_componente_ha consulta cada hora el main público, comprueba el
+recibo y las sumas de pgm_forgejo_backup y escribe con su propio GITHUB_TOKEN.
+Su workflow y lector canónicos viven en .github/pgm-publication/ y se despliegan
+al catálogo. No necesita MIS_COMPONENT_GITHUB_DEPLOY_KEY: el publicador antiguo
+queda desactivado cuando ENABLE_MIRROR_PUBLICATION=true. La clave se conserva
+para revisar su retirada por separado. La lectura del catálogo es anónima.
 
 La ruta antigua descrita abajo se mantiene operativa hasta completar este corte.
 

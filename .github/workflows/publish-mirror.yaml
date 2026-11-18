@@ -92,11 +92,6 @@ jobs:
     uses: ./.github/workflows/publish-store.yaml
     secrets:
       MIS_APP_DEPLOY_KEY: ${{ secrets.MIS_APP_DEPLOY_KEY }}
-  component:
-    needs: publish
-    uses: ./.github/workflows/publish-components.yaml
-    secrets:
-      MIS_COMPONENT_GITHUB_DEPLOY_KEY: ${{ secrets.MIS_COMPONENT_GITHUB_DEPLOY_KEY }}
   manual:
     needs: publish
     permissions:
