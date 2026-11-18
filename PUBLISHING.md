@@ -45,8 +45,8 @@ la política de publicación.
 4. Home Assistant detectará la versión al comprobar actualizaciones de la tienda.
    La publicación no instala ni actualiza automáticamente las instancias de los usuarios.
 
-La app se construye en Home Assistant desde su `Dockerfile` para `amd64` o
-`aarch64`. Esta publicación copia código; no genera imágenes precompiladas.
+La app se prepara en GitHub Actions para `amd64` y `aarch64`; Home Assistant
+descarga de GHCR la imagen ya compilada que anuncia la tienda.
 
 Para generar el archivo de instalación local, ejecuta `python3 scripts/package.py`
 y verifica el SHA-256 que acompaña al archivo de `dist/`. El contenido parte de
@@ -79,3 +79,23 @@ El publicador de la aplicación utiliza `MIS_APP_DEPLOY_KEY`. Son independientes
 comprueba ambas ejecuciones cuando cambien los dos productos. Estos flujos se
 activan por cambios en `main`; no dependen del flujo de calidad de Headscale,
 PiVigia o JackSignal. Ejecuta primero las pruebas indicadas en VALIDATION.md.
+
+
+## Imágenes precompiladas de Home Assistant
+
+Forgejo sigue siendo el origen y GitHub el espejo. El publicador entrega el
+contenido aprobado a `build-source` de `Mis_app_ha`. Un único workflow de esa
+tienda construye imágenes nativas `amd64` y `aarch64`, ejecuta las pruebas de
+arranque con datos desechables y crea un índice multi arquitectura en GHCR.
+Solo después de verificar su descarga anónima actualiza la aplicación en `main`
+y añade `image:`. La versión anterior sigue instalable mientras se prepara la nueva.
+
+Los Dockerfile y fuentes se conservan; Home Assistant descarga la imagen preparada.
+No se cambian slugs, opciones, volúmenes, permisos, datos ni credenciales. Una imagen
+ya distribuida no se sustituye con otro contenido: aumenta la versión al cambiar
+el contexto de compilación. El cambio inicial publica las versiones actuales sin
+forzar actualizaciones ni reinstalaciones de los equipos existentes.
+
+El controlador común se mantiene en `packaging/homeassistant/store/` de
+`headscale_gateway` en Forgejo y se exporta a `.github/ha-images/` y al workflow
+de `Mis_app_ha`. No escribe en los principales ni devuelve cambios a Forgejo.
