@@ -1,0 +1,30 @@
+name: Consumir aplicación pública de PGM
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: homeassistant-forgejo-sources
+  cancel-in-progress: false
+jobs:
+  stage:
+    if: github.repository == 'Gente-del-Condado/Mis_app_ha' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: true
+      - run: python3 -m pip install PyYAML==6.0.3
+      - name: Consumir la aplicación pública sin credenciales entre repositorios
+        run: python3 .github/pgm-publication/consume_app.py
+  images:
+    needs: stage
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/build-images.yml
