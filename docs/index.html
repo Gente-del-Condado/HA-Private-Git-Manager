@@ -66,7 +66,7 @@
         <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
         <h3>YunoHost</h3>
         <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
-        <pre><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.17.0</code></pre>
+        <pre tabindex="0" role="region" aria-label="Comando de instalación en YunoHost"><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.17.2</code></pre>
       </section>
 
       <section id="conectar">
@@ -148,6 +148,14 @@
           <li>Para recuperarla, pulsa <strong>Recuperar desde Git</strong>, elige el destino y selecciona la copia. El gestor verifica la revisión y la integridad antes de importar al Supervisor. Cuando termine, revisa la versión, introduce su contraseña y confirma con <strong>Restaurar copia</strong>. Si cierras el portal durante la importación, podrás restaurarla desde <strong>Copias de seguridad</strong>.</li>
         </ol>
         <p>Si eliges solo el destino <strong>Local</strong>, la programación guarda copias sin cifrar. Usa 0 horas para desactivarla. Si falla un envío a Git, el gestor conserva la copia local y reintenta en el siguiente intervalo.</p>
+        <h3>Comprobar una recuperación</h3>
+        <p>Haz el ensayo en una instalación de pruebas y con una aplicación que contenga datos ficticios.</p>
+        <ol>
+          <li>Guarda un dato reconocible en la aplicación y programa una copia cifrada al repositorio privado. Espera a que el trabajo figure como completado en <strong>Registros y actividad</strong>.</li>
+          <li>Conserva la contraseña de la copia fuera del gestor. Retira su archivo local desde <strong>Borrar copia</strong> y modifica el dato de prueba en la aplicación.</li>
+          <li>Usa <strong>Recuperar desde Git</strong> para importar esa copia. Comprueba su fecha y versión antes de confirmar la restauración con su contraseña.</li>
+          <li>Abre la aplicación y comprueba que ha recuperado el dato original y su configuración. Mantén activada la protección de Home Assistant durante el ensayo.</li>
+        </ol>
         <p>Consulta <strong>Registros y actividad</strong> para comprobar el resultado de cada trabajo. Si ves <strong>Recuperación pendiente</strong>, verifica primero el estado en Supervisor. Después revisa si debes restaurar la copia de código o aceptar la versión actual. La recuperación del código y la restauración de datos son operaciones distintas.</p>
       </section>
 

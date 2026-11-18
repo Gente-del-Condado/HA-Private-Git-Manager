@@ -89,6 +89,46 @@ este recorrido con un paquete y unas claves de prueba:
 
 ## Copias cifradas de aplicaciones por SSH
 
+### Aceptación con AppArmor — 18 de noviembre de 2026
+
+Se probó la imagen pública `ghcr.io/gente-del-condado/ha-private-git-manager:0.17.2`
+en HAOS 18.4 amd64, Supervisor 2026.11.0 y Core 2026.11.2. El gestor de
+laboratorio usa su propio estado y no monta la configuración de Core. Conserva
+el perfil distribuido, en modo **enforce**, y el rol manager.
+
+Los destinos son un repositorio privado en Forgejo 17.0.1 desechable y un
+repositorio privado real en GitHub. Cada uno utiliza una clave Ed25519 del
+gestor registrada con escritura y una huella SSH comprobada. La clave temporal
+de GitHub se registra como clave de despliegue. Las pruebas no necesitan
+desactivar AppArmor ni usar un agente SSH.
+
+- La programación conserva un intervalo de una hora. Para acelerar el ensayo,
+  con el gestor detenido se adelanta únicamente `next_at` de la aplicación
+  ficticia. Después del arranque, el programador real crea y envía la copia.
+- Cada `.tar` cifrado ocupa 24 791 040 bytes e incluye un archivo de 20 MiB de
+  datos aleatorios. El tamaño obliga a usar varios fragmentos en Git.
+- Se verifica `protected: true` en la copia nativa y se retira el archivo local.
+  La recuperación usa la referencia y el commit del destino privado. El SHA-256
+  y el tamaño del `.tar` importado coinciden con los originales.
+- La contraseña incorrecta es rechazada. Con la correcta se recuperan el
+  archivo marcador, la suma SHA-256 del archivo aleatorio y la opción original.
+- Se repite la recuperación después de desinstalar la aplicación ficticia y
+  borrar otra vez su copia local. Cada proveedor permite reinstalar la versión
+  1.0.0 y recuperar los mismos archivos y opciones.
+- El proceso mantiene AppArmor en **enforce** durante ambas transferencias y
+  restauraciones. El diario no registra denegaciones de ese perfil durante el
+  ensayo. La instantánea pública del gestor no incluye la contraseña programada.
+
+La comprobación de distribución compara los 36 archivos de la aplicación con
+Mis_app_ha y los 13 del componente con Mis_componente_ha. Coinciden con Forgejo.
+La tienda añade a `config.yaml` el campo `image:` esperado. La imagen 0.17.2
+se descarga anónimamente de GHCR y su índice contiene amd64 y arm64. Al iniciar
+la revisión, los publicadores estaban completados y no había Actions pendientes
+ni en ejecución en esos dos catálogos.
+
+### Pruebas anteriores
+
+
 El flujo de Private Git Manager 0.17.0 se probó con un Supervisor simulado y un
 repositorio privado desechable en Forgejo 17.0.1. Se verificó la programación,
 el reintento tras un fallo de envío, la importación del mismo `.tar` byte por
@@ -96,7 +136,7 @@ byte y la restauración con la contraseña correcta. Chrome, con un ancho de
 390 píxeles, cubrió el envío manual y la revisión de la restauración. Se
 comprobó el envío de una etiqueta a GitHub privado en modo de simulación.
 
-Para aceptar el flujo con un Supervisor real, instala una aplicación de
+Para repetir el flujo con un Supervisor real, instala una aplicación de
 prueba, añade un dato reconocible y programa una copia a un repositorio
 privado. Espera a que termine el envío, cambia el dato y retira la copia
 local. Recupera la copia desde Git y verifica que la contraseña incorrecta
