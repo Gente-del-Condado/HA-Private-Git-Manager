@@ -42,7 +42,7 @@ jobs:
           curl --fail --silent --show-error --max-time 15 https://api.github.com/meta |
             jq -er '.ssh_keys[] | "github.com " + .' > "$key_dir/known_hosts"
           ssh_command="ssh -i '$key_dir/key' -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile='$key_dir/known_hosts'"
-          git -c core.sshCommand="$ssh_command" clone --branch main --single-branch \
+          git -c core.sshCommand="$ssh_command" clone --branch build-source --single-branch \
             git@github.com:Gente-del-Condado/Mis_app_ha.git store
           git -C store config core.sshCommand "$ssh_command"
 
@@ -63,8 +63,8 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m "Update private_git_manager from ${SOURCE_COMMIT}"
           for attempt in 1 2 3; do
-            if git push origin HEAD:main; then break; fi
+            if git push origin HEAD:build-source; then break; fi
             if [ "$attempt" = 3 ]; then exit 1; fi
-            git pull --rebase origin main
+            git pull --rebase origin build-source
           done
-          echo "Publicada private_git_manager desde ${SOURCE_COMMIT} en el catálogo Mis_app_ha de Forgejo." >> "$GITHUB_STEP_SUMMARY"
+          echo "Publicada private_git_manager desde ${SOURCE_COMMIT} en la preparación de Mis_app_ha de GitHub." >> "$GITHUB_STEP_SUMMARY"
