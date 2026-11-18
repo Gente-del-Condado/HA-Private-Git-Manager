@@ -96,6 +96,6 @@ ya distribuida no se sustituye con otro contenido: aumenta la versión al cambia
 el contexto de compilación. El cambio inicial publica las versiones actuales sin
 forzar actualizaciones ni reinstalaciones de los equipos existentes.
 
-El controlador común se mantiene en `packaging/homeassistant/store/` de
+El controlador común se mantiene en `packaging/homeassistant-store/` de
 `headscale_gateway` en Forgejo y se exporta a `.github/ha-images/` y al workflow
 de `Mis_app_ha`. No escribe en los principales ni devuelve cambios a Forgejo.
