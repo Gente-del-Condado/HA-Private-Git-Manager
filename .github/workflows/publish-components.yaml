@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.repository == 'Gente-del-Condado/HA-Private-Git-Manager' && github.ref == 'refs/heads/main'
+    if: vars.ENABLE_MIRROR_PUBLICATION != 'true' && github.repository == 'Gente-del-Condado/HA-Private-Git-Manager' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
