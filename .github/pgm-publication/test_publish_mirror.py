@@ -58,6 +58,22 @@ class ExportTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'ajeno'):
                 publisher.inventory(root)
 
+    def test_artifact_restores_executable_modes_from_verified_receipt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.source(root / 'source.tar.gz')
+            files = publisher.export(root / 'source.tar.gz', root / 'main')
+            record = {'source_sha': 'a'*40, 'tag_sha': None, 'main_files': files}
+            (root / 'receipt.json').write_text(json.dumps(record))
+            executable = root / 'main/private_git_manager/app/main.py'
+            executable.chmod(0o644)
+            publisher.verify(root)
+            self.assertEqual(executable.stat().st_mode & 0o777, 0o755)
+            record['main_files']['private_git_manager/app/main.py']['mode'] = 0o4755
+            (root / 'receipt.json').write_text(json.dumps(record))
+            with self.assertRaisesRegex(ValueError, 'permisos'):
+                publisher.verify(root)
+
     def test_controller_paths_cannot_enter_allowlist(self):
         with patch.object(publisher, 'CONTROL') as control:
             (control / 'public-files.txt').read_text.return_value = '.github/workflows/other.yml\n'
