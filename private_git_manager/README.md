@@ -31,3 +31,9 @@ publica por separado en Mis_componente_ha. No edites las copias generadas.
 Abre la pestaña **Documentación** o el [manual web ilustrado](https://gente-del-condado.github.io/HA-Private-Git-Manager/#home-assistant) para comenzar. Compatible con aarch64 y amd64. Requiere Supervisor.
 
 Spanish/English UI, SSH keys, private Git repositories and local apps, with background jobs, recovery and logs. See **Documentation** for setup and recovery instructions.
+
+## AppArmor
+
+Desde 0.17.2 se carga un perfil propio en modo enforce. Mantiene Git SSH/HTTPS, claves Ed25519, age, migración, copias y despliegues. Se conserva el rol manager porque la aplicación administra aplicaciones y copias nativas; no requiere desactivar la protección. El acceso de escritura a Core se limita a `custom_components`. El shell y el ayudante `askpass.sh` siguen permitidos para la autenticación de Git; las copias Git no reciben permisos de ejecución y Git mantiene desactivados sus hooks.
+
+[Alcance y pruebas del perfil AppArmor](APPARMOR.md).

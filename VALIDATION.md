@@ -14,6 +14,41 @@ Para comprobar el contenedor con Podman, construye la imagen a partir de `privat
 
 Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home Assistant OS comprueba la instalación desde Mis_app_ha, un complemento privado, una copia y la recuperación. En YunoHost comprueba la sesión de administrador en el mismo dominio, la instalación, actualización y desinstalación de un paquete privado, y la copia del propio gestor. Usa paquetes de prueba sin datos importantes.
 
+## 0.17.2 — AppArmor en HAOS — 18 de noviembre de 2026
+
+- HAOS 18.4, Supervisor 2026.11.0 y Core 2026.11.2, en dos VM independientes:
+  amd64 y aarch64. Sin cambiar sus recursos ni la configuración de Core. El
+  gestor de laboratorio usa datos propios y una configuración ficticia de Core.
+- Perfil propio en **enforce**: puntuación instalada 7/8 y protección activada.
+  Se conserva el rol manager. El ABI 3.0 explícito evita que las reglas de red
+  queden sin mediar con el parser 3.1.7 del laboratorio.
+- Suite nativa sin los archivos opcionales de navegador: **215 pruebas correctas
+  en cada arquitectura**; un caso opcional de navegador omitido. Incluye Git SSH
+  real y Git HTTPS con autenticación y TLS verificado contra servidores locales,
+  migración, revisión del commit, recuperación, copias y paquete reproducible.
+  El aviso de Starlette/httpx es de obsolescencia del cliente de pruebas.
+- `scripts/check_apparmor.py --confirm-disposable-lab` comprueba en el proceso
+  confinado Git, Ed25519, age, askpass, DNS/TLS y denegaciones de secretos de Core,
+  modificación del programa y ejecución de pip. Git HTTPS también consultó la
+  tienda pública con validación de certificados, sin credenciales ni escritura.
+- Desde la IP real de Ingress se sincroniza un repositorio SSH ficticio,
+  verificando la huella, se revisa el commit y se instala una app desechable y
+  una integración en Core ficticio. Se prueba la recuperación explícita de una
+  instalación cuyo contenedor de laboratorio no pudo construir su imagen.
+- La copia nativa cifrada y su restauración recuperan una opción de prueba.
+  La actualización a 1.0.1 conserva esa opción; la integración también cambia de
+  versión. El reinicio del gestor conserva repositorio y clave: una sincronización
+  posterior vuelve a autenticarse por SSH. Este recorrido se repite en ambas VM.
+- Ruff, formato, paquete y revisión de los archivos distribuidos. El paquete
+  incluye `apparmor.txt` y `APPARMOR.md`. No se añaden credenciales ni fixtures
+  privados a Git. El ayudante de tests espera la liberación del bloqueo después
+  del estado terminal, sin cambiar la lógica de trabajos del producto.
+
+La aceptación usa servicios ficticios y no acredita todos los proveedores
+externos ni escenarios de navegador. No se instala ni restaura Core real,
+YunoHost o aplicaciones del usuario con esta revisión. Para repetirla consulta
+[AppArmor](private_git_manager/APPARMOR.md); nunca uses el estado de producción.
+
 ## Migración cifrada del catálogo
 
 En un laboratorio con Forgejo 17.0.1 se exportó el catálogo por SSH desde la

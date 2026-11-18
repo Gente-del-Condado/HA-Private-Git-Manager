@@ -239,7 +239,13 @@ def finish_job(jobs, selected):
     for _ in range(500):
         item = jobs.snapshot()[selected]
         if item["status"] not in {"queued", "running"}:
-            return item
+            # El estado terminal se guarda antes del último evento y de liberar
+            # el bloqueo del gestor. Esperar ese cierre evita una carrera del arnés.
+            assert jobs.manager.lock.acquire(timeout=5), "El trabajo no liberó el gestor"
+            try:
+                return jobs.snapshot()[selected]
+            finally:
+                jobs.manager.lock.release()
         time.sleep(0.01)
     raise AssertionError("Job did not finish")
 

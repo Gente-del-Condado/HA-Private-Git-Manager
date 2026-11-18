@@ -18,6 +18,8 @@ def test_release_archive_reproducible_and_contains_no_runtime_data():
     with tarfile.open(output) as archive:
         names = archive.getnames()
         assert "private_git_manager/config.yaml" in names
+        assert "private_git_manager/apparmor.txt" in names
+        assert "private_git_manager/APPARMOR.md" in names
         assert "private_git_manager/icon.png" in names
         assert "private_git_manager/logo.png" in names
         assert "private_git_manager/app/static/locales/en.json" in names
