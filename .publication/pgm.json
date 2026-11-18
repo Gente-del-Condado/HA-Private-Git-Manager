@@ -1,5 +1,5 @@
 {
-  "source_sha": "cff435c2ec6c72dd33ee285593397a011c61d72b",
+  "source_sha": "1f9f91f610ad2991ab2531c9a765af281972753e",
   "tag": "v0.17.3",
   "tag_sha": "11dbc8cad02619b93367606f4aa614fb8205df23",
   "main_files": {
@@ -28,7 +28,7 @@
       "mode": 420
     },
     "PUBLISHING.md": {
-      "sha256": "2695fe5acf34da5f41d41d1e616bffbb42468ae5849f15b9da02ed384ff0e045",
+      "sha256": "96f7d30fa9603f6073a033ab1f9a8fec5718991188d140584147bb2aa2978bb5",
       "mode": 420
     },
     "README.en.md": {
