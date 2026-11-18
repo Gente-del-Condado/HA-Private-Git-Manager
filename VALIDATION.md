@@ -14,6 +14,37 @@ Para comprobar el contenedor con Podman, construye la imagen a partir de `privat
 
 Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home Assistant OS comprueba la instalación desde Mis_app_ha, un complemento privado, una copia y la recuperación. En YunoHost comprueba la sesión de administrador en el mismo dominio, la instalación, actualización y desinstalación de un paquete privado, y la copia del propio gestor. Usa paquetes de prueba sin datos importantes.
 
+## Compatibilidad estable revisada — 18 de noviembre de 2026
+
+| Componente | Versión estable consultada | Alcance de la comprobación |
+| --- | --- | --- |
+| Core de 64 bits | 2026.11.2 | Ejecución real del gestor 0.17.3 en las dos VM y comprobación de APIs en Core |
+| Supervisor | 2026.11.0 | APIs actuales de aplicaciones, tienda, Ingress y copias, con los ensayos reales registrados abajo |
+| HAOS OVA y generic-aarch64 | 18.4 | Ejecución real en las VM amd64 y ARM64 |
+| HAOS Raspberry Pi de 64 bits y Yellow | 18.5 | Revisión de cambios y requisitos. Ejecución directa en esas placas pendiente en esta revisión |
+
+**HAOS 18.4 es únicamente la versión del entorno de las VM de prueba.** El
+gestor usa Supervisor y las arquitecturas declaradas en su manifiesto. Su código
+y su configuración no fijan HAOS 18.4 como versión obligatoria.
+
+Las versiones se contrastan con el [canal estable oficial](https://version.home-assistant.io/stable.json)
+y sus valores por placa. [HAOS 18.5](https://github.com/home-assistant/operating-system/releases/tag/18.5)
+actualiza el kernel de Raspberry Pi y Yellow. OVA y generic-aarch64 siguen
+recibiendo 18.4 en ese canal en la fecha de esta revisión.
+
+Se revisan autenticación, rol manager, rutas de aplicaciones y tienda, formato
+de copias y acceso por Ingress con la [API oficial del Supervisor](https://contributors.home-assistant.io/apps/supervisor-api/).
+Las rutas `/addons` y `/store/addons` utilizadas por el gestor siguen formando
+parte de esa API. El manifiesto conserva las arquitecturas amd64 y aarch64 y
+los permisos probados.
+
+Como comprobación adicional de la integración opcional Forgejo Backup, nueve
+símbolos de Home Assistant importados por el componente están presentes en
+Core 2026.11.2. Se cargan su módulo de copias y su flujo de configuración desde
+una copia temporal en un proceso aislado de Core. El agente implementa los
+métodos abstractos requeridos. Esta comprobación utiliza código temporal y las
+bibliotecas instaladas, sin cambiar la configuración de la instancia.
+
 ## 0.17.3 — Publicación y actualización en HAOS — 18 de noviembre de 2026
 
 - Cambio pequeño en la etiqueta visible de la contraseña de las copias
@@ -34,7 +65,7 @@ Las pruebas simuladas no sustituyen la aceptación en un equipo real. En Home As
   y los bytes de la clave privada. El perfil sigue en **enforce** y la interfaz
   sirve las nuevas traducciones desde la imagen actualizada.
 - Se consultan las versiones vigentes en el Supervisor antes y después del
-  ensayo. Para estas VM, HAOS 18.4 es la última disponible. Se usan Supervisor
+  ensayo. HAOS 18.4 identifica el entorno concreto de las VM probadas. Se usan Supervisor
   2026.11.0 y Core 2026.11.2. La ficha habitual del gestor en la tienda también
   anuncia la actualización 0.17.3.
 

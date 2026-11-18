@@ -22,6 +22,7 @@
       <p class="etiqueta">Índice</p>
       <ol>
         <li><a href="#empezar">Instalación</a></li>
+        <li><a href="#compatibilidad">Compatibilidad y versiones</a></li>
         <li><a href="#conectar">Conectar Git privado</a></li>
         <li><a href="#migracion">Migrar el catálogo</a></li>
         <li><a href="#catalogos">Paquetes y catálogos</a></li>
@@ -64,6 +65,18 @@
           <li>Abre la interfaz web a través de Home Assistant. Puedes fijarla a la barra lateral.</li>
         </ol>
         <p>El gestor requiere Supervisor y se distribuye para <code>amd64</code> y <code>aarch64</code>. La interfaz permite elegir idioma y tema desde Ajustes.</p>
+        <h3 id="compatibilidad">Compatibilidad y versiones de prueba</h3>
+        <p><strong>HAOS 18.4 es únicamente la versión del sistema operativo utilizada en las VM de las pruebas documentadas.</strong> Para actualizar HAOS y Core, sigue el canal estable que el Supervisor ofrece para tu equipo.</p>
+        <details>
+          <summary>Versiones contrastadas el 18 de noviembre de 2026</summary>
+          <dl>
+            <dt>Home Assistant Core</dt><dd>2026.11.2, comprobado con Private Git Manager 0.17.3.</dd>
+            <dt>Supervisor</dt><dd>2026.11.0, con las APIs de aplicaciones, tienda, Ingress y copias utilizadas por el gestor.</dd>
+            <dt>HAOS en las VM</dt><dd>18.4 para OVA y generic-aarch64. Ejecución real verificada en amd64 y ARM64.</dd>
+            <dt>HAOS en Raspberry Pi y Yellow</dt><dd>18.5. Revisados los cambios publicados y los requisitos del gestor. La ejecución directa de esta revisión en esas placas queda pendiente.</dd>
+          </dl>
+          <p>La versión estable de HAOS varía según la placa. Consulta el <a href="https://version.home-assistant.io/stable.json">canal estable oficial</a>, las <a href="https://github.com/home-assistant/operating-system/releases/tag/18.5">notas de HAOS 18.5</a> y el <a href="https://github.com/Gente-del-Condado/HA-Private-Git-Manager/blob/main/VALIDATION.md">alcance de las pruebas registradas</a>.</p>
+        </details>
         <h3>YunoHost</h3>
         <p>Instala el gestor con el comando siguiente desde YunoHost 12.1.17 o posterior. Elige el dominio de tu administración y una ruta como <code>/private-git</code>. El acceso inicial se concede al grupo <code>admins</code>.</p>
         <pre tabindex="0" role="region" aria-label="Comando de instalación en YunoHost"><code>sudo yunohost app install https://github.com/Gente-del-Condado/HA-Private-Git-Manager/tree/v0.17.3</code></pre>

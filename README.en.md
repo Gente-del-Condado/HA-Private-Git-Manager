@@ -16,6 +16,14 @@ manages repositories and installations; the integration saves encrypted Home
 Assistant backups. Distribution workflows never write back to Forgejo. Users
 can still choose Forgejo or GitHub as their private backup destination.
 
+## Home Assistant compatibility
+
+The manager uses Supervisor APIs on amd64 and aarch64.
+**HAOS 18.4 identifies the VM operating system used in the documented tests.**
+The stable HAOS version depends on the board and is reported by each device's
+Supervisor. The [compatibility guide](https://gente-del-condado.github.io/HA-Private-Git-Manager/#compatibilidad)
+and [VALIDATION.md](VALIDATION.md) distinguish API review from runtime testing.
+
 ## Get started
 
 1. On Home Assistant OS, add [Mis_app_ha](https://github.com/Gente-del-Condado/Mis_app_ha) to the app store, install and start **HA Private Git Manager**, then open its web interface. The app requires Supervisor and supports amd64 and aarch64. For YunoHost, install a tagged package using the [YunoHost guide](YUNOHOST.md).

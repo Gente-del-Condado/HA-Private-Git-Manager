@@ -28,6 +28,14 @@ La aplicación incluye un [perfil propio](private_git_manager/APPARMOR.md), vali
 en amd64 y aarch64. Mantiene Git, SSH, copias cifradas y el rol manager necesario
 para gestionar aplicaciones. La integración de copias de Core es independiente.
 
+## Compatibilidad con Home Assistant
+
+El gestor se integra con las APIs del Supervisor en amd64 y aarch64.
+**HAOS 18.4 identifica únicamente el entorno de las VM utilizadas en las pruebas
+documentadas.** La versión estable de HAOS depende de la placa y se comprueba
+en el Supervisor de cada equipo. El [manual de compatibilidad](https://gente-del-condado.github.io/HA-Private-Git-Manager/#compatibilidad)
+y [VALIDATION.md](VALIDATION.md) distinguen las versiones revisadas y la ejecución real.
+
 ## Instalar
 
 **Home Assistant OS.** Añade [Mis_app_ha](https://github.com/Gente-del-Condado/Mis_app_ha) a la tienda de aplicaciones. Instala e inicia **HA Private Git Manager** y abre su interfaz web. Requiere Supervisor y admite `amd64` y `aarch64`.
