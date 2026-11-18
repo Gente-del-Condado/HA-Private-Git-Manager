@@ -1,5 +1,25 @@
 # Publicación automática en Mis_app_ha
 
+## Preparación del espejo privado
+
+El repositorio `Gente-del-Condado/HA-Private-Git-Manager-private` conserva una
+copia de `main` y las etiquetas de Forgejo. GitHub Actions está deshabilitado
+en ese privado. La réplica automática y el cambio de productor se activan por
+separado; hasta verificarlos, la publicación pública descrita abajo continúa.
+
+El workflow manual **Comprobar espejo privado de PGM** solo se ejecuta en
+`main` del público `HA-Private-Git-Manager`. Recibe el SHA completo comprobado
+en Forgejo y necesita `MIRROR_READ_TOKEN`, un token fino limitado al nuevo
+privado, con Contents: read y Metadata: read. Comprueba la identidad privada,
+la referencia exacta y el archivo de fuentes. No ejecuta su código, no modifica
+repositorios y no publica versiones. El token solo está disponible durante
+la descarga; la comprobación de manifiestos, rutas y sumas se realiza después,
+sin credenciales. No se sube el archivo privado como artefacto de Actions.
+
+Las claves `MIS_APP_DEPLOY_KEY` y `MIS_COMPONENT_GITHUB_DEPLOY_KEY` todavía
+son necesarias para los publicadores existentes. No retirarlas hasta comprobar
+sus sustitutos de extremo a extremo.
+
 El código se desarrolla en el origen de
 [Forgejo](https://gentedelcondado.es/forgejo/wolfbelmi88/HA-Private-Git-Manager).
 [GitHub](https://github.com/Gente-del-Condado/HA-Private-Git-Manager) es su espejo
