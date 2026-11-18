@@ -109,6 +109,18 @@ def verify(folder):
     record = json.loads((folder / 'receipt.json').read_text())
     if not SHA.fullmatch(record['source_sha']):
         raise ValueError('SHA inválido')
+    # Los artefactos de Actions restauran todos los archivos como 0644.
+    # Validar rutas y bytes antes de restaurar únicamente modos autorizados.
+    for tree in ('main', 'tag') if record['tag_sha'] else ('main',):
+        expected = record[tree + '_files']
+        actual = inventory(folder / tree)
+        if actual.keys() != expected.keys() or any(
+                value.get('mode') not in (0o644, 0o755)
+                or value.get('sha256') != actual[name]['sha256']
+                for name, value in expected.items()):
+            raise ValueError('Exportación alterada o permisos no autorizados')
+        for name, value in expected.items():
+            (folder / tree / name).chmod(value['mode'])
     if inventory(folder / 'main') != record['main_files']:
         raise ValueError('Exportación principal alterada')
     if record['tag_sha']:
